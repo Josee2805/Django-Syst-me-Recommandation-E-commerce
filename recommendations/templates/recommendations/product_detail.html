@@ -1,0 +1,178 @@
+{% extends 'recommendations/base.html' %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block content %}
+
+<!-- Breadcrumb -->
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:24px;font-size:.8rem;color:var(--text-muted);">
+  <a href="{% url 'home' %}" style="color:var(--text-muted);text-decoration:none;">Accueil</a>
+  <span>›</span>
+  <a href="{% url 'products' %}" style="color:var(--text-muted);text-decoration:none;">Boutique</a>
+  <span>›</span>
+  <a href="{% url 'products' %}?category={{ product.category.slug }}" style="color:var(--text-muted);text-decoration:none;">{{ product.category.name }}</a>
+  <span>›</span>
+  <span style="color:var(--gold);">{{ product.name }}</span>
+</div>
+
+<!-- Product Main -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:40px;">
+
+  <!-- Image -->
+  <div style="background:linear-gradient(135deg,{{ product.image_color }}22 0%,{{ product.image_color }}11 100%);border-radius:20px;border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;min-height:400px;position:relative;">
+    {% if product.is_featured %}
+    <span style="position:absolute;top:16px;left:16px;background:var(--gold);color:#1a1a18;font-size:.7rem;font-weight:600;padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;">Vedette</span>
+    {% endif %}
+    {% if product.discount_percent > 0 %}
+    <span style="position:absolute;top:16px;right:16px;background:#e63946;color:white;font-size:.75rem;font-weight:600;padding:4px 10px;border-radius:20px;">-{{ product.discount_percent }}%</span>
+    {% endif %}
+    <span style="font-size:9rem;filter:drop-shadow(0 16px 32px rgba(0,0,0,0.2));">{{ product.image_emoji }}</span>
+  </div>
+
+  <!-- Info -->
+  <div style="display:flex;flex-direction:column;justify-content:center;">
+    <div style="font-size:.75rem;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;font-weight:500;margin-bottom:8px;">
+      {{ product.category.icon }} {{ product.category.name }}
+    </div>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:600;color:var(--text-dark);line-height:1.2;margin-bottom:8px;">{{ product.name }}</h1>
+    {% if product.brand %}
+    <p style="color:var(--text-muted);font-size:.875rem;margin-bottom:16px;">par <strong>{{ product.brand }}</strong></p>
+    {% endif %}
+
+    <!-- Stars -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;">
+      {% with avg=product.average_rating %}
+      <div style="display:flex;gap:2px;">
+        {% for i in "12345" %}
+          {% if forloop.counter <= avg %}
+          <span style="color:var(--gold);font-size:1.1rem;">★</span>
+          {% else %}
+          <span style="color:var(--gold-border);font-size:1.1rem;">★</span>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <span style="font-weight:600;color:var(--text-dark);">{{ avg }}</span>
+      <span style="color:var(--text-muted);font-size:.85rem;">({{ product.rating_count }} avis)</span>
+      {% endwith %}
+    </div>
+
+    <!-- Price -->
+    <div style="margin-bottom:24px;">
+      <span style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:600;color:var(--gold);">{{ product.price }} €</span>
+      {% if product.original_price %}
+      <span style="font-size:1.1rem;color:var(--text-light);text-decoration:line-through;margin-left:10px;">{{ product.original_price }} €</span>
+      {% endif %}
+    </div>
+
+    <!-- Description -->
+    <p style="color:var(--text-muted);font-size:.9rem;line-height:1.7;margin-bottom:24px;">{{ product.description }}</p>
+
+    <!-- Tags -->
+    {% if product.get_tags_list %}
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;">
+      {% for tag in product.get_tags_list %}
+      <span style="background:var(--gold-faint);border:1px solid var(--gold-border);color:var(--gold-dark);font-size:.72rem;padding:3px 10px;border-radius:20px;">{{ tag }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Stock -->
+    <p style="font-size:.8rem;color:{% if product.stock > 10 %}#166534{% else %}#991b1b{% endif %};margin-bottom:20px;">
+      {% if product.stock > 10 %}✅ En stock ({{ product.stock }} disponibles){% else %}⚠️ Stock limité ({{ product.stock }} restants){% endif %}
+    </p>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      {% if in_cart %}
+      <a href="{% url 'cart' %}" class="btn btn-primary">🛒 Voir le panier</a>
+      {% else %}
+      <button onclick="addToCart({{ product.pk }})" class="btn btn-primary">🛒 Ajouter au panier</button>
+      {% endif %}
+    </div>
+
+    <!-- User Rating -->
+    <div style="margin-top:28px;padding:20px;background:var(--cream);border-radius:var(--radius);border:1px solid var(--gold-border);">
+      <p style="font-size:.8rem;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">
+        {% if user_rating %}Votre note : {{ user_rating.score }}/5{% else %}Notez ce produit{% endif %}
+      </p>
+      <form method="post" id="ratingForm">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="rate">
+        <input type="hidden" name="score" id="ratingScore" value="{{ user_rating.score|default:'' }}">
+        <div class="stars-interactive" id="starsContainer">
+          {% for i in "12345" %}
+          <button type="button" class="star-btn {% if user_rating.score >= forloop.counter %}filled{% endif %}" data-val="{{ forloop.counter }}" onclick="setRating({{ forloop.counter }})">★</button>
+          {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-outline btn-sm" style="margin-top:12px;">
+          {% if user_rating %}Modifier ma note{% else %}Enregistrer{% endif %}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Comments -->
+<div style="margin-bottom:40px;">
+  <h2 class="section-title">💬 Avis clients</h2>
+
+  <!-- Add comment -->
+  <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:24px;margin-bottom:24px;">
+    <h3 style="font-size:1rem;font-weight:500;margin-bottom:16px;color:var(--text-dark);">Laisser un avis</h3>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="comment">
+      <textarea name="content" class="form-input" placeholder="Partagez votre expérience avec ce produit…" rows="3"></textarea>
+      <button type="submit" class="btn btn-primary btn-sm" style="margin-top:12px;">Publier l'avis</button>
+    </form>
+  </div>
+
+  {% if comments %}
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    {% for comment in comments %}
+    <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:20px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--gold-faint);border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.85rem;color:var(--gold);">
+          {% if comment.user.profile_pic %}
+          <img src="{{ comment.user.profile_pic.url }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="">
+          {% else %}
+          {{ comment.user.username|first|upper }}
+          {% endif %}
+        </div>
+        <div>
+          <div style="font-weight:500;font-size:.875rem;color:var(--text-dark);">{{ comment.user.username }}</div>
+          <div style="font-size:.72rem;color:var(--text-light);">{{ comment.created_at|date:"d F Y" }}</div>
+        </div>
+      </div>
+      <p style="color:var(--text-muted);font-size:.9rem;line-height:1.6;">{{ comment.content }}</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state" style="padding:30px;">
+    <p style="color:var(--text-muted);">Aucun avis pour l'instant. Soyez le premier à commenter !</p>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Similar Products -->
+{% if similar_products %}
+<div>
+  <h2 class="section-title">🔗 Produits similaires</h2>
+  <div class="products-grid">
+    {% for p in similar_products %}
+    {% include 'recommendations/partials/product_card.html' with product=p %}
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+{% block extra_js %}
+<script>
+function setRating(val) {
+  document.getElementById('ratingScore').value = val;
+  document.querySelectorAll('.star-btn').forEach(btn => {
+    btn.classList.toggle('filled', parseInt(btn.dataset.val) <= val);
+  });
+}
+</script>
+{% endblock %}

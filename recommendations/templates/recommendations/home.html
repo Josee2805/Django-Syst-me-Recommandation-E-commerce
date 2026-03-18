@@ -1,0 +1,103 @@
+{% extends 'recommendations/base.html' %}
+{% block title %}Accueil{% endblock %}
+{% block content %}
+
+<!-- Hero Banner -->
+<div style="background:linear-gradient(135deg,#1a1a18 0%,#2c2a1e 50%,#3d3520 100%);border-radius:20px;padding:48px 48px;margin-bottom:32px;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(212,175,55,0.2) 0%,transparent 60%);pointer-events:none;"></div>
+  <div style="position:relative;z-index:1;max-width:560px;">
+    <p style="font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(212,175,55,0.7);margin-bottom:12px;">Bienvenue, {{ user.username }} ✦</p>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:600;color:#fff;line-height:1.1;margin-bottom:16px;">
+      Votre boutique<br><span style="color:var(--gold);">sur-mesure</span>
+    </h1>
+    <p style="color:rgba(255,255,255,0.6);font-size:.95rem;line-height:1.6;margin-bottom:28px;">
+      {% if is_cold_start %}
+        Découvrez notre sélection. Notez des produits pour recevoir des recommandations personnalisées.
+      {% else %}
+        Nos algorithmes ont trouvé {{ recommendations|length }} recommandations rien que pour vous.
+      {% endif %}
+    </p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <a href="{% url 'products' %}" class="btn btn-primary">Explorer la boutique →</a>
+      <a href="{% url 'recommendations' %}" class="btn" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);">Mes recommandations ✨</a>
+    </div>
+  </div>
+  <div style="position:absolute;right:48px;top:50%;transform:translateY(-50%);font-size:8rem;opacity:0.15;pointer-events:none;">✦</div>
+</div>
+
+<!-- Stats Row -->
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;">
+  {% for cat in categories|slice:":4" %}
+  <a href="{% url 'products' %}?category={{ cat.slug }}" style="text-decoration:none;">
+    <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:20px;text-align:center;transition:all .25s;cursor:pointer;" onmouseover="this.style.borderColor='var(--gold)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--gold-border)';this.style.transform=''">
+      <div style="font-size:2rem;margin-bottom:8px;">{{ cat.icon }}</div>
+      <div style="font-size:.8rem;font-weight:500;color:var(--text-dark);">{{ cat.name }}</div>
+      <div style="font-size:.7rem;color:var(--text-muted);margin-top:3px;">{{ cat.product_count }} produits</div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+
+<!-- Recommendations -->
+{% if recommendations %}
+<div style="margin-bottom:40px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <h2 class="section-title" style="margin-bottom:0;flex:1;">
+      {% if is_cold_start %}🔥 Sélection du moment{% else %}✨ Recommandé pour vous{% endif %}
+    </h2>
+    <a href="{% url 'recommendations' %}" class="btn btn-outline btn-sm">Voir tout</a>
+  </div>
+  {% if is_cold_start %}
+  <div class="alert alert-info" style="margin-bottom:16px;">
+    💡 Notez des produits pour recevoir des recommandations personnalisées basées sur vos goûts !
+  </div>
+  {% endif %}
+  <div class="products-grid">
+    {% for product in recommendations %}
+    {% include 'recommendations/partials/product_card.html' with product=product %}
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Featured Products -->
+{% if featured %}
+<div style="margin-bottom:40px;">
+  <h2 class="section-title">⭐ Produits vedettes</h2>
+  <div class="products-grid">
+    {% for product in featured %}
+    {% include 'recommendations/partials/product_card.html' with product=product %}
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Top Rated -->
+{% if top_rated %}
+<div style="margin-bottom:40px;">
+  <h2 class="section-title">🏆 Mieux notés</h2>
+  <div class="products-grid">
+    {% for product in top_rated %}
+    {% include 'recommendations/partials/product_card.html' with product=product %}
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- All Categories -->
+<div style="margin-bottom:40px;">
+  <h2 class="section-title">🗂️ Toutes les catégories</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">
+    {% for cat in categories %}
+    <a href="{% url 'products' %}?category={{ cat.slug }}" style="text-decoration:none;">
+      <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:24px 16px;text-align:center;transition:all .25s;" onmouseover="this.style.borderColor='var(--gold)';this.style.background='var(--gold-faint)'" onmouseout="this.style.borderColor='var(--gold-border)';this.style.background='var(--white)'">
+        <div style="font-size:2.2rem;margin-bottom:10px;">{{ cat.icon }}</div>
+        <div style="font-size:.85rem;font-weight:500;color:var(--text-dark);">{{ cat.name }}</div>
+        <div style="font-size:.72rem;color:var(--gold);margin-top:4px;">{{ cat.product_count }} articles</div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

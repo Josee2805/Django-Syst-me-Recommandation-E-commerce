@@ -1,0 +1,70 @@
+{% extends 'recommendations/base.html' %}
+{% block title %}Boutique{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h2>{% if current_category %}{{ current_category.icon }} {{ current_category.name }}{% elif search_q %}🔍 "{{ search_q }}"{% else %}🛍️ Toute la boutique{% endif %}</h2>
+  <p>
+    {% if products %}{{ products|length }} produit{{ products|length|pluralize }} disponible{{ products|length|pluralize }}
+    {% else %}Aucun produit trouvé{% endif %}
+  </p>
+</div>
+
+<!-- Catégories chips -->
+<div class="category-chips">
+  <a href="{% url 'products' %}" class="category-chip {% if not current_category and not search_q %}active{% endif %}">🛍️ Tout</a>
+  {% for cat in categories %}
+  <a href="{% url 'products' %}?category={{ cat.slug }}" class="category-chip {% if current_category.slug == cat.slug %}active{% endif %}">
+    {{ cat.icon }} {{ cat.name }}
+    <span style="opacity:.6;font-size:.7rem;">({{ cat.product_count }})</span>
+  </a>
+  {% endfor %}
+</div>
+
+<!-- Filtres & Tri -->
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+  <form action="{% url 'products' %}" method="get" style="display:flex;gap:8px;align-items:center;">
+    {% if current_category %}<input type="hidden" name="category" value="{{ current_category.slug }}">{% endif %}
+    <div style="position:relative;">
+      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-light);font-size:.85rem;">🔍</span>
+      <input type="text" name="q" value="{{ search_q }}" placeholder="Rechercher…" class="form-input"
+             style="padding-left:36px;width:240px;border-radius:30px;">
+    </div>
+    <button type="submit" class="btn btn-primary btn-sm">Chercher</button>
+    {% if search_q or current_category %}
+      <a href="{% url 'products' %}" class="btn btn-outline btn-sm">✕ Effacer</a>
+    {% endif %}
+  </form>
+
+  <!-- Sort links -->
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <span style="font-size:.8rem;color:var(--text-muted);">Trier :</span>
+    <a href="?{% if current_category %}category={{ current_category.slug }}&{% endif %}{% if search_q %}q={{ search_q }}&{% endif %}sort=featured"
+       class="category-chip {% if sort == 'featured' or not sort %}active{% endif %}" style="padding:4px 12px;font-size:.75rem;">⭐ Vedettes</a>
+    <a href="?{% if current_category %}category={{ current_category.slug }}&{% endif %}{% if search_q %}q={{ search_q }}&{% endif %}sort=rating"
+       class="category-chip {% if sort == 'rating' %}active{% endif %}" style="padding:4px 12px;font-size:.75rem;">🏆 Note</a>
+    <a href="?{% if current_category %}category={{ current_category.slug }}&{% endif %}{% if search_q %}q={{ search_q }}&{% endif %}sort=price_asc"
+       class="category-chip {% if sort == 'price_asc' %}active{% endif %}" style="padding:4px 12px;font-size:.75rem;">Prix ↑</a>
+    <a href="?{% if current_category %}category={{ current_category.slug }}&{% endif %}{% if search_q %}q={{ search_q }}&{% endif %}sort=price_desc"
+       class="category-chip {% if sort == 'price_desc' %}active{% endif %}" style="padding:4px 12px;font-size:.75rem;">Prix ↓</a>
+    <a href="?{% if current_category %}category={{ current_category.slug }}&{% endif %}{% if search_q %}q={{ search_q }}&{% endif %}sort=newest"
+       class="category-chip {% if sort == 'newest' %}active{% endif %}" style="padding:4px 12px;font-size:.75rem;">🆕 Récents</a>
+  </div>
+</div>
+
+{% if products %}
+<div class="products-grid">
+  {% for product in products %}
+  {% include 'recommendations/partials/product_card.html' with product=product %}
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-state-icon">🔍</div>
+  <h3>Aucun produit trouvé</h3>
+  <p>Essayez d'autres mots-clés ou explorez une autre catégorie.</p>
+  <a href="{% url 'products' %}" class="btn btn-primary" style="margin-top:20px;">Voir tous les produits</a>
+</div>
+{% endif %}
+
+{% endblock %}

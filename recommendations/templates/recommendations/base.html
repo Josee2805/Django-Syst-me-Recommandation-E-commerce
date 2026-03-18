@@ -1,0 +1,196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}LuxeMart{% endblock %} — L'Art du Shopping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="{% static 'css/main.css' %}">
+{% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{% if user.is_authenticated %}
+<!-- Sidebar -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <h1>✦ LuxeMart</h1>
+    <span>L'art du shopping</span>
+  </div>
+
+  <div class="sidebar-user">
+    <div class="sidebar-user-avatar">
+      {% if user.profile_pic %}
+        <img src="{{ user.profile_pic.url }}" alt="avatar">
+      {% else %}
+        {{ user.username|first|upper }}
+      {% endif %}
+    </div>
+    <div class="sidebar-user-info">
+      <div class="sidebar-user-name">{{ user.username }}</div>
+      <div class="sidebar-user-email">{{ user.email }}</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Navigation</div>
+    <a href="{% url 'home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+      <span class="nav-item-icon">🏠</span> Accueil
+    </a>
+    <a href="{% url 'products' %}" class="nav-item {% if request.resolver_match.url_name == 'products' or request.resolver_match.url_name == 'product_detail' %}active{% endif %}">
+      <span class="nav-item-icon">🛍️</span> Boutique
+    </a>
+    <a href="{% url 'recommendations' %}" class="nav-item {% if request.resolver_match.url_name == 'recommendations' %}active{% endif %}">
+      <span class="nav-item-icon">✨</span> Pour vous
+    </a>
+    <a href="{% url 'cart' %}" class="nav-item {% if request.resolver_match.url_name == 'cart' %}active{% endif %}">
+      <span class="nav-item-icon">🛒</span> Panier
+      {% if cart_count > 0 %}
+        <span class="nav-badge">{{ cart_count }}</span>
+      {% endif %}
+    </a>
+
+    <div class="nav-section-label">Compte</div>
+    <a href="{% url 'profile' %}" class="nav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+      <span class="nav-item-icon">👤</span> Mon profil
+    </a>
+    <a href="{% url 'logout' %}" class="nav-item" style="color: #e63946;">
+      <span class="nav-item-icon">🚪</span> Déconnexion
+    </a>
+
+    <div class="nav-section-label">Catégories</div>
+    {% for cat in sidebar_categories %}
+    <a href="{% url 'products' %}?category={{ cat.slug }}" class="nav-item">
+      <span class="nav-item-icon">{{ cat.icon }}</span> {{ cat.name }}
+    </a>
+    {% endfor %}
+  </nav>
+
+  <div class="sidebar-bottom">
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <span id="themeIcon">🌙</span>
+      <span id="themeLabel">Mode sombre</span>
+      <div class="toggle-knob"></div>
+    </button>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main-content">
+  <header class="topbar">
+    <button class="hamburger" onclick="openSidebar()">☰</button>
+    <form action="{% url 'products' %}" method="get" class="topbar-search">
+      <span class="topbar-search-icon">🔍</span>
+      <input type="text" name="q" placeholder="Rechercher un produit, une marque…" value="{{ request.GET.q }}">
+    </form>
+    <div class="topbar-actions">
+      <a href="{% url 'cart' %}" class="topbar-btn" title="Panier">
+        🛒
+        {% if cart_count > 0 %}<span class="cart-badge">{{ cart_count }}</span>{% endif %}
+      </a>
+      <a href="{% url 'profile' %}" class="topbar-btn" title="Profil">
+        {% if user.profile_pic %}
+          <img src="{{ user.profile_pic.url }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="">
+        {% else %}
+          👤
+        {% endif %}
+      </a>
+    </div>
+  </header>
+
+  <main class="page-content">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}info{% endif %} fade-up" style="margin-bottom:16px;">
+      {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}❌{% else %}ℹ️{% endif %}
+      {{ message }}
+    </div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+{% else %}
+<main>
+  {% for message in messages %}
+  <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}info{% endif %}">
+    {{ message }}
+  </div>
+  {% endfor %}
+  {% block auth_content %}{% endblock %}
+</main>
+{% endif %}
+
+<script>
+// Theme
+const saved = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', saved);
+updateThemeUI(saved);
+
+function updateThemeUI(theme) {
+  const icon = document.getElementById('themeIcon');
+  const label = document.getElementById('themeLabel');
+  if (!icon) return;
+  if (theme === 'dark') { icon.textContent = '☀️'; label.textContent = 'Mode clair'; }
+  else { icon.textContent = '🌙'; label.textContent = 'Mode sombre'; }
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  updateThemeUI(next);
+}
+
+// Sidebar mobile
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+// CSRF
+function getCookie(name) {
+  let v = null;
+  document.cookie.split(';').forEach(c => {
+    c = c.trim();
+    if (c.startsWith(name + '=')) v = decodeURIComponent(c.slice(name.length + 1));
+  });
+  return v;
+}
+
+// Add to cart AJAX
+function addToCart(productId) {
+  fetch(`/cart/add/${productId}/`, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': getCookie('csrftoken'), 'X-Requested-With': 'XMLHttpRequest' }
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      document.querySelectorAll('.cart-badge, .nav-badge').forEach(el => {
+        el.textContent = data.cart_count;
+        el.style.display = data.cart_count > 0 ? 'flex' : 'none';
+      });
+      showToast('Ajouté au panier !');
+    }
+  });
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--gold);color:#1a1a18;padding:10px 20px;border-radius:30px;font-size:.85rem;font-weight:500;z-index:9999;animation:fadeUp .3s ease';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2500);
+}
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

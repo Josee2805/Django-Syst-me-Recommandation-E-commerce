@@ -1,0 +1,159 @@
+{% extends 'recommendations/base.html' %}
+{% block title %}Mon Profil{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h2>👤 Mon Profil</h2>
+  <p>Gérez votre compte et consultez vos statistiques</p>
+</div>
+
+<div style="display:grid;grid-template-columns:340px 1fr;gap:28px;align-items:start;">
+
+  <!-- Left: Profile Card + Edit -->
+  <div style="display:flex;flex-direction:column;gap:20px;">
+    
+    <!-- Profile card -->
+    <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);overflow:hidden;">
+      <div style="background:linear-gradient(135deg,#1a1a18,#2c2a1e);padding:32px;text-align:center;position:relative;">
+        <div style="width:90px;height:90px;border-radius:50%;border:3px solid var(--gold);margin:0 auto 16px;overflow:hidden;background:var(--gold-faint);display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:600;color:var(--gold);">
+          {% if user.profile_pic %}
+          <img src="{{ user.profile_pic.url }}" style="width:100%;height:100%;object-fit:cover;" alt="Photo de profil">
+          {% else %}
+          {{ user.username|first|upper }}
+          {% endif %}
+        </div>
+        <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:#fff;margin-bottom:4px;">{{ user.username }}</h2>
+        <p style="font-size:.8rem;color:rgba(255,255,255,0.5);">{{ user.email }}</p>
+        {% if user.bio %}
+        <p style="font-size:.82rem;color:rgba(255,255,255,0.6);margin-top:10px;font-style:italic;">{{ user.bio }}</p>
+        {% endif %}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+        <div style="padding:16px;text-align:center;border-right:1px solid var(--gold-border);">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:var(--gold);">{{ purchases|length }}</div>
+          <div style="font-size:.72rem;color:var(--text-muted);">Achats</div>
+        </div>
+        <div style="padding:16px;text-align:center;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:var(--gold);">{{ ratings|length }}</div>
+          <div style="font-size:.72rem;color:var(--text-muted);">Notes</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit form -->
+    <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:24px;">
+      <h3 style="font-size:1rem;font-weight:600;margin-bottom:20px;color:var(--text-dark);">✏️ Modifier le profil</h3>
+      <form method="post" action="{% url 'update_profile' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Photo de profil</label>
+          <input type="file" name="profile_pic" accept="image/*" class="form-input" style="padding:6px;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nom d'utilisateur</label>
+          <input type="text" name="username" value="{{ user.username }}" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bio</label>
+          <textarea name="bio" class="form-input" rows="2" placeholder="Quelques mots sur vous…">{{ user.bio }}</textarea>
+        </div>
+        <div style="height:1px;background:var(--gold-border);margin:16px 0;"></div>
+        <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:12px;">Laisser vide pour ne pas changer le mot de passe</p>
+        <div class="form-group">
+          <label class="form-label">Nouveau mot de passe</label>
+          <input type="password" name="new_password1" class="form-input" placeholder="••••••••">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmer</label>
+          <input type="password" name="new_password2" class="form-input" placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Sauvegarder</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Right: Stats + History -->
+  <div style="display:flex;flex-direction:column;gap:24px;">
+
+    <!-- Eval stats -->
+    {% if eval_data %}
+    <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:24px;">
+      <h3 style="font-size:1rem;font-weight:600;margin-bottom:20px;color:var(--text-dark);">📊 Performance des recommandations</h3>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+        <div style="text-align:center;padding:16px;background:var(--gold-faint);border-radius:var(--radius-sm);border:1px solid var(--gold-border);">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:var(--gold);">{{ eval_data.precision }}</div>
+          <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px;">Précision</div>
+        </div>
+        <div style="text-align:center;padding:16px;background:var(--gold-faint);border-radius:var(--radius-sm);border:1px solid var(--gold-border);">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:var(--gold);">{{ eval_data.recall }}</div>
+          <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px;">Rappel</div>
+        </div>
+        <div style="text-align:center;padding:16px;background:var(--gold-faint);border-radius:var(--radius-sm);border:1px solid var(--gold-border);">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:var(--gold);">{{ eval_data.f1 }}</div>
+          <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px;">F1-Score</div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- My ratings -->
+    {% if ratings %}
+    <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:24px;">
+      <h3 style="font-size:1rem;font-weight:600;margin-bottom:16px;color:var(--text-dark);">⭐ Mes notes récentes</h3>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        {% for rating in ratings|slice:":8" %}
+        <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--cream);border-radius:var(--radius-sm);">
+          <span style="font-size:1.5rem;">{{ rating.product.image_emoji }}</span>
+          <div style="flex:1;min-width:0;">
+            <a href="{% url 'product_detail' rating.product.pk %}" style="font-size:.875rem;font-weight:500;color:var(--text-dark);text-decoration:none;">{{ rating.product.name|truncatechars:35 }}</a>
+            <div style="font-size:.72rem;color:var(--text-muted);">{{ rating.product.category.name }}</div>
+          </div>
+          <div style="display:flex;gap:1px;">
+            {% for i in "12345" %}
+            <span style="color:{% if forloop.counter <= rating.score %}var(--gold){% else %}var(--gold-border){% endif %};">★</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Purchase history -->
+    {% if purchases %}
+    <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:24px;">
+      <h3 style="font-size:1rem;font-weight:600;margin-bottom:16px;color:var(--text-dark);">🧾 Historique d'achats</h3>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        {% for purchase in purchases|slice:":10" %}
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--cream);border-radius:var(--radius-sm);">
+          <span style="font-size:1.5rem;">{{ purchase.product.image_emoji }}</span>
+          <div style="flex:1;min-width:0;">
+            <a href="{% url 'product_detail' purchase.product.pk %}" style="font-size:.875rem;font-weight:500;color:var(--text-dark);text-decoration:none;">{{ purchase.product.name|truncatechars:35 }}</a>
+            <div style="font-size:.72rem;color:var(--text-muted);">{{ purchase.purchased_at|date:"d/m/Y" }} · ×{{ purchase.quantity }}</div>
+          </div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--gold);">{{ purchase.product.price }} €</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Recommendations preview -->
+    {% if recommendations %}
+    <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <h3 style="font-size:1rem;font-weight:600;color:var(--text-dark);">✨ Recommandé pour vous</h3>
+        <a href="{% url 'recommendations' %}" class="btn btn-outline btn-sm">Voir tout</a>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+        {% for product in recommendations|slice:":4" %}
+        {% include 'recommendations/partials/product_card.html' with product=product %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock %}

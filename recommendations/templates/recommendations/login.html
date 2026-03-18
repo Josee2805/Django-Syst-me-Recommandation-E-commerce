@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Connexion — LuxeMart</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="{% static 'css/main.css' %}">
+<style>
+  body { display:block; min-height:100vh; background:var(--off-white); }
+  .auth-wrapper {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .auth-hero {
+    background: linear-gradient(160deg, #1a1a18 0%, #2c2a1e 60%, #3d3520 100%);
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: flex-start;
+    padding: 60px;
+    position: relative; overflow: hidden;
+  }
+  .auth-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(212,175,55,0.18) 0%, transparent 65%);
+  }
+  .auth-hero-content { position: relative; z-index: 1; }
+  .auth-hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.5rem; font-weight: 600;
+    color: var(--gold);
+    line-height: 1; margin-bottom: 8px;
+  }
+  .auth-hero-sub {
+    font-size: 0.85rem; letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase; margin-bottom: 40px;
+  }
+  .auth-hero-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; font-style: italic;
+    color: rgba(255,255,255,0.7); line-height: 1.5;
+    max-width: 340px;
+  }
+  .auth-hero-dots { display:flex; gap:8px; margin-top:40px; }
+  .auth-hero-dot {
+    width:8px; height:8px; border-radius:50%;
+    background: rgba(212,175,55,0.3);
+  }
+  .auth-hero-dot:first-child { background: var(--gold); width:24px; border-radius:4px; }
+
+  .auth-form-side {
+    display: flex; align-items: center; justify-content: center;
+    padding: 60px 40px;
+    background: var(--white);
+  }
+  .auth-form-box { width: 100%; max-width: 380px; }
+  .auth-form-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; font-weight: 600;
+    color: var(--text-dark); margin-bottom: 6px;
+  }
+  .auth-form-subtitle { color: var(--text-muted); font-size:.875rem; margin-bottom:32px; }
+  .auth-divider {
+    text-align:center; margin:24px 0;
+    position:relative; color:var(--text-light); font-size:.8rem;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content:''; position:absolute; top:50%; width:42%; height:1px;
+    background:var(--gold-border);
+  }
+  .auth-divider::before { left:0; }
+  .auth-divider::after { right:0; }
+  .auth-link { color:var(--gold); text-decoration:none; font-weight:500; }
+  .auth-link:hover { text-decoration:underline; }
+
+  @media(max-width:700px){
+    .auth-wrapper{ grid-template-columns:1fr; }
+    .auth-hero{ display:none; }
+  }
+</style>
+</head>
+<body>
+<div class="auth-wrapper">
+  <div class="auth-hero">
+    <div class="auth-hero-content">
+      <h1>✦ LuxeMart</h1>
+      <p class="auth-hero-sub">L'art du shopping</p>
+      <p class="auth-hero-tagline">"Découvrez des produits choisis avec soin, recommandés rien que pour vous."</p>
+      <div class="auth-hero-dots">
+        <div class="auth-hero-dot"></div>
+        <div class="auth-hero-dot"></div>
+        <div class="auth-hero-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-form-side">
+    <div class="auth-form-box">
+      <h2 class="auth-form-title">Connexion</h2>
+      <p class="auth-form-subtitle">Ravi de vous revoir ✨</p>
+
+      {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}error{% else %}info{% endif %}">{{ message }}</div>
+      {% endfor %}
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Adresse email</label>
+          <input type="email" name="email" class="form-input" placeholder="vous@exemple.com" required autofocus>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mot de passe</label>
+          <input type="password" name="password" class="form-input" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;">
+          Se connecter →
+        </button>
+      </form>
+
+      <div class="auth-divider">ou</div>
+      <p style="text-align:center;font-size:.875rem;color:var(--text-muted);">
+        Pas encore de compte ?
+        <a href="{% url 'register' %}" class="auth-link">Créer un compte</a>
+      </p>
+
+      <div style="margin-top:32px;padding:16px;background:var(--gold-faint);border:1px solid var(--gold-border);border-radius:var(--radius-sm);">
+        <p style="font-size:.75rem;color:var(--text-muted);margin-bottom:4px;font-weight:500;">💡 Compte démo</p>
+        <p style="font-size:.8rem;color:var(--gold);">demo@luxemart.com <span style="color:var(--text-muted);">/</span> demo1234</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const t = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', t);
+</script>
+</body>
+</html>

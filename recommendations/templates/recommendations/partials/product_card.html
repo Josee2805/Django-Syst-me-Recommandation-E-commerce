@@ -1,0 +1,39 @@
+<a href="{% url 'product_detail' product.pk %}" class="product-card">
+  <div class="product-card-image" style="background:linear-gradient(135deg,{{ product.image_color }}22 0%,{{ product.image_color }}11 100%);">
+    {% if product.is_featured %}
+    <span class="product-card-badge">Vedette</span>
+    {% endif %}
+    {% if product.discount_percent > 0 %}
+    <span class="discount-badge">-{{ product.discount_percent }}%</span>
+    {% endif %}
+    <span class="product-card-emoji">{{ product.image_emoji }}</span>
+  </div>
+  <div class="product-card-body">
+    <div class="product-card-category">{{ product.category.name }}</div>
+    <div class="product-card-name">{{ product.name }}</div>
+    {% if product.brand %}
+    <div class="product-card-brand">{{ product.brand }}</div>
+    {% endif %}
+    <div class="product-card-stars">
+      {% with avg=product.average_rating %}
+      {% for i in "12345" %}
+        {% if forloop.counter <= avg %}
+        <span class="star">★</span>
+        {% else %}
+        <span class="star empty">★</span>
+        {% endif %}
+      {% endfor %}
+      <span class="rating-count">({{ product.rating_count }})</span>
+      {% endwith %}
+    </div>
+    <div class="product-card-footer">
+      <div>
+        <span class="product-card-price">{{ product.price }} €</span>
+        {% if product.original_price %}
+        <span class="product-card-original">{{ product.original_price }} €</span>
+        {% endif %}
+      </div>
+      <button class="btn-add-cart" onclick="event.preventDefault();addToCart({{ product.pk }})" title="Ajouter au panier">+</button>
+    </div>
+  </div>
+</a>

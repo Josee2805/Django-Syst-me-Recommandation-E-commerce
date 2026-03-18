@@ -1,0 +1,62 @@
+{% extends 'recommendations/base.html' %}
+{% block title %}Recommandations{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h2>✨ Recommandations pour vous</h2>
+  <p>Basées sur vos notes et vos préférences — algorithme hybride (collaboratif + contenu)</p>
+</div>
+
+{% if eval_data %}
+<div style="background:linear-gradient(135deg,#1a1a18,#2c2a1e);border-radius:var(--radius);padding:24px;margin-bottom:28px;">
+  <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--gold);margin-bottom:16px;">📊 Performance de l'algorithme</h3>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+    <div style="text-align:center;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);font-weight:600;">{{ eval_data.precision }}</div>
+      <div style="font-size:.75rem;color:rgba(255,255,255,0.5);margin-top:4px;">Précision</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);font-weight:600;">{{ eval_data.recall }}</div>
+      <div style="font-size:.75rem;color:rgba(255,255,255,0.5);margin-top:4px;">Rappel</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);font-weight:600;">{{ eval_data.f1 }}</div>
+      <div style="font-size:.75rem;color:rgba(255,255,255,0.5);margin-top:4px;">F1-Score</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);font-weight:600;">{{ user_ratings }}</div>
+      <div style="font-size:.75rem;color:rgba(255,255,255,0.5);margin-top:4px;">Notes données</div>
+    </div>
+  </div>
+  <p style="font-size:.75rem;color:rgba(255,255,255,0.4);margin-top:16px;text-align:center;">
+    Plus vous notez de produits, plus les recommandations s'améliorent.
+  </p>
+</div>
+{% endif %}
+
+{% if user_ratings == 0 %}
+<div class="alert alert-info" style="margin-bottom:24px;">
+  💡 <strong>Astuce :</strong> Notez des produits pour activer les recommandations personnalisées. Pour l'instant, nous vous montrons nos sélections populaires.
+</div>
+{% elif user_ratings < 5 %}
+<div class="alert alert-info" style="margin-bottom:24px;">
+  📈 Vous avez noté {{ user_ratings }} produit{{ user_ratings|pluralize }}. Notez-en encore quelques-uns pour affiner vos recommandations !
+</div>
+{% endif %}
+
+{% if recommendations %}
+<div class="products-grid">
+  {% for product in recommendations %}
+  {% include 'recommendations/partials/product_card.html' with product=product %}
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-state-icon">✨</div>
+  <h3>Pas encore de recommandations</h3>
+  <p>Explorez nos produits et notez-les pour recevoir des suggestions personnalisées.</p>
+  <a href="{% url 'products' %}" class="btn btn-primary" style="margin-top:20px;">Découvrir les produits →</a>
+</div>
+{% endif %}
+
+{% endblock %}
