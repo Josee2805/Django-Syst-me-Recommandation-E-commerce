@@ -79,7 +79,7 @@
     {% if eval_data %}
     <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:24px;">
       <h3 style="font-size:1rem;font-weight:600;margin-bottom:20px;color:var(--text-dark);">📊 Performance des recommandations</h3>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
         <div style="text-align:center;padding:16px;background:var(--gold-faint);border-radius:var(--radius-sm);border:1px solid var(--gold-border);">
           <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:var(--gold);">{{ eval_data.precision }}</div>
           <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px;">Précision</div>
@@ -91,6 +91,10 @@
         <div style="text-align:center;padding:16px;background:var(--gold-faint);border-radius:var(--radius-sm);border:1px solid var(--gold-border);">
           <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:var(--gold);">{{ eval_data.f1 }}</div>
           <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px;">F1-Score</div>
+        </div>
+        <div style="text-align:center;padding:16px;background:var(--gold-faint);border-radius:var(--radius-sm);border:1px solid var(--gold-border);">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:var(--gold);">{{ eval_data.ndcg }}</div>
+          <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px;">NDCG</div>
         </div>
       </div>
     </div>

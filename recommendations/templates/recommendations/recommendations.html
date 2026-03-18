@@ -10,7 +10,7 @@
 {% if eval_data %}
 <div style="background:linear-gradient(135deg,#1a1a18,#2c2a1e);border-radius:var(--radius);padding:24px;margin-bottom:28px;">
   <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--gold);margin-bottom:16px;">📊 Performance de l'algorithme</h3>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;">
     <div style="text-align:center;">
       <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);font-weight:600;">{{ eval_data.precision }}</div>
       <div style="font-size:.75rem;color:rgba(255,255,255,0.5);margin-top:4px;">Précision</div>
@@ -22,6 +22,10 @@
     <div style="text-align:center;">
       <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);font-weight:600;">{{ eval_data.f1 }}</div>
       <div style="font-size:.75rem;color:rgba(255,255,255,0.5);margin-top:4px;">F1-Score</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);font-weight:600;">{{ eval_data.ndcg }}</div>
+      <div style="font-size:.75rem;color:rgba(255,255,255,0.5);margin-top:4px;">NDCG</div>
     </div>
     <div style="text-align:center;">
       <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);font-weight:600;">{{ user_ratings }}</div>

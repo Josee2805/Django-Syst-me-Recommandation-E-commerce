@@ -22,36 +22,6 @@ def f1_score(precision, recall):
     return 2 * precision * recall / (precision + recall)
 
 
-def ndcg_at_k(recommended_ids, relevant_ids, k=10):
-    """
-    NDCG@K (Normalized Discounted Cumulative Gain).
-    Mesure la qualite du classement : un produit pertinent en position 1
-    vaut plus qu'en position 10. Retourne un score entre 0 et 1.
-    """
-    import math
-
-    if not recommended_ids or not relevant_ids:
-        return 0.0
-
-    relevant_set = set(relevant_ids)
-    top_k = recommended_ids[:k]
-
-    # DCG : somme de 1/log2(position+1) pour chaque produit pertinent trouve
-    dcg = 0.0
-    for i, pid in enumerate(top_k):
-        if pid in relevant_set:
-            dcg += 1.0 / math.log2(i + 2)  # +2 car log2(1) = 0
-
-    # IDCG : meilleur DCG possible (tous les pertinents en tete de liste)
-    ideal_hits = min(len(relevant_set), k)
-    idcg = sum(1.0 / math.log2(i + 2) for i in range(ideal_hits))
-
-    if idcg == 0:
-        return 0.0
-
-    return round(dcg / idcg, 3)
-
-
 def evaluate_recommender(user, recommendation_ids, threshold=4):
     """Evaluate recommendations for a given user."""
     from .models import Rating
@@ -61,13 +31,11 @@ def evaluate_recommender(user, recommendation_ids, threshold=4):
     p = precision_at_k(recommendation_ids, relevant_ids)
     r = recall_at_k(recommendation_ids, relevant_ids)
     f1 = f1_score(p, r)
-    ndcg = ndcg_at_k(recommendation_ids, relevant_ids)
 
     return {
         'precision': round(p, 3),
         'recall': round(r, 3),
         'f1': round(f1, 3),
-        'ndcg': ndcg,
         'relevant_count': len(relevant_ids),
         'recommended_count': len(recommendation_ids),
     }
