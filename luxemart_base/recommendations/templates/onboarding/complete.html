@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>C'est parti ! — LuxeMart</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+  <style>
+    :root{--gold:#C9A84C;--gold-light:#F0D080;}
+    body{min-height:100vh;background:linear-gradient(135deg,#1A1A2E,#16213E);display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',sans-serif;padding:40px 20px;}
+    .card{background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.25);border-radius:20px;padding:56px 44px;max-width:520px;width:100%;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,0.5);animation:fadeUp 0.6s ease;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+    .confetti{font-size:72px;display:block;margin-bottom:20px;animation:bounce 1s ease;}
+    @keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+    h1{color:var(--gold-light);font-size:2rem;font-weight:700;margin-bottom:10px;}
+    p{color:rgba(255,255,255,0.55);line-height:1.8;}
+    .tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:20px 0;}
+    .tag{background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.25);color:var(--gold-light);padding:4px 12px;border-radius:20px;font-size:0.75rem;}
+    .btn-shop{display:inline-block;margin-top:28px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#1A1A2E;text-decoration:none;padding:15px 40px;border-radius:14px;font-weight:700;font-size:1rem;letter-spacing:1px;transition:all 0.3s;}
+    .btn-shop:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(201,168,76,0.35);color:#1A1A2E;}
+    .note{font-size:0.8rem;color:rgba(255,255,255,0.25);margin-top:16px;}
+  </style>
+</head>
+<body>
+<div class="card">
+  <span class="confetti">🎉</span>
+  <h1>Tout est prêt !</h1>
+  <p>Vos préférences ont été enregistrées. Notre algorithme va maintenant vous proposer des produits qui vous correspondent.</p>
+
+  {% if preferences and preferences.preference_tags %}
+  <div class="tags">
+    {% for tag in preferences.preference_tags %}
+    <span class="tag">{{ tag }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <p class="note">Vos recommandations s'affineront au fil de vos achats et de vos notes.</p>
+  <a href="{% url 'home' %}" class="btn-shop">Découvrir ma boutique →</a>
+</div>
+</body>
+</html>

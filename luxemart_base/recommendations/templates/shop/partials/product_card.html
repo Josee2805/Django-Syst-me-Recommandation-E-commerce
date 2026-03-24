@@ -1,0 +1,23 @@
+<div class="prod-card-wrap">
+  <a href="{% url 'product_detail' slug=p.slug %}" class="prod-card">
+    <div style="position:relative;">
+      <img src="{{ p.get_image }}" alt="{{ p.name }}" class="prod-img" loading="lazy">
+      {% if p.discount_percent %}
+      <span class="discount">-{{ p.discount_percent }}%</span>
+      {% endif %}
+    </div>
+    <div class="prod-body">
+      <span class="prod-cat">{{ p.category.icon }} {{ p.category.name }}</span>
+      <p class="prod-name">{{ p.name }}</p>
+      <div>
+        <span class="prod-price">{{ p.price }}€</span>
+        {% if p.original_price %}
+        <span class="prod-orig">{{ p.original_price }}€</span>
+        {% endif %}
+      </div>
+      {% if p.ratings_count > 0 %}
+      <p class="prod-rating">⭐ {{ p.average_rating }} ({{ p.ratings_count }} avis)</p>
+      {% endif %}
+    </div>
+  </a>
+</div>

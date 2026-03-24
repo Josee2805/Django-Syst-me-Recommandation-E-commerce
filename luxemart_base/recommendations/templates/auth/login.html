@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Connexion — LuxeMart</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root{--gold:#C9A84C;--gold-light:#F0D080;}
+    *{box-sizing:border-box;}
+    body{min-height:100vh;background:linear-gradient(135deg,#1A1A2E,#0F3460 55%,#533483);display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',sans-serif;padding:20px;position:relative;overflow:hidden;}
+    .particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+    .particle{position:absolute;width:4px;height:4px;background:#F0D080;border-radius:50%;opacity:0.3;animation:float linear infinite;}
+    @keyframes float{0%{transform:translateY(100vh);opacity:0}10%{opacity:0.3}90%{opacity:0.3}100%{transform:translateY(-10vh);opacity:0}}
+    .card{position:relative;z-index:1;background:rgba(255,255,255,0.07);backdrop-filter:blur(20px);border:1px solid rgba(201,168,76,0.3);border-radius:20px;padding:48px 40px;width:100%;max-width:440px;box-shadow:0 24px 64px rgba(0,0,0,0.45);}
+    .brand{text-align:center;margin-bottom:32px;}
+    .brand .logo{width:64px;height:64px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:12px;box-shadow:0 8px 24px rgba(201,168,76,0.35);}
+    .brand h1{color:var(--gold-light);font-size:2rem;font-weight:700;letter-spacing:2px;margin:0;}
+    .brand p{color:rgba(255,255,255,0.4);font-size:0.82rem;margin-top:4px;}
+    .form-label{color:rgba(255,255,255,0.7);font-size:0.85rem;font-weight:500;}
+    .input-wrap{display:flex;align-items:center;background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.3);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+    .input-wrap .ico{padding:0 14px;color:var(--gold-light);}
+    .input-wrap input{flex:1;background:transparent;border:none;color:white;padding:13px 14px 13px 0;font-size:0.95rem;outline:none;}
+    .input-wrap input::placeholder{color:rgba(255,255,255,0.3);}
+    .input-wrap:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.15);}
+    .input-wrap button{background:transparent;border:none;color:rgba(255,255,255,0.4);padding:0 14px;cursor:pointer;}
+    .input-wrap button:hover{color:var(--gold-light);}
+    .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#1A1A2E;border:none;padding:14px;font-weight:700;font-size:1rem;border-radius:12px;width:100%;letter-spacing:1px;transition:all 0.3s;cursor:pointer;margin-top:8px;}
+    .btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,0.4);}
+    .divider{display:flex;align-items:center;gap:12px;color:rgba(255,255,255,0.3);font-size:0.78rem;margin:20px 0;}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(201,168,76,0.2);}
+    .auth-links{text-align:center;color:rgba(255,255,255,0.4);font-size:0.83rem;}
+    .auth-links a{color:var(--gold-light);text-decoration:none;}
+    .auth-links a:hover{text-decoration:underline;}
+    .alert{border-radius:10px;border:none;font-size:0.83rem;padding:10px 14px;margin-bottom:14px;}
+    .alert-danger{background:rgba(220,53,69,0.15);color:#ff6b7a;}
+    .alert-warning{background:rgba(255,193,7,0.15);color:#ffd60a;}
+    .alert-success{background:rgba(40,167,69,0.15);color:#56e87a;}
+    .theme-btn{position:fixed;top:16px;right:16px;background:rgba(255,255,255,0.1);border:1px solid rgba(201,168,76,0.3);color:white;width:38px;height:38px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:100;}
+  </style>
+</head>
+<body>
+<div class="particles" id="particles"></div>
+<button class="theme-btn" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
+
+<div class="card">
+  <div class="brand">
+    <div class="logo">✨</div>
+    <h1>LuxeMart</h1>
+    <p>Votre boutique d'exception</p>
+  </div>
+
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <label class="form-label">Adresse email</label>
+    <div class="input-wrap">
+      <span class="ico"><i class="fas fa-envelope"></i></span>
+      <input type="email" name="email" placeholder="votre@email.com" autocomplete="email" autofocus required>
+    </div>
+    <label class="form-label">Mot de passe</label>
+    <div class="input-wrap">
+      <span class="ico"><i class="fas fa-lock"></i></span>
+      <input type="password" name="password" id="pwd" placeholder="••••••••" autocomplete="current-password" required>
+      <button type="button" onclick="togglePwd()"><i class="fas fa-eye" id="eyeIcon"></i></button>
+    </div>
+    <button type="submit" class="btn-gold">
+      <i class="fas fa-sign-in-alt me-2"></i>Se connecter
+    </button>
+  </form>
+
+  <div class="divider">ou</div>
+  <div class="auth-links">
+    <p>Pas encore de compte ? <a href="{% url 'register' %}">Créer un compte</a></p>
+    <p class="mt-2"><a href="{% url 'verify_code' %}">Vérifier mon email</a></p>
+  </div>
+</div>
+
+<script>
+  /* Particules */
+  const cont = document.getElementById('particles');
+  for(let i=0;i<25;i++){
+    const p=document.createElement('div');p.className='particle';
+    p.style.cssText=`left:${Math.random()*100}%;width:${2+Math.random()*4}px;height:${2+Math.random()*4}px;animation-duration:${6+Math.random()*10}s;animation-delay:${Math.random()*10}s;`;
+    cont.appendChild(p);
+  }
+  function togglePwd(){const i=document.getElementById('pwd'),e=document.getElementById('eyeIcon');i.type=i.type==='password'?'text':'password';e.className=i.type==='text'?'fas fa-eye-slash':'fas fa-eye';}
+  function toggleTheme(){document.getElementById('themeIcon').className='fas fa-sun';}
+</script>
+</body>
+</html>
