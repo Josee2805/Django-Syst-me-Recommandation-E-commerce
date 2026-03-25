@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RecoShop — Découvrez des produits faits pour vous</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple:    #7C3AED;
+      --purple-lt: #A78BFA;
+      --pink:      #EC4899;
+      --pink-lt:   #F9A8D4;
+      --green:     #4A9E8A;
+      --green-lt:  #6EE7B7;
+      --dark:      #0F0A1A;
+      --text:      #1A1229;
+      --text-sub:  #4A4060;
+      --text-muted:#8A80A0;
+      --white:     #FFFFFF;
+      --card-bg:   #FAFAF9;
+      --border:    rgba(124,58,237,0.12);
+      --shadow-sm: 0 2px 12px rgba(124,58,237,0.08);
+      --shadow-md: 0 8px 32px rgba(124,58,237,0.14);
+      --shadow-lg: 0 20px 60px rgba(124,58,237,0.18);
+      --radius:    16px;
+      --radius-lg: 24px;
+      --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      background: #fff;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ─── KEYFRAMES ─────────────────────────────── */
+
+    @keyframes blob1 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%     { transform: translate(60px,-40px) scale(1.1); }
+      66%     { transform: translate(-30px,50px) scale(0.95); }
+    }
+    @keyframes blob2 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%     { transform: translate(-70px,40px) scale(1.08); }
+      66%     { transform: translate(40px,-60px) scale(1.02); }
+    }
+    @keyframes blob3 {
+      0%,100% { transform: translate(0,0) scale(1); }
+      50%     { transform: translate(50px,70px) scale(1.06); }
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0px); }
+      50%     { transform: translateY(-22px); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes gradientShift {
+      0%,100% { background-position: 0% 50%; }
+      50%     { background-position: 100% 50%; }
+    }
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position:  200% center; }
+    }
+    @keyframes dash {
+      from { stroke-dashoffset: 300; }
+      to   { stroke-dashoffset: 0; }
+    }
+    @keyframes pulse-ring {
+      0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(124,58,237,0.4); }
+      70%  { transform: scale(1);    box-shadow: 0 0 0 16px rgba(124,58,237,0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(124,58,237,0); }
+    }
+    @keyframes card-float {
+      0%,100% { transform: translateY(0) rotate(0deg); }
+      25%     { transform: translateY(-8px) rotate(0.5deg); }
+      75%     { transform: translateY(-4px) rotate(-0.3deg); }
+    }
+    @keyframes spin-slow {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ─── REVEAL ON SCROLL ───────────────────────── */
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    [data-reveal].visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    [data-reveal-delay="100"] { transition-delay: .1s; }
+    [data-reveal-delay="200"] { transition-delay: .2s; }
+    [data-reveal-delay="300"] { transition-delay: .3s; }
+
+    /* ─── NAVBAR ─────────────────────────────────── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 68px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(124,58,237,0.08);
+      transition: box-shadow var(--transition);
+    }
+    .nav.scrolled { box-shadow: 0 4px 24px rgba(124,58,237,0.10); }
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem; font-weight: 400;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-link {
+      font-size: .875rem; font-weight: 500; color: var(--text-sub);
+      text-decoration: none; transition: color var(--transition);
+    }
+    .nav-link:hover { color: var(--purple); }
+    .nav-actions { display: flex; gap: 10px; align-items: center; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: 'Inter', sans-serif; font-size: .875rem; font-weight: 600;
+      padding: 10px 22px; border-radius: 100px; border: none; cursor: pointer;
+      text-decoration: none; transition: all var(--transition); white-space: nowrap;
+    }
+    .btn-ghost {
+      background: transparent; color: var(--text-sub);
+      border: 1.5px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--purple); color: var(--purple); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: #fff; box-shadow: 0 4px 16px rgba(124,58,237,0.30);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(124,58,237,0.40);
+    }
+    .btn-lg { padding: 15px 32px; font-size: 1rem; }
+    .btn-outline-white {
+      background: rgba(255,255,255,0.12); color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.30);
+      backdrop-filter: blur(6px);
+    }
+    .btn-outline-white:hover {
+      background: rgba(255,255,255,0.22);
+      transform: translateY(-2px);
+    }
+
+    /* ─── HERO ───────────────────────────────────── */
+    .hero {
+      min-height: 100vh; padding: 120px 48px 80px;
+      position: relative; overflow: hidden;
+      display: flex; align-items: center;
+    }
+    /* Blobs */
+    .blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); opacity: 0.45; pointer-events: none;
+    }
+    .blob-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(124,58,237,0.35), transparent 70%);
+      top: -180px; left: -120px;
+      animation: blob1 12s ease-in-out infinite;
+    }
+    .blob-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(236,72,153,0.28), transparent 70%);
+      top: 60px; right: -100px;
+      animation: blob2 15s ease-in-out infinite;
+    }
+    .blob-3 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(74,158,138,0.22), transparent 70%);
+      bottom: -120px; left: 35%;
+      animation: blob3 18s ease-in-out infinite;
+    }
+    /* Grid hero */
+    .hero-grid {
+      max-width: 1200px; margin: 0 auto; width: 100%;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+      align-items: center; position: relative; z-index: 2;
+    }
+    /* Badge */
+    .badge-ai {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(124,58,237,0.08);
+      border: 1px solid rgba(124,58,237,0.20);
+      border-radius: 100px; padding: 6px 14px;
+      font-size: .75rem; font-weight: 600; color: var(--purple);
+      margin-bottom: 24px;
+      animation: fadeUp .6s .1s both;
+    }
+    .badge-ai-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--purple);
+      animation: pulse-ring 2s infinite;
+    }
+    /* Heading */
+    .hero-h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.6rem, 5vw, 4rem);
+      font-weight: 400; line-height: 1.12; letter-spacing: -0.03em;
+      color: var(--text); margin-bottom: 20px;
+      animation: fadeUp .6s .2s both;
+    }
+    .hero-h1 .gradient-word {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--purple), var(--pink), var(--purple));
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 4s linear infinite;
+    }
+    .hero-sub {
+      font-size: 1.05rem; color: var(--text-sub); line-height: 1.7;
+      max-width: 480px; margin-bottom: 36px;
+      animation: fadeUp .6s .3s both;
+    }
+    .hero-btns {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      animation: fadeUp .6s .4s both;
+    }
+
+    /* ─── ILLUSTRATION HERO ──────────────────────── */
+    .hero-illustration {
+      animation: float 3.5s ease-in-out infinite;
+      position: relative;
+    }
+    .phone-mockup {
+      width: 100%; max-width: 420px; margin: 0 auto;
+      display: block;
+    }
+    /* SVG phone illustration */
+    .phone-wrap {
+      position: relative;
+      filter: drop-shadow(0 32px 60px rgba(124,58,237,0.25));
+    }
+    /* Floating mini-cards around phone */
+    .float-card {
+      position: absolute; background: #fff;
+      border-radius: 14px; padding: 10px 16px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+      font-size: .75rem; font-weight: 600; color: var(--text);
+      white-space: nowrap; display: flex; align-items: center; gap: 8px;
+    }
+    .float-card-1 {
+      top: 10%; left: -20%;
+      animation: card-float 4s ease-in-out infinite;
+    }
+    .float-card-2 {
+      bottom: 20%; right: -18%;
+      animation: card-float 5s ease-in-out infinite 1s;
+    }
+    .float-card-3 {
+      top: 50%; left: -25%;
+      animation: card-float 4.5s ease-in-out infinite .5s;
+    }
+    .fc-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* ─── STATS ──────────────────────────────────── */
+    .stats-section {
+      padding: 80px 48px;
+      background: linear-gradient(135deg, rgba(124,58,237,0.06) 0%, rgba(236,72,153,0.04) 100%);
+      border-top: 1px solid rgba(124,58,237,0.08);
+      border-bottom: 1px solid rgba(124,58,237,0.08);
+    }
+    .stats-grid {
+      max-width: 900px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 40px;
+      text-align: center;
+    }
+    .stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.8rem, 5vw, 4.2rem);
+      font-weight: 400; line-height: 1;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 8px;
+    }
+    .stat-label {
+      font-size: .8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .14em; color: var(--text-muted);
+    }
+    .stat-sep {
+      width: 1px; background: rgba(124,58,237,0.15);
+      margin: 0 20px; align-self: stretch;
+    }
+
+    /* ─── FEATURES ───────────────────────────────── */
+    .features-section { padding: 100px 48px; }
+    .section-label {
+      font-size: .68rem; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--purple);
+      display: block; margin-bottom: 10px;
+    }
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 400; color: var(--text); line-height: 1.2;
+      letter-spacing: -0.02em; margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 1rem; color: var(--text-sub); max-width: 500px; line-height: 1.7;
+    }
+    .features-header { text-align: center; margin-bottom: 60px; }
+    .features-grid {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 28px;
+    }
+    .feature-card {
+      background: var(--card-bg); border-radius: var(--radius-lg);
+      padding: 36px 32px; border: 1.5px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+      position: relative; overflow: hidden; cursor: default;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute; inset: 0; border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      opacity: 0;
+      transition: opacity var(--transition);
+      padding: 2px;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+    .feature-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-card:hover { border-color: transparent; }
+    .feature-icon-wrap {
+      width: 72px; height: 72px; border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem; margin-bottom: 24px;
+    }
+    .icon-purple { background: rgba(124,58,237,0.10); }
+    .icon-pink   { background: rgba(236,72,153,0.10); }
+    .icon-green  { background: rgba(74,158,138,0.10); }
+    .feature-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 12px;
+    }
+    .feature-desc { font-size: .9rem; color: var(--text-sub); line-height: 1.7; }
+
+    /* ─── STEPS ──────────────────────────────────── */
+    .steps-section {
+      padding: 100px 48px;
+      background: linear-gradient(180deg, #fff 0%, rgba(124,58,237,0.03) 100%);
+    }
+    .steps-header { text-align: center; margin-bottom: 64px; }
+    .steps-wrap {
+      max-width: 900px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 0; position: relative;
+    }
+    /* SVG connecting line */
+    .steps-line {
+      position: absolute; top: 36px; left: calc(16.6% + 20px); right: calc(16.6% + 20px);
+      height: 2px; overflow: visible;
+    }
+    .steps-line svg {
+      width: 100%; height: 4px; overflow: visible;
+    }
+    .steps-line path {
+      fill: none; stroke: var(--purple); stroke-width: 2;
+      stroke-dasharray: 8 6; stroke-linecap: round;
+      stroke-dashoffset: 300;
+      animation: dash 2s ease forwards;
+      animation-play-state: paused;
+    }
+    .steps-line.animated path { animation-play-state: running; }
+
+    .step { text-align: center; padding: 0 24px; }
+    .step-num-wrap {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px; box-shadow: 0 8px 24px rgba(124,58,237,0.30);
+      position: relative; z-index: 2;
+    }
+    .step-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem; font-weight: 400; color: #fff;
+    }
+    .step-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 10px;
+    }
+    .step-desc { font-size: .875rem; color: var(--text-sub); line-height: 1.65; }
+
+    /* ─── CTA FINAL ──────────────────────────────── */
+    .cta-section {
+      padding: 120px 48px; position: relative; overflow: hidden;
+      background: linear-gradient(135deg, var(--dark) 0%, #1a0a2e 50%, #0d1a14 100%);
+      text-align: center;
+    }
+    /* Particules */
+    .particle {
+      position: absolute; border-radius: 50%;
+      pointer-events: none; opacity: 0;
+    }
+    .cta-h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 400; color: #fff; line-height: 1.2;
+      letter-spacing: -0.02em; margin-bottom: 16px;
+      text-shadow: 0 2px 24px rgba(124,58,237,0.4);
+    }
+    .cta-h2 em {
+      font-style: italic; color: var(--purple-lt);
+    }
+    .cta-sub {
+      font-size: 1rem; color: rgba(255,255,255,0.60);
+      max-width: 480px; margin: 0 auto 40px; line-height: 1.7;
+    }
+    .cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+    /* ─── FOOTER LANDING ─────────────────────────── */
+    .footer-landing {
+      background: var(--dark); padding: 40px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .footer-landing-logo {
+      font-family: 'DM Serif Display', serif; font-size: 1.3rem;
+      background: linear-gradient(135deg, var(--purple-lt), var(--pink-lt));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .footer-landing-links { display: flex; gap: 28px; }
+    .footer-landing-link {
+      font-size: .8rem; color: rgba(255,255,255,0.40);
+      text-decoration: none; transition: color var(--transition);
+    }
+    .footer-landing-link:hover { color: var(--purple-lt); }
+    .footer-landing-copy {
+      font-size: .75rem; color: rgba(255,255,255,0.25);
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────── */
+    @media (max-width: 900px) {
+      .hero { padding: 110px 24px 60px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 48px; text-align: center; }
+      .hero-sub { margin: 0 auto 36px; }
+      .hero-btns { justify-content: center; }
+      .hero-illustration { order: -1; max-width: 320px; margin: 0 auto; }
+      .float-card { display: none; }
+      .features-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
+      .steps-wrap { grid-template-columns: 1fr; max-width: 360px; margin: 0 auto; gap: 32px; }
+      .steps-line { display: none; }
+      .nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .stats-grid { grid-template-columns: 1fr; gap: 24px; }
+      .footer-landing { flex-direction: column; text-align: center; padding: 32px 24px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════ NAVBAR ═══════ -->
+  <nav class="nav" id="mainNav">
+    <a href="#" class="nav-logo">RecoShop</a>
+    <div class="nav-links">
+      <a href="#features" class="nav-link">Fonctionnalités</a>
+      <a href="#steps" class="nav-link">Comment ça marche</a>
+      <a href="#cta" class="nav-link">À propos</a>
+    </div>
+    <div class="nav-actions">
+      <a href="{% url 'login' %}" class="btn btn-ghost">Se connecter</a>
+      <a href="{% url 'register' %}" class="btn btn-primary">S'inscrire</a>
+    </div>
+  </nav>
+
+  <!-- ═══════ SECTION 1 — HERO ═══════ -->
+  <section class="hero" id="hero">
+
+    <!-- Blobs animés -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="hero-grid">
+
+      <!-- Texte gauche -->
+      <div>
+        <div class="badge-ai">
+          <div class="badge-ai-dot"></div>
+          Propulsé par l'Intelligence Artificielle
+        </div>
+
+        <h1 class="hero-h1">
+          Découvrez des produits<br>
+          faits pour <span class="gradient-word">VOUS</span>
+        </h1>
+
+        <p class="hero-sub">
+          RecoShop analyse vos goûts et vos habitudes pour vous recommander
+          exactement ce que vous allez adorer — grâce à trois algorithmes
+          de recommandation de pointe.
+        </p>
+
+        <div class="hero-btns">
+          <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
+            Commencer gratuitement &rarr;
+          </a>
+          <a href="#features" class="btn btn-ghost btn-lg">
+            Voir la démo
+          </a>
+        </div>
+      </div>
+
+      <!-- Illustration droite -->
+      <div class="hero-illustration">
+        <div class="phone-wrap" style="position:relative;max-width:380px;margin:0 auto;">
+
+          <!-- Floating cards -->
+          <div class="float-card float-card-1">
+            <div class="fc-dot" style="background:#7C3AED;"></div>
+            Correspondance : 94%
+          </div>
+          <div class="float-card float-card-2">
+            <div class="fc-dot" style="background:#EC4899;"></div>
+            Nouveau pour vous
+          </div>
+          <div class="float-card float-card-3">
+            <div class="fc-dot" style="background:#4A9E8A;"></div>
+            Tendance du moment
+          </div>
+
+          <!-- SVG Phone illustration -->
+          <svg viewBox="0 0 340 600" fill="none" xmlns="http://www.w3.org/2000/svg" class="phone-mockup">
+            <!-- Phone body -->
+            <rect x="20" y="10" width="300" height="580" rx="40" fill="#1A1229"/>
+            <rect x="28" y="18" width="284" height="564" rx="34" fill="#0F0A1A"/>
+            <!-- Notch -->
+            <rect x="120" y="22" width="100" height="22" rx="11" fill="#1A1229"/>
+            <!-- Screen content -->
+            <rect x="28" y="55" width="284" height="527" rx="6" fill="#F8F6FF"/>
+            <!-- App bar -->
+            <rect x="28" y="55" width="284" height="52" rx="6" fill="#7C3AED"/>
+            <rect x="48" y="72" width="80" height="14" rx="7" fill="rgba(255,255,255,0.9)"/>
+            <circle cx="285" cy="79" r="14" fill="rgba(255,255,255,0.15)"/>
+            <rect cx="285" cy="79" x="279" y="73" width="12" height="12" rx="3" fill="rgba(255,255,255,0.6)"/>
+
+            <!-- Product cards -->
+            <!-- Card 1 -->
+            <rect x="44" y="120" width="114" height="140" rx="14" fill="white" filter="url(#shadow)"/>
+            <rect x="44" y="120" width="114" height="88" rx="14" fill="#EDE9FF"/>
+            <rect x="44" y="188" width="114" height="20" rx="5" fill="white"/>
+            <rect x="52" y="194" width="70" height="8" rx="4" fill="#E5E0F5"/>
+            <rect x="52" y="210" width="50" height="9" rx="4" fill="#7C3AED"/>
+            <rect x="52" y="227" width="86" height="7" rx="3.5" fill="#F0EEF8"/>
+            <rect x="52" y="240" width="60" height="7" rx="3.5" fill="#F0EEF8"/>
+            <!-- Product image placeholder -->
+            <circle cx="101" cy="158" r="26" fill="rgba(124,58,237,0.15)"/>
+            <circle cx="101" cy="158" r="16" fill="rgba(124,58,237,0.25)"/>
+
+            <!-- Card 2 -->
+            <rect x="170" y="120" width="114" height="140" rx="14" fill="white"/>
+            <rect x="170" y="120" width="114" height="88" rx="14" fill="#FFF0F5"/>
+            <rect x="170" y="188" width="114" height="20" rx="5" fill="white"/>
+            <rect x="178" y="194" width="70" height="8" rx="4" fill="#F5E0EA"/>
+            <rect x="178" y="210" width="50" height="9" rx="4" fill="#EC4899"/>
+            <rect x="178" y="227" width="86" height="7" rx="3.5" fill="#FAF0F5"/>
+            <rect x="178" y="240" width="60" height="7" rx="3.5" fill="#FAF0F5"/>
+            <circle cx="227" cy="158" r="26" fill="rgba(236,72,153,0.12)"/>
+            <circle cx="227" cy="158" r="16" fill="rgba(236,72,153,0.22)"/>
+
+            <!-- Card 3 (bottom) -->
+            <rect x="44" y="276" width="240" height="90" rx="14" fill="white"/>
+            <rect x="44" y="276" width="90" height="90" rx="14" fill="#E8F5F2"/>
+            <circle cx="89" cy="321" r="24" fill="rgba(74,158,138,0.18)"/>
+            <circle cx="89" cy="321" r="15" fill="rgba(74,158,138,0.30)"/>
+            <rect x="150" y="292" width="110" height="9" rx="4.5" fill="#E5E3EE"/>
+            <rect x="150" y="309" width="80" height="9" rx="4.5" fill="#E5E3EE"/>
+            <rect x="150" y="326" width="55" height="11" rx="5.5" fill="#4A9E8A"/>
+            <rect x="213" y="326" width="42" height="11" rx="5.5" fill="#F0F0F0"/>
+
+            <!-- Score badge -->
+            <rect x="44" y="384" width="240" height="50" rx="14" fill="rgba(124,58,237,0.06)" stroke="rgba(124,58,237,0.15)" stroke-width="1"/>
+            <rect x="60" y="401" width="140" height="8" rx="4" fill="rgba(124,58,237,0.20)"/>
+            <rect x="220" y="397" width="52" height="18" rx="9" fill="#7C3AED"/>
+            <rect x="228" y="403" width="36" height="6" rx="3" fill="rgba(255,255,255,0.7)"/>
+
+            <!-- Bottom nav -->
+            <rect x="28" y="450" width="284" height="50" rx="6" fill="white"/>
+            <rect x="28" y="450" width="284" height="1" fill="#EEE"/>
+            <rect x="60" y="466" width="44" height="6" rx="3" fill="#7C3AED"/>
+            <rect x="150" y="466" width="44" height="6" rx="3" fill="#E0DDF0"/>
+            <rect x="240" y="466" width="44" height="6" rx="3" fill="#E0DDF0"/>
+            <rect x="60" y="478" width="20" height="4" rx="2" fill="rgba(124,58,237,0.3)"/>
+
+            <!-- Stars -->
+            <text x="150" y="480" font-size="10" fill="#F59E0B">&#9733;&#9733;&#9733;&#9733;&#9733;</text>
+
+            <!-- Shadow filter -->
+            <defs>
+              <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(124,58,237,0.15)"/>
+              </filter>
+            </defs>
+          </svg>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════ SECTION 2 — STATS ═══════ -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div data-reveal>
+        <div class="stat-num">
+          <span data-count-landing="500">0</span>+
+        </div>
+        <div class="stat-label">Produits disponibles</div>
+      </div>
+      <div data-reveal data-reveal-delay="100">
+        <div class="stat-num">
+          <span data-count-landing="3">0</span>
+        </div>
+        <div class="stat-label">Algorithmes IA</div>
+      </div>
+      <div data-reveal data-reveal-delay="200">
+        <div class="stat-num">
+          <span data-count-landing="84">0</span>%
+        </div>
+        <div class="stat-label">Précision de recommandation</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SECTION 3 — FEATURES ═══════ -->
+  <section class="features-section" id="features">
+    <div class="features-header" data-reveal>
+      <span class="section-label">Technologie</span>
+      <h2 class="section-title">Comment ça fonctionne&nbsp;?</h2>
+      <p class="section-sub" style="margin:0 auto;">
+        Trois algorithmes complémentaires travaillent ensemble
+        pour apprendre vos goûts et affiner vos suggestions.
+      </p>
+    </div>
+
+    <div class="features-grid">
+
+      <div class="feature-card" data-reveal data-reveal-delay="100">
+        <div class="feature-icon-wrap icon-purple">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <circle cx="12" cy="12" r="6" fill="#7C3AED" opacity=".7"/>
+            <circle cx="24" cy="12" r="6" fill="#A78BFA" opacity=".7"/>
+            <circle cx="18" cy="24" r="6" fill="#7C3AED" opacity=".9"/>
+            <path d="M12 12 L24 12 M12 12 L18 24 M24 12 L18 24" stroke="#7C3AED" stroke-width="1.5" opacity=".4"/>
+          </svg>
+        </div>
+        <div class="feature-title">Filtrage Collaboratif</div>
+        <p class="feature-desc">
+          On analyse les goûts d'utilisateurs similaires à vous pour vous suggérer
+          ce qu'ils ont adoré. Plus vous notez, plus les suggestions s'affinent.
+        </p>
+      </div>
+
+      <div class="feature-card" data-reveal data-reveal-delay="200">
+        <div class="feature-icon-wrap icon-pink">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <rect x="4" y="8" width="12" height="20" rx="3" fill="#EC4899" opacity=".7"/>
+            <rect x="20" y="4" width="12" height="28" rx="3" fill="#F9A8D4" opacity=".9"/>
+            <path d="M10 18 Q18 10 26 18" stroke="#EC4899" stroke-width="1.5" fill="none" opacity=".5"/>
+          </svg>
+        </div>
+        <div class="feature-title">Filtrage par Contenu</div>
+        <p class="feature-desc">
+          On compare les caractéristiques des produits pour trouver ceux qui
+          ressemblent à vos coups de coeur — catégorie, prix, tags, marque.
+        </p>
+      </div>
+
+      <div class="feature-card" data-reveal data-reveal-delay="300">
+        <div class="feature-icon-wrap icon-green">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <path d="M18 4 L32 12 L32 24 L18 32 L4 24 L4 12 Z" fill="#4A9E8A" opacity=".2" stroke="#4A9E8A" stroke-width="1.5"/>
+            <circle cx="18" cy="18" r="5" fill="#4A9E8A" opacity=".9"/>
+            <path d="M18 4 L18 13 M32 12 L24 15 M32 24 L24 21 M18 32 L18 23 M4 24 L12 21 M4 12 L12 15" stroke="#4A9E8A" stroke-width="1.2" opacity=".5"/>
+          </svg>
+        </div>
+        <div class="feature-title">Système Hybride</div>
+        <p class="feature-desc">
+          On combine les deux approches pour des recommandations encore plus
+          précises et personnalisées — le meilleur des deux mondes.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════ SECTION 4 — STEPS ═══════ -->
+  <section class="steps-section" id="steps">
+    <div class="steps-header" data-reveal>
+      <span class="section-label">Simple &amp; rapide</span>
+      <h2 class="section-title">Commencez en 3 étapes</h2>
+      <p class="section-sub" style="margin:0 auto;">
+        Pas de configuration, pas de complexité — juste des recommandations
+        qui deviennent meilleures à chaque interaction.
+      </p>
+    </div>
+
+    <div class="steps-wrap" id="stepsWrap">
+
+      <!-- Ligne pointillée SVG -->
+      <div class="steps-line" id="stepsLine">
+        <svg viewBox="0 0 100 4" preserveAspectRatio="none">
+          <path d="M0 2 L100 2" class="dash-path"/>
+        </svg>
+      </div>
+
+      <div class="step" data-reveal>
+        <div class="step-num-wrap">
+          <span class="step-num">1</span>
+        </div>
+        <div class="step-title">Créez votre compte</div>
+        <p class="step-desc">Inscription gratuite en 30 secondes. Aucune carte bancaire requise.</p>
+      </div>
+
+      <div class="step" data-reveal data-reveal-delay="100">
+        <div class="step-num-wrap">
+          <span class="step-num">2</span>
+        </div>
+        <div class="step-title">Explorez les produits</div>
+        <p class="step-desc">Parcourez notre catalogue et notez vos premières découvertes.</p>
+      </div>
+
+      <div class="step" data-reveal data-reveal-delay="200">
+        <div class="step-num-wrap">
+          <span class="step-num">3</span>
+        </div>
+        <div class="step-title">Recevez vos recommandations</div>
+        <p class="step-desc">L'IA apprend vos goûts et vous suggère des produits parfaits.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════ SECTION 5 — CTA FINAL ═══════ -->
+  <section class="cta-section" id="cta">
+    <!-- Particules générées en JS -->
+    <div id="particlesContainer"></div>
+
+    <div style="position:relative;z-index:2;">
+      <span class="section-label" style="color:var(--purple-lt);">Rejoignez-nous</span>
+      <h2 class="cta-h2" data-reveal>
+        Prêt à découvrir vos<br>
+        produits <em>idéaux</em>&nbsp;?
+      </h2>
+      <p class="cta-sub" data-reveal data-reveal-delay="100">
+        Créez votre compte gratuitement et laissez nos algorithmes
+        travailler pour vous. Chaque note affine votre profil.
+      </p>
+      <div class="cta-btns" data-reveal data-reveal-delay="200">
+        <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
+          Créer mon compte gratuitement &rarr;
+        </a>
+        <a href="{% url 'login' %}" class="btn btn-outline-white btn-lg">
+          J'ai déjà un compte
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ FOOTER LANDING ═══════ -->
+  <footer class="footer-landing">
+    <span class="footer-landing-logo">RecoShop</span>
+    <div class="footer-landing-links">
+      <a href="#features" class="footer-landing-link">Fonctionnalités</a>
+      <a href="#steps" class="footer-landing-link">Comment ça marche</a>
+      <a href="{% url 'login' %}" class="footer-landing-link">Connexion</a>
+      <a href="{% url 'register' %}" class="footer-landing-link">Inscription</a>
+    </div>
+    <span class="footer-landing-copy">&copy; 2025 RecoShop &mdash; Système de recommandation e-commerce</span>
+  </footer>
+
+  <script>
+  /* ── NAVBAR SCROLL ── */
+  window.addEventListener('scroll', () => {
+    document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+
+  /* ── REVEAL ON SCROLL ── */
+  const revealEls = document.querySelectorAll('[data-reveal]');
+  const revealIO = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const delay = e.target.dataset.revealDelay || 0;
+      setTimeout(() => e.target.classList.add('visible'), parseInt(delay));
+      revealIO.unobserve(e.target);
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => revealIO.observe(el));
+
+  /* ── ANIMATED COUNTERS ── */
+  function animCount(el, target, duration) {
+    const start = performance.now();
+    const isInt = Number.isInteger(target);
+    (function tick(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.textContent = isInt ? Math.round(ease * target) : (ease * target).toFixed(1);
+      if (p < 1) requestAnimationFrame(tick);
+    })(start);
+  }
+  const countEls = document.querySelectorAll('[data-count-landing]');
+  const countIO = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      animCount(e.target, parseFloat(e.target.dataset.countLanding), 1800);
+      countIO.unobserve(e.target);
+    });
+  }, { threshold: 0.5 });
+  countEls.forEach(el => countIO.observe(el));
+
+  /* ── DASH LINE ANIMATION (steps) ── */
+  const stepsLine = document.getElementById('stepsLine');
+  if (stepsLine) {
+    const lineIO = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { stepsLine.classList.add('animated'); lineIO.unobserve(stepsLine); }
+      });
+    }, { threshold: 0.5 });
+    lineIO.observe(document.getElementById('stepsWrap'));
+  }
+
+  /* ── PARTICLES CTA ── */
+  (function() {
+    const container = document.getElementById('particlesContainer');
+    if (!container) return;
+    const colors = ['rgba(124,58,237,', 'rgba(236,72,153,', 'rgba(74,158,138,'];
+    for (let i = 0; i < 28; i++) {
+      const p = document.createElement('div');
+      const size = Math.random() * 5 + 2;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const x = Math.random() * 100;
+      const y = Math.random() * 100;
+      const dur = Math.random() * 8 + 6;
+      const delay = Math.random() * 6;
+      const rise = Math.random() * 120 + 40;
+      p.className = 'particle';
+      p.style.cssText = `
+        width:${size}px; height:${size}px;
+        background:${color}0.7);
+        left:${x}%; top:${y}%;
+        animation: particleRise ${dur}s ${delay}s infinite ease-in;
+      `;
+      container.appendChild(p);
+    }
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes particleRise {
+        0%   { opacity:0; transform:translateY(0) scale(1); }
+        10%  { opacity:.7; }
+        90%  { opacity:.3; }
+        100% { opacity:0; transform:translateY(-140px) scale(0.4); }
+      }
+    `;
+    document.head.appendChild(style);
+  })();
+
+  /* ── SMOOTH SCROLL for anchor links ── */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+  </script>
+
+</body>
+</html>

@@ -114,12 +114,21 @@ def products_view(request):
     categories = Category.objects.annotate(product_count=Count('products')).all()
     current_category = Category.objects.filter(slug=category_slug).first() if category_slug else None
     
+    sort_options = [
+        ('Vedettes', 'featured'),
+        ('Meilleures notes', 'rating'),
+        ('Prix croissant', 'price_asc'),
+        ('Prix décroissant', 'price_desc'),
+        ('Plus récents', 'newest'),
+    ]
+
     return render(request, 'recommendations/products.html', {
         'products': products,
         'categories': categories,
         'current_category': current_category,
         'search_q': search_q,
         'sort': sort,
+        'sort_options': sort_options,
     })
 
 

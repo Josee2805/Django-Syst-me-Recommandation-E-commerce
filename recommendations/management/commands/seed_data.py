@@ -29,73 +29,211 @@ class Command(BaseCommand):
             cats[slug] = c
         self.stdout.write(self.style.SUCCESS(f'✅ {len(cats)} catégories'))
 
+        # (name, cat_slug, price, orig_price, emoji, color, desc, tags, brand, featured, image_url)
         PRODUCTS = [
-            ('iPhone 15 Pro Max', 'electronique', 1599.99, 1799.99, '📱', '#1a1a2e', 'Dernier flagship Apple avec puce A17 Pro.', 'apple,smartphone,ios,camera', 'Apple', True),
-            ('Samsung Galaxy S24 Ultra', 'electronique', 1399.99, 1499.99, '📱', '#1c1c2e', 'Galaxy AI, stylet S Pen intégré.', 'samsung,android,smartphone,ai', 'Samsung', True),
-            ('MacBook Pro M3', 'electronique', 2499.99, None, '💻', '#2c2c2e', 'Puce M3 Ultra, 18h autonomie.', 'apple,laptop,macos,m3', 'Apple', True),
-            ('Sony WH-1000XM5', 'electronique', 349.99, 399.99, '🎧', '#1a1a1a', 'Meilleure réduction de bruit 30h.', 'sony,casque,audio,anc', 'Sony', False),
-            ('iPad Pro 12.9"', 'electronique', 1199.99, None, '📱', '#3a3a3c', 'Écran Liquid Retina XDR, puce M2.', 'apple,tablette,ipad,m2', 'Apple', False),
-            ('Dell XPS 15', 'electronique', 1899.99, 2100.00, '💻', '#0f0f23', 'Intel Core i9, RTX 4070, OLED.', 'dell,laptop,windows,gaming', 'Dell', False),
-            ('AirPods Pro 2', 'electronique', 279.99, 299.99, '🎵', '#e8e8e8', 'ANC, audio spatial, MagSafe.', 'apple,earbuds,anc,audio', 'Apple', False),
-            ('Samsung 65" QLED 4K', 'electronique', 999.99, 1299.99, '📺', '#121212', 'Neo QLED, 144Hz, HDR2000.', 'samsung,tv,qled,4k', 'Samsung', False),
-            ('GoPro Hero 12', 'electronique', 449.99, None, '📷', '#1a1a1a', 'Vidéo 5.3K, HyperSmooth 6.0.', 'gopro,camera,action,video', 'GoPro', False),
-            ('Dyson V15 Detect', 'electronique', 699.99, 749.99, '🌀', '#d4af37', 'Aspirateur laser détecteur.', 'dyson,aspirateur,laser,cordless', 'Dyson', False),
-            ('Veste en cuir vintage', 'mode', 299.99, 399.99, '🧥', '#3d1c02', 'Cuir véritable, coupe cintrée biker.', 'cuir,veste,fashion,vintage', 'Zara', True),
-            ('Robe de soirée dorée', 'mode', 189.99, 249.99, '👗', '#D4AF37', 'Tissu lamé doré, coupe midi.', 'robe,soiree,or,elegant', 'H&M', True),
-            ('Sneakers Air Max 270', 'mode', 149.99, 169.99, '👟', '#ff6b35', 'Coussin Air Max, design iconique.', 'nike,sneakers,air,running', 'Nike', True),
-            ('Costume 3 pièces slim', 'mode', 399.99, 499.99, '👔', '#1a1a2e', 'Laine mérinos, coupe slim navy.', 'costume,slim,business,formal', 'Hugo Boss', False),
-            ('Sac à main Tote premium', 'mode', 229.99, None, '👜', '#5c3d2e', 'Cuir grainé, fermeture dorée.', 'sac,tote,cuir,femme', 'Michael Kors', False),
-            ('Jean slim déchiré', 'mode', 89.99, 119.99, '👖', '#1565C0', 'Denim stretch, effet used.', 'jean,denim,slim,casual', "Levi's", False),
-            ('Écharpe cachemire', 'mode', 159.99, 199.99, '🧣', '#8B0000', '100% cachemire mongol, 180x30cm.', 'echarpe,cachemire,luxe,winter', 'Loro Piana', False),
-            ('Chaussures Oxford', 'mode', 199.99, 249.99, '👞', '#3d1c02', 'Cuir poli, Goodyear welt, cognac.', 'chaussures,oxford,cuir,classique', 'Clarks', False),
-            ('Canapé panoramique', 'maison', 1299.99, 1599.99, '🛋️', '#a0522d', 'Tissu chenille, 5 places, chêne.', 'canape,salon,confort,design', 'IKEA', True),
-            ('Lampe de sol arc doré', 'maison', 349.99, 399.99, '💡', '#D4AF37', 'Structure acier doré, velours 180cm.', 'lampe,deco,or,salon', 'Maisons du Monde', True),
-            ('Miroir baroque ovale', 'maison', 279.99, 329.99, '🪞', '#D4AF37', 'Cadre résine dorée, 80x120cm.', 'miroir,baroque,or,deco', 'Maisons du Monde', False),
-            ('Literie 1000 fils', 'maison', 189.99, 249.99, '🛏️', '#f5f5f5', 'Coton égyptien 1000 fils, ivoire.', 'literie,coton,luxe,blanc', 'Descamps', False),
-            ('Plante monstera XL', 'maison', 89.99, None, '🌿', '#2d6a4f', 'Pot céramique blanc, hauteur 120cm.', 'plante,monstera,vert,deco', 'Fleur de Paris', False),
-            ('Vélo électrique Urban', 'sport', 1499.99, 1799.99, '🚴', '#d62828', 'Moteur 250W, 100km, hydraulique.', 'velo,electrique,urban,ebike', 'Trek', True),
-            ('Tapis de course Pro', 'sport', 899.99, 1099.99, '🏃', '#1a1a1a', '22km/h max, inclinaison ±15%.', 'tapis,course,running,fitness', 'Technogym', True),
-            ('Kettlebell set 5-30kg', 'sport', 299.99, None, '🏋️', '#1a1a1a', 'Fonte émaillée, 6 paires.', 'kettlebell,musculation,fonte,gym', 'Cap Barbell', False),
-            ('Yoga mat premium', 'sport', 89.99, 119.99, '🧘', '#7B2D8B', 'Caoutchouc naturel 6mm, antidérap.', 'yoga,mat,bien-etre,fitness', 'Manduka', False),
-            ('Montre Garmin Fenix 7', 'sport', 699.99, 799.99, '⌚', '#1a1a2e', 'GPS multiband, 18j autonomie.', 'garmin,montre,gps,running', 'Garmin', False),
-            ('Parfum N°5 Chanel', 'beaute', 189.99, None, '🌸', '#f5e6c8', 'Eau de parfum 100ml, floral.', 'parfum,chanel,floral,luxe', 'Chanel', True),
-            ('Crème La Mer', 'beaute', 299.99, None, '✨', '#c0c0c0', 'Miracle Broth 60ml, anti-âge.', 'creme,lamer,antiage,soin', 'La Mer', True),
-            ('Palette Natasha Denona', 'beaute', 149.99, None, '💄', '#c77dff', '15 fards yeux, mat/shimmer pro.', 'maquillage,palette,yeux,pro', 'Natasha Denona', False),
-            ('Sérum Vitamin C', 'beaute', 69.99, 89.99, '🧴', '#f4a261', 'Vitamine C 20%, éclat & fermeté.', 'serum,vitaminec,soin,eclat', 'The Ordinary', False),
-            ('Atomic Habits', 'livres', 19.99, None, '📖', '#4361ee', 'James Clear. Bonnes habitudes.', 'livre,habits,productivite,bestseller', 'Gallimard', True),
-            ('Sapiens', 'livres', 24.99, None, '🌍', '#2b2d42', 'Yuval Harari. Histoire humanité.', 'livre,histoire,humanite,bestseller', 'Albin Michel', True),
-            ('Dune', 'livres', 18.99, None, '🏜️', '#c9b458', 'Frank Herbert. Épopée science-fiction.', 'livre,scifi,dune,aventure', 'Robert Laffont', False),
-            ('Apprendre Django', 'livres', 39.99, None, '💻', '#4361ee', 'Guide complet Django 4.x.', 'livre,django,python,dev', "O'Reilly", False),
-            ('Robot KitchenAid', 'cuisine', 599.99, 699.99, '🍰', '#d62828', 'Robot 6.9L, 10 vitesses, rouge.', 'kitchenaid,robot,patisserie,rouge', 'KitchenAid', True),
-            ('Wok en fonte', 'cuisine', 129.99, 159.99, '🥘', '#1a1a1a', 'Fonte émaillée 32cm, couvercle.', 'wok,fonte,cuisine,asiatique', 'Le Creuset', False),
-            ('Machine Nespresso Vertuo', 'cuisine', 179.99, 219.99, '☕', '#2c1810', 'Capsules Vertuo, 5 tailles café.', 'cafe,nespresso,vertuo,machine', 'Nespresso', False),
-            ('Couteaux Wusthof set 7', 'cuisine', 349.99, None, '🔪', '#c0c0c0', 'Acier X50CrMoV15, 7 pièces.', 'couteaux,wusthof,inox,chef', 'Wüsthof', False),
-            ('PlayStation 5', 'jeux', 499.99, None, '🎮', '#003087', 'Console PS5, DualSense, 4K/120fps.', 'ps5,console,gaming,sony,4k', 'Sony', True),
-            ('Nintendo Switch OLED', 'jeux', 349.99, None, '🕹️', '#e4000f', 'OLED 7", Joy-Con améliorés.', 'nintendo,switch,oled,portable', 'Nintendo', True),
-            ('LEGO Technic Ferrari', 'jeux', 399.99, None, '🏎️', '#e4000f', '1677 pièces, Ferrari 488 GTE.', 'lego,technic,ferrari,adulte', 'LEGO', False),
-            ('Monopoly édition luxe', 'jeux', 79.99, None, '🎲', '#D4AF37', 'Plateau bois, pions métal dorés.', 'monopoly,jeu,famille,luxe', 'Hasbro', False),
-            ('Valise Rimowa Original', 'voyage', 799.99, 899.99, '🧳', '#c0c0c0', 'Aluminium, 4 roues, TSA, 45L.', 'rimowa,valise,aluminium,luxe', 'Rimowa', True),
-            ('Sac à dos Osprey 65L', 'voyage', 289.99, 329.99, '🎒', '#1a5276', 'Randonnée 65L, cadre alu.', 'osprey,sac,randonnee,trekking', 'Osprey', False),
-            ('Tente 4 saisons', 'voyage', 499.99, 599.99, '⛺', '#2d6a4f', 'Double paroi, -30°C, 5 min montage.', 'tente,camping,outdoor,hiver', 'Mountain Hardwear', False),
-            ('Montre Rolex Submariner', 'bijoux', 12999.99, None, '⌚', '#D4AF37', 'Acier 904L, céramique noire, 300m.', 'rolex,montre,luxe,submariner', 'Rolex', True),
-            ('Collier diamant or blanc', 'bijoux', 2499.99, None, '💎', '#f5f5f5', 'Or blanc 18K, diamant 0.5ct GIA.', 'collier,diamant,or,luxe', 'Cartier', True),
-            ('Bracelet jonc or jaune', 'bijoux', 899.99, None, '💛', '#D4AF37', 'Or jaune 18K, brossé, ø60mm.', 'bracelet,jonc,or,bijou', 'Bulgari', False),
-            ('Dashcam 4K Sony', 'auto', 199.99, 249.99, '📷', '#1a1a2e', 'Capteur Sony 4K, GPS, WiFi.', 'dashcam,4k,camera,voiture', 'Vantrue', False),
-            ('Siège baquet sport', 'auto', 399.99, None, '🏁', '#d62828', 'Baquet FIA, harnais 4pts, rouge.', 'siege,baquet,sport,auto', 'Sparco', False),
-            ('Poussette Bugaboo', 'bebe', 1099.99, 1299.99, '👶', '#ffb3c6', 'Fox 5, all-terrain, siège auto.', 'poussette,bebe,bugaboo,premium', 'Bugaboo', True),
-            ('Lit bébé évolutif', 'bebe', 399.99, 499.99, '🛏️', '#fff3e0', 'Berceau→lit→banquette, bois massif.', 'lit,bebe,evolutif,bois', 'Stokke', False),
+            # ── Électronique ──
+            ('iPhone 15 Pro',     'electronique', 650000, 700000, '📱', '#1a1a2e',
+             'Puce A17 Pro, titane, 48MP ProRAW, Dynamic Island.',
+             'apple,smartphone,ios,camera,pro',
+             'Apple', True,
+             'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&q=80'),
+
+            ('Samsung Galaxy S24', 'electronique', 580000, None, '📱', '#1c1c2e',
+             'Galaxy AI intégré, Snapdragon 8 Gen 3, écran 6.7".',
+             'samsung,android,smartphone,ai,amoled',
+             'Samsung', True,
+             'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=500&q=80'),
+
+            ('MacBook Air M2',    'electronique', 950000, 1000000, '💻', '#2c2c2e',
+             'Puce M2, 15h autonomie, écran Liquid Retina 13.6".',
+             'apple,laptop,macos,m2,ultraportable',
+             'Apple', True,
+             'https://images.unsplash.com/photo-1611186871525-9be197a39a16?w=500&q=80'),
+
+            ('AirPods Pro',       'electronique', 180000, None, '🎵', '#e8e8e8',
+             'ANC adaptatif, audio spatial personnalisé, MagSafe.',
+             'apple,earbuds,anc,audio,wireless',
+             'Apple', False,
+             'https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=500&q=80'),
+
+            ('iPad Pro 12.9',     'electronique', 720000, None, '📱', '#3a3a3c',
+             'Écran Liquid Retina XDR, puce M2, compatible Apple Pencil.',
+             'apple,tablette,ipad,m2,pro',
+             'Apple', False,
+             'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&q=80'),
+
+            ('Sony WH-1000XM5',   'electronique', 220000, 260000, '🎧', '#1a1a1a',
+             'Meilleure réduction de bruit du marché, 30h autonomie.',
+             'sony,casque,audio,anc,hi-res',
+             'Sony', False,
+             'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80'),
+
+            # ── Mode ──
+            ('Nike Air Max 270',      'mode', 85000, 95000, '👟', '#ff6b35',
+             'Coussin Air Max 270° pour un amorti exceptionnel.',
+             'nike,sneakers,air,running,lifestyle',
+             'Nike', True,
+             'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80'),
+
+            ('Adidas Stan Smith',      'mode', 65000, None, '👟', '#f5f5f5',
+             'L\'icône du tennis devenue incontournable du streetwear.',
+             'adidas,sneakers,classique,cuir,blanc',
+             'Adidas', False,
+             'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=500&q=80'),
+
+            ('Sac à main cuir',        'mode', 120000, 140000, '👜', '#5c3d2e',
+             'Cuir pleine fleur tanné végétal, fermeture dorée.',
+             'sac,cuir,femme,luxe,tote',
+             'Maroquinerie', True,
+             'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&q=80'),
+
+            ('Montre classique homme', 'mode', 95000, None, '⌚', '#D4AF37',
+             'Cadran guilloché, bracelet cuir brun, mouvement quartz.',
+             'montre,homme,classique,or,cuir',
+             'Horlogerie', False,
+             'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80'),
+
+            ('Lunettes de soleil',     'mode', 35000, None, '😎', '#1a1a1a',
+             'Monture acétate, verres polarisants UV400.',
+             'lunettes,soleil,uv,style,acetate',
+             'Optique', False,
+             'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=500&q=80'),
+
+            ('Veste en jean',          'mode', 45000, None, '🧥', '#1565C0',
+             'Denim 100% coton, coupe droite, boutons dorés.',
+             'jean,veste,denim,casual,vintage',
+             'Denim Co.', False,
+             'https://images.unsplash.com/photo-1601333144130-8cbb312386b6?w=500&q=80'),
+
+            # ── Maison ──
+            ('Lampe design LED',   'maison', 45000, None, '💡', '#D4AF37',
+             'Structure métal doré, ampoule Edison, lumière chaude 2700K.',
+             'lampe,led,deco,or,salon,design',
+             'Déco Lumière', False,
+             'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500&q=80'),
+
+            ('Cafetière premium',  'maison', 55000, 65000, '☕', '#2c1810',
+             '15 bars, buse vapeur, bac 1.5L, café espresso parfait.',
+             'cafe,expresso,machine,premium,barista',
+             'CoffeeMaster', True,
+             'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=500&q=80'),
+
+            ('Coussin décoratif',  'maison', 15000, None, '🛋️', '#a0522d',
+             'Velours doux, 45×45cm, garnissage plumes recyclées.',
+             'coussin,velours,deco,salon,confort',
+             'Maison Textile', False,
+             'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=500&q=80'),
+
+            ("Plante d'intérieur", 'maison', 12000, None, '🌿', '#2d6a4f',
+             'Facile d\'entretien, purifie l\'air, pot céramique inclus.',
+             'plante,interieur,vert,deco,air',
+             'Green Home', False,
+             'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=500&q=80'),
+
+            ('Bougie parfumée',    'maison', 8000, None, '🕯️', '#f5e6c8',
+             'Cire de soja naturelle, 50h combustion, senteur vanille-bois.',
+             'bougie,parfum,soja,ambiance,zen',
+             'Parfums Maison', False,
+             'https://images.unsplash.com/photo-1602928321679-560bb453f190?w=500&q=80'),
+
+            ('Tapis berbère',      'maison', 75000, None, '🏠', '#a0522d',
+             'Tissé main au Maroc, laine naturelle, motifs géométriques, 200×300cm.',
+             'tapis,berbere,maroc,laine,artisanat',
+             'Atlas Artisan', True,
+             'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500&q=80'),
+
+            # ── Sport ──
+            ('Tapis de yoga',       'sport', 25000, None, '🧘', '#7B2D8B',
+             'Caoutchouc naturel 6mm, antidérapant, marquages alignement.',
+             'yoga,mat,fitness,bien-etre,antiderapant',
+             'YogaLife', False,
+             'https://images.unsplash.com/photo-1601925228957-7e5a4a0d3e1b?w=500&q=80'),
+
+            ('Vélo de course',      'sport', 350000, 400000, '🚴', '#d62828',
+             'Cadre aluminium allégé, 22 vitesses Shimano, freins disque.',
+             'velo,course,route,shimano,carbon',
+             'CyclePro', True,
+             'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=500&q=80'),
+
+            ('Haltères 10kg',       'sport', 40000, None, '🏋️', '#1a1a1a',
+             'Paire 10kg, fonte chromée, grip antidérapant hexagonal.',
+             'halteres,musculation,fonte,gym,force',
+             'IronFit', False,
+             'https://images.unsplash.com/photo-1585152968992-d2b9444408cc?w=500&q=80'),
+
+            ('Montre GPS Garmin',   'sport', 180000, None, '⌚', '#1a1a2e',
+             'GPS multiband, cardio poignet, 14 jours autonomie, running dynamics.',
+             'garmin,montre,gps,running,sport',
+             'Garmin', False,
+             'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=500&q=80'),
+
+            ('Sac de sport Nike',   'sport', 35000, None, '🎒', '#1a1a2e',
+             '35L, compartiment chaussures séparé, imperméable.',
+             'nike,sac,sport,gym,training',
+             'Nike', False,
+             'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80'),
+
+            ('Ballon de football',  'sport', 18000, None, '⚽', '#1a1a1a',
+             'Taille 5, couture thermocollée, FIFA Quality Pro.',
+             'football,ballon,sport,fifa,competition',
+             'SportBall', False,
+             'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=500&q=80'),
+
+            # ── Beauté ──
+            ('Parfum Chanel N°5',  'beaute', 150000, 170000, '🌸', '#f5e6c8',
+             'L\'eau de parfum iconique depuis 1921. Floral aldéhydé, 100ml.',
+             'parfum,chanel,floral,luxe,femme',
+             'Chanel', True,
+             'https://images.unsplash.com/photo-1541643600914-78b084683702?w=500&q=80'),
+
+            ('Crème visage Nivea',  'beaute', 28000, None, '✨', '#c0c0c0',
+             'Hydratation intense 24h, formule légère non grasse, tous types de peau.',
+             'nivea,creme,hydratation,visage,soin',
+             'Nivea', False,
+             'https://images.unsplash.com/photo-1556228720-da4ef8ab9eed?w=500&q=80'),
+
+            ('Palette maquillage',  'beaute', 32000, None, '💄', '#c77dff',
+             '20 teintes harmonisées, finis mat & shimmer, longue tenue.',
+             'maquillage,palette,yeux,ombre,shimmer',
+             'MakeUp Pro', False,
+             'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=500&q=80'),
+
+            ('Sérum Vitamin C',     'beaute', 22000, None, '🧴', '#f4a261',
+             'Vitamine C 20% stabilisée, éclat immédiat, anti-taches, 30ml.',
+             'serum,vitaminec,eclat,antiage,soin',
+             'The Ordinary', False,
+             'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500&q=80'),
+
+            ('Rouge à lèvres MAC',  'beaute', 18000, None, '💄', '#8B0000',
+             'Formule crémeuse longue tenue, couleur intense, 50 teintes.',
+             'mac,rouge,levres,maquillage,couleur',
+             'MAC', False,
+             'https://images.unsplash.com/photo-1586495777744-4e6232bf2e79?w=500&q=80'),
+
+            ("Huile d'argan bio",   'beaute', 12000, None, '🌿', '#D4AF37',
+             '100% pure, première pression à froid, certifiée bio, 50ml.',
+             'argan,huile,bio,soin,naturel',
+             'Argan Pur', False,
+             'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=500&q=80'),
         ]
-        created = 0
+        created = updated = 0
         for data in PRODUCTS:
-            name, cat_slug, price, orig, emoji, color, desc, tags, brand, featured = data
-            _, c = Product.objects.get_or_create(name=name, defaults={
-                'category': cats[cat_slug], 'price': price, 'original_price': orig,
-                'image_emoji': emoji, 'image_color': color, 'description': desc,
-                'tags': tags, 'brand': brand, 'is_featured': featured,
-                'stock': random.randint(10, 200),
-            })
-            if c: created += 1
-        self.stdout.write(self.style.SUCCESS(f'✅ {created} produits créés'))
+            name, cat_slug, price, orig, emoji, color, desc, tags, brand, featured, image_url = data
+            obj, c = Product.objects.update_or_create(
+                name=name,
+                defaults={
+                    'category': cats[cat_slug], 'price': price, 'original_price': orig,
+                    'image_emoji': emoji, 'image_color': color, 'description': desc,
+                    'tags': tags, 'brand': brand, 'is_featured': featured,
+                    'image_url': image_url,
+                    'stock': random.randint(10, 200),
+                }
+            )
+            if c:
+                created += 1
+            else:
+                updated += 1
+        self.stdout.write(self.style.SUCCESS(f'✅ {created} produits créés, {updated} mis à jour'))
 
         USERS = [
             ('alice@luxemart.com', 'Alice', 'pass1234'),

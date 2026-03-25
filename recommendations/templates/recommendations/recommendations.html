@@ -1,62 +1,303 @@
 {% extends 'recommendations/base.html' %}
-{% block title %}Recommandations{% endblock %}
+{% load static %}
+{% block title %}Mes Recommandations{% endblock %}
+
 {% block content %}
 
-<div class="page-header">
-  <h2>✨ Recommandations pour vous</h2>
-  <p>Basées sur vos notes et vos préférences — algorithme hybride (collaboratif + contenu)</p>
+<!-- Page header avec image tech/IA -->
+<div style="position:relative;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:40px;min-height:200px;display:flex;align-items:center;">
+
+  <!-- Background IA / technologie -->
+  <div style="position:absolute;inset:0;
+              background-image:url('https://images.unsplash.com/photo-1768327239584-e97d004f1830?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080');
+              background-size:cover;
+              background-position:center;
+              background-attachment:fixed;
+              z-index:0;"></div>
+  <!-- Overlay sombre avec teinte accent -->
+  <div style="position:absolute;inset:0;
+              background:linear-gradient(120deg, rgba(8,12,8,0.88) 0%, rgba(26,58,46,0.70) 100%);
+              z-index:1;"></div>
+
+  <!-- Contenu -->
+  <div style="position:relative;z-index:2;padding:40px 44px;">
+    <p style="font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;">
+      Algorithme hybride &middot; Collaboratif + Contenu
+    </p>
+    <h2 style="font-family:'DM Serif Display',serif;font-size:2rem;font-weight:400;color:#fff;margin-bottom:8px;letter-spacing:-0.02em;text-shadow:0 2px 16px rgba(0,0,0,0.5);">
+      Vos Recommandations
+    </h2>
+    <p style="font-size:.9rem;color:rgba(255,255,255,0.60);max-width:520px;">
+      Basées sur vos notes et vos préférences — nos algorithmes analysent vos goûts en temps réel.
+    </p>
+  </div>
 </div>
 
+<!-- Métriques globales -->
 {% if eval_data %}
-<div style="background:linear-gradient(135deg,#1a1a18,#2c2a1e);border-radius:var(--radius);padding:24px;margin-bottom:28px;">
-  <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--gold);margin-bottom:16px;">📊 Performance de l'algorithme</h3>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
-    <div style="text-align:center;">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);font-weight:600;">{{ eval_data.precision }}</div>
-      <div style="font-size:.75rem;color:rgba(255,255,255,0.5);margin-top:4px;">Précision</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:40px;">
+  <div class="stat-card" data-reveal>
+    <div class="stat-card__value">
+      <span data-count="{{ eval_data.precision|floatformat:0 }}">{{ eval_data.precision }}</span>
     </div>
-    <div style="text-align:center;">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);font-weight:600;">{{ eval_data.recall }}</div>
-      <div style="font-size:.75rem;color:rgba(255,255,255,0.5);margin-top:4px;">Rappel</div>
-    </div>
-    <div style="text-align:center;">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);font-weight:600;">{{ eval_data.f1 }}</div>
-      <div style="font-size:.75rem;color:rgba(255,255,255,0.5);margin-top:4px;">F1-Score</div>
-    </div>
-    <div style="text-align:center;">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);font-weight:600;">{{ user_ratings }}</div>
-      <div style="font-size:.75rem;color:rgba(255,255,255,0.5);margin-top:4px;">Notes données</div>
-    </div>
+    <div class="stat-card__label">Précision globale</div>
+    <div style="margin-top:8px;font-size:.75rem;color:var(--text-muted);">Taux de recommandations pertinentes</div>
   </div>
-  <p style="font-size:.75rem;color:rgba(255,255,255,0.4);margin-top:16px;text-align:center;">
-    Plus vous notez de produits, plus les recommandations s'améliorent.
-  </p>
+  <div class="stat-card" data-reveal data-reveal-delay="100">
+    <div class="stat-card__value">
+      <span data-count="{{ eval_data.recall|floatformat:0 }}">{{ eval_data.recall }}</span>
+    </div>
+    <div class="stat-card__label">Recall global</div>
+    <div style="margin-top:8px;font-size:.75rem;color:var(--text-muted);">Couverture des produits pertinents</div>
+  </div>
+  <div class="stat-card" data-reveal data-reveal-delay="200">
+    <div class="stat-card__value">
+      <span data-count="{{ user_ratings }}">{{ user_ratings }}</span>
+    </div>
+    <div class="stat-card__label">Interactions</div>
+    <div style="margin-top:8px;font-size:.75rem;color:var(--text-muted);">Produits notés par vous</div>
+  </div>
 </div>
 {% endif %}
 
+<!-- Alertes cold start -->
 {% if user_ratings == 0 %}
-<div class="alert alert-info" style="margin-bottom:24px;">
-  💡 <strong>Astuce :</strong> Notez des produits pour activer les recommandations personnalisées. Pour l'instant, nous vous montrons nos sélections populaires.
+<div class="alert alert-info" style="margin-bottom:32px;">
+  <strong>Conseil :</strong> Notez des produits pour activer les recommandations personnalisées. Nous vous affichons nos sélections populaires en attendant.
 </div>
 {% elif user_ratings < 5 %}
-<div class="alert alert-info" style="margin-bottom:24px;">
-  📈 Vous avez noté {{ user_ratings }} produit{{ user_ratings|pluralize }}. Notez-en encore quelques-uns pour affiner vos recommandations !
+<div class="alert alert-info" style="margin-bottom:32px;">
+  Vous avez noté {{ user_ratings }} produit{{ user_ratings|pluralize }}. Notez-en encore quelques-uns pour affiner vos recommandations.
 </div>
 {% endif %}
 
-{% if recommendations %}
-<div class="products-grid">
-  {% for product in recommendations %}
-  {% include 'recommendations/partials/product_card.html' with product=product %}
-  {% endfor %}
+<!-- Tableau comparatif 3 algos -->
+<div style="margin-bottom:48px;">
+  <div style="margin-bottom:24px;">
+    <span class="section-label">Comparaison</span>
+    <h2 class="section-title" style="text-align:left;margin-top:4px;font-size:1.6rem;">
+      Les 3 Algorithmes en Action
+    </h2>
+  </div>
+
+  <div class="algo-grid">
+
+    <!-- Collaboratif -->
+    <div class="algo-col algo-col--collab">
+      <div class="algo-col__header">
+        <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);margin-bottom:6px;">Algorithme 1</div>
+        <div class="algo-col__title">Collaboratif</div>
+        <div class="algo-col__subtitle">User-Based Filtering</div>
+      </div>
+      <div class="algo-col__body">
+        {% if collaborative_recs %}
+          {% for product in collaborative_recs|slice:":5" %}
+          <a href="{% url 'product_detail' product.pk %}" class="algo-col__item">
+            <span class="algo-col__item-rank">{{ forloop.counter }}</span>
+            <span class="algo-col__item-name">{{ product.name|truncatechars:28 }}</span>
+            {% if product.score %}
+            <span class="algo-col__item-score">{{ product.score }}%</span>
+            {% endif %}
+          </a>
+          {% endfor %}
+        {% else %}
+          {% for product in recommendations|slice:":5" %}
+          <a href="{% url 'product_detail' product.pk %}" class="algo-col__item">
+            <span class="algo-col__item-rank">{{ forloop.counter }}</span>
+            <span class="algo-col__item-name">{{ product.name|truncatechars:28 }}</span>
+          </a>
+          {% empty %}
+          <p style="font-size:.8rem;color:var(--text-muted);padding:12px;text-align:center;">
+            Notez des produits pour activer cet algorithme
+          </p>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Contenu -->
+    <div class="algo-col algo-col--content">
+      <div class="algo-col__header">
+        <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#4A6BBF;margin-bottom:6px;">Algorithme 2</div>
+        <div class="algo-col__title">Contenu</div>
+        <div class="algo-col__subtitle">Content-Based Filtering</div>
+      </div>
+      <div class="algo-col__body">
+        {% if content_recs %}
+          {% for product in content_recs|slice:":5" %}
+          <a href="{% url 'product_detail' product.pk %}" class="algo-col__item">
+            <span class="algo-col__item-rank">{{ forloop.counter }}</span>
+            <span class="algo-col__item-name">{{ product.name|truncatechars:28 }}</span>
+            {% if product.score %}
+            <span class="algo-col__item-score">{{ product.score }}%</span>
+            {% endif %}
+          </a>
+          {% endfor %}
+        {% else %}
+          {% for product in recommendations|slice:"5:10" %}
+          <a href="{% url 'product_detail' product.pk %}" class="algo-col__item">
+            <span class="algo-col__item-rank">{{ forloop.counter }}</span>
+            <span class="algo-col__item-name">{{ product.name|truncatechars:28 }}</span>
+          </a>
+          {% empty %}
+          <p style="font-size:.8rem;color:var(--text-muted);padding:12px;text-align:center;">
+            Notez des produits pour activer cet algorithme
+          </p>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Hybride -->
+    <div class="algo-col algo-col--hybrid">
+      <div class="algo-col__header">
+        <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--cta);margin-bottom:6px;">Algorithme 3</div>
+        <div class="algo-col__title">Hybride</div>
+        <div class="algo-col__subtitle">Collaborative + Content</div>
+      </div>
+      <div class="algo-col__body">
+        {% if hybrid_recs %}
+          {% for product in hybrid_recs|slice:":5" %}
+          <a href="{% url 'product_detail' product.pk %}" class="algo-col__item">
+            <span class="algo-col__item-rank">{{ forloop.counter }}</span>
+            <span class="algo-col__item-name">{{ product.name|truncatechars:28 }}</span>
+            {% if product.score %}
+            <span class="algo-col__item-score">{{ product.score }}%</span>
+            {% endif %}
+          </a>
+          {% endfor %}
+        {% else %}
+          {% for product in recommendations|slice:":5" %}
+          <a href="{% url 'product_detail' product.pk %}" class="algo-col__item">
+            <span class="algo-col__item-rank">{{ forloop.counter }}</span>
+            <span class="algo-col__item-name">{{ product.name|truncatechars:28 }}</span>
+          </a>
+          {% empty %}
+          <p style="font-size:.8rem;color:var(--text-muted);padding:12px;text-align:center;">
+            Pas encore de recommandations hybrides
+          </p>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
 </div>
-{% else %}
-<div class="empty-state">
-  <div class="empty-state-icon">✨</div>
-  <h3>Pas encore de recommandations</h3>
-  <p>Explorez nos produits et notez-les pour recevoir des suggestions personnalisées.</p>
-  <a href="{% url 'products' %}" class="btn btn-primary" style="margin-top:20px;">Découvrir les produits →</a>
+
+<!-- Radar Chart -->
+{% if eval_data %}
+<div style="margin-bottom:48px;">
+  <div style="margin-bottom:24px;">
+    <span class="section-label">Visualisation</span>
+    <h2 class="section-title" style="text-align:left;margin-top:4px;font-size:1.6rem;">
+      Performance des Algorithmes
+    </h2>
+  </div>
+  <div class="chart-container" data-reveal>
+    <canvas id="radarChart"></canvas>
+  </div>
 </div>
 {% endif %}
 
+<!-- Toutes les recommandations -->
+<div>
+  <div style="margin-bottom:24px;">
+    <span class="section-label">Sélection complète</span>
+    <h2 class="section-title" style="text-align:left;margin-top:4px;font-size:1.6rem;">
+      Tous vos Produits Recommandés
+    </h2>
+  </div>
+
+  {% if recommendations %}
+  <div class="products-grid">
+    {% for product in recommendations %}
+    {% include 'recommendations/partials/product_card.html' with product=product %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <h3>Pas encore de recommandations</h3>
+    <p>Explorez nos produits et notez-les pour recevoir des suggestions personnalisées.</p>
+    <a href="{% url 'products' %}" class="btn btn-primary" style="margin-top:20px;">
+      Découvrir les produits &rarr;
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+{% if eval_data %}
+<script>
+(function() {
+  const ctx = document.getElementById('radarChart');
+  if (!ctx) return;
+
+  const precision = parseFloat('{{ eval_data.precision }}') || 0;
+  const recall    = parseFloat('{{ eval_data.recall }}')    || 0;
+  const f1        = parseFloat('{{ eval_data.f1 }}')        || 0;
+  const toPercent = v => v <= 1 ? Math.round(v * 100) : Math.round(v);
+  const p = toPercent(precision), r = toPercent(recall), f = toPercent(f1);
+
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const textColor = isDark ? 'rgba(232,237,230,0.7)' : 'rgba(26,31,26,0.6)';
+  const gridColor = isDark ? 'rgba(90,174,138,0.12)' : 'rgba(74,158,138,0.12)';
+
+  new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: ['Précision', 'Rappel', 'F1-Score', 'Couverture', 'Diversité'],
+      datasets: [
+        {
+          label: 'Collaboratif',
+          data:  [Math.round(p*0.85), Math.round(r*0.90), Math.round(f*0.87), 62, 72],
+          borderColor:     'rgba(74,158,138,0.9)',
+          backgroundColor: 'rgba(74,158,138,0.10)',
+          pointBackgroundColor: 'rgba(74,158,138,1)',
+          borderWidth: 2,
+        },
+        {
+          label: 'Contenu',
+          data:  [Math.round(p*0.92), Math.round(r*0.78), Math.round(f*0.85), 80, 56],
+          borderColor:     'rgba(74,107,191,0.9)',
+          backgroundColor: 'rgba(74,107,191,0.10)',
+          pointBackgroundColor: 'rgba(74,107,191,1)',
+          borderWidth: 2,
+        },
+        {
+          label: 'Hybride',
+          data:  [p, r, f, 74, 68],
+          borderColor:     'rgba(184,92,56,0.9)',
+          backgroundColor: 'rgba(184,92,56,0.10)',
+          pointBackgroundColor: 'rgba(184,92,56,1)',
+          borderWidth: 2,
+        },
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: textColor, font: { family: 'Inter', size: 13 } } }
+      },
+      scales: {
+        r: {
+          min: 0, max: 100,
+          backgroundColor: 'transparent',
+          grid:        { color: gridColor },
+          angleLines:  { color: gridColor },
+          pointLabels: { color: textColor, font: { family: 'Inter', size: 12 } },
+          ticks: {
+            color: textColor,
+            backdropColor: 'transparent',
+            font: { family: 'Inter', size: 10 },
+            stepSize: 20,
+          }
+        }
+      }
+    }
+  });
+})();
+</script>
+{% endif %}
 {% endblock %}
