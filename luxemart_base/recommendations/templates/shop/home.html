@@ -1,0 +1,175 @@
+{% extends 'recommendations/base.html' %}
+{% block title %}Accueil — LuxeMart{% endblock %}
+
+{% block extra_css %}
+<style>
+  .hero {
+    background: linear-gradient(135deg, #1A1A2E 0%, #0F3460 60%, #533483 100%);
+    border-radius: 20px; padding: 60px 48px;
+    margin-bottom: 40px; color: white; position: relative; overflow: hidden;
+  }
+  .hero::after {
+    content: '✨'; position: absolute; right: 60px; top: 50%;
+    transform: translateY(-50%); font-size: 120px; opacity: 0.08;
+  }
+  .hero-badge {
+    display: inline-block; background: rgba(201,168,76,0.2);
+    border: 1px solid rgba(201,168,76,0.4); color: var(--gold-light);
+    padding: 4px 14px; border-radius: 20px; font-size: 0.78rem;
+    margin-bottom: 16px; letter-spacing: 1px;
+  }
+  .hero h1 { font-size: 2.8rem; font-weight: 700; margin-bottom: 12px; line-height: 1.2; }
+  .hero h1 .gold { color: var(--gold-light); }
+  .hero p { color: rgba(255,255,255,0.6); max-width: 480px; line-height: 1.7; margin-bottom: 28px; }
+  .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero-stats {
+    display: flex; gap: 32px; margin-top: 40px; padding-top: 28px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .stat .num { font-size: 1.8rem; font-weight: 700; color: var(--gold-light); display: block; }
+  .stat .lbl { font-size: 0.78rem; color: rgba(255,255,255,0.45); }
+
+  .section { margin-bottom: 48px; }
+  .section-head {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+  }
+  .section-head h2 { font-size: 1.3rem; font-weight: 700; color: var(--text); }
+  .see-all { color: var(--gold); font-size: 0.85rem; text-decoration: none; font-weight: 600; }
+  .see-all:hover { text-decoration: underline; }
+
+  .cats-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px;
+  }
+  .cat-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 12px; text-align: center;
+    text-decoration: none; transition: all 0.25s;
+    border-top: 3px solid var(--cat-color, var(--gold));
+  }
+  .cat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+  .cat-card .ico  { font-size: 28px; display: block; margin-bottom: 8px; }
+  .cat-card .name { font-size: 0.8rem; font-weight: 600; color: var(--text); display: block; }
+  .cat-card .cnt  { font-size: 0.7rem; color: var(--text-muted); }
+
+  .products-row {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;
+  }
+  .prod-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+    text-decoration: none; transition: all 0.25s;
+  }
+  .prod-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.12); }
+  .prod-img  { width: 100%; height: 160px; object-fit: cover; }
+  .prod-body { padding: 14px; }
+  .prod-cat  { font-size: 0.7rem; color: var(--gold); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .prod-name { font-size: 0.88rem; font-weight: 600; color: var(--text); margin: 4px 0; line-height: 1.3; }
+  .prod-price { font-size: 1rem; font-weight: 700; color: var(--gold); }
+  .prod-orig  { font-size: 0.78rem; color: var(--text-muted); text-decoration: line-through; margin-left: 6px; }
+  .prod-rating { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+  .discount {
+    position: absolute; top: 10px; left: 10px;
+    background: #E74C3C; color: white; font-size: 0.7rem; font-weight: 700;
+    padding: 3px 8px; border-radius: 6px;
+  }
+  .prod-card-wrap { position: relative; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">✨ Nouveautés de la saison</div>
+    <h1>Découvrez<br>l'<span class="gold">Excellence</span></h1>
+    <p>Des milliers de produits premium sélectionnés pour vous, avec des recommandations personnalisées.</p>
+    <div class="hero-btns">
+      <a href="{% url 'products' %}" class="btn-gold">
+        <i class="fas fa-store me-2"></i>Explorer la boutique
+      </a>
+      {% if user.is_authenticated %}
+      <a href="{% url 'recommendations' %}" class="btn-outline">
+        <i class="fas fa-magic me-2"></i>Mes recommandations
+      </a>
+      {% else %}
+      <a href="{% url 'register' %}" class="btn-outline">
+        Créer un compte
+      </a>
+      {% endif %}
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="num">35+</span><span class="lbl">Produits</span></div>
+      <div class="stat"><span class="num">12</span><span class="lbl">Catégories</span></div>
+      <div class="stat"><span class="num">4.8★</span><span class="lbl">Note moy.</span></div>
+    </div>
+  </section>
+
+  <!-- Catégories -->
+  {% if categories %}
+  <section class="section">
+    <div class="section-head">
+      <h2>🗂️ Nos catégories</h2>
+      <a href="{% url 'products' %}" class="see-all">Tout voir →</a>
+    </div>
+    <div class="cats-grid">
+      {% for cat in categories %}
+      <a href="{% url 'products' %}?category={{ cat.slug }}"
+         class="cat-card" style="--cat-color:{{ cat.color }}">
+        <span class="ico">{{ cat.icon }}</span>
+        <span class="name">{{ cat.name }}</span>
+        <span class="cnt">{{ cat.product_count }} produits</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- Recommandations personnalisées -->
+  {% if reco_products %}
+  <section class="section">
+    <div class="section-head">
+      <h2>🎯 Rien que pour vous</h2>
+      <a href="{% url 'recommendations' %}" class="see-all">Voir tout →</a>
+    </div>
+    <div class="products-row">
+      {% for p in reco_products %}{% include 'shop/partials/product_card.html' %}{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- Produits vedettes -->
+  {% if featured %}
+  <section class="section">
+    <div class="section-head">
+      <h2>⭐ Produits vedettes</h2>
+      <a href="{% url 'products' %}" class="see-all">Voir tout →</a>
+    </div>
+    <div class="products-row">
+      {% for p in featured %}{% include 'shop/partials/product_card.html' %}{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- Meilleures ventes -->
+  {% if best_sellers %}
+  <section class="section">
+    <div class="section-head"><h2>🔥 Meilleures ventes</h2></div>
+    <div class="products-row">
+      {% for p in best_sellers %}{% include 'shop/partials/product_card.html' %}{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- Nouveautés -->
+  {% if new_arrivals %}
+  <section class="section">
+    <div class="section-head"><h2>🆕 Nouveautés</h2></div>
+    <div class="products-row">
+      {% for p in new_arrivals %}{% include 'shop/partials/product_card.html' %}{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Question {{ step }}/{{ total }} — LuxeMart</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+  <style>
+    :root{--gold:#C9A84C;--gold-light:#F0D080;}
+    *{box-sizing:border-box;}
+    body{min-height:100vh;background:linear-gradient(135deg,#1A1A2E,#16213E);display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',sans-serif;padding:40px 20px;}
+    .card{background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.25);border-radius:20px;padding:44px;max-width:640px;width:100%;box-shadow:0 32px 80px rgba(0,0,0,0.5);}
+    .prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+    .prog-lbl{color:rgba(255,255,255,0.4);font-size:0.78rem;}
+    .prog-pct{color:var(--gold-light);font-size:0.78rem;font-weight:600;}
+    .prog-track{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;margin-bottom:30px;}
+    .prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:3px;transition:width 0.5s;}
+    .badge-type{display:inline-block;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:var(--gold-light);padding:3px 12px;border-radius:20px;font-size:0.72rem;margin-bottom:12px;}
+    h2{color:white;font-size:1.3rem;font-weight:600;line-height:1.5;margin-bottom:6px;}
+    .subtitle{color:rgba(255,255,255,0.4);font-size:0.82rem;margin-bottom:24px;}
+    /* Grille des options */
+    .options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px;}
+    .options.wide{grid-template-columns:repeat(3,1fr);}
+    @media(max-width:500px){.options,.options.wide{grid-template-columns:1fr 1fr;}}
+    .opt{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:8px;background:rgba(255,255,255,0.04);
+      border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;
+      padding:18px 12px;cursor:pointer;transition:all 0.2s;text-align:center;
+      color:rgba(255,255,255,0.65);position:relative;user-select:none;
+    }
+    .opt:hover{border-color:rgba(201,168,76,0.5);background:rgba(201,168,76,0.07);color:white;}
+    .opt.selected{border-color:var(--gold);background:rgba(201,168,76,0.13);color:white;}
+    .opt.selected::after{content:'✓';position:absolute;top:8px;right:10px;font-size:0.7rem;color:var(--gold);font-weight:700;}
+    .opt input{display:none;}
+    .opt .emo{font-size:28px;line-height:1;}
+    .opt .lbl{font-size:0.83rem;font-weight:500;}
+    .opt .det{font-size:0.7rem;color:rgba(255,255,255,0.35);margin-top:2px;}
+    .opt.selected .det{color:rgba(201,168,76,0.7);}
+    /* Max choices indicator */
+    .max-hint{color:rgba(255,255,255,0.3);font-size:0.74rem;margin-bottom:14px;text-align:center;}
+    /* Actions */
+    .actions{display:flex;gap:10px;}
+    .btn-back{flex:0 0 auto;padding:12px 22px;border:1px solid rgba(201,168,76,0.3);background:transparent;color:rgba(255,255,255,0.45);border-radius:12px;font-size:0.88rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:all 0.3s;}
+    .btn-back:hover{border-color:var(--gold);color:var(--gold-light);}
+    .btn-next{flex:1;padding:13px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#1A1A2E;border:none;border-radius:12px;font-weight:700;font-size:0.95rem;cursor:pointer;transition:all 0.3s;letter-spacing:0.5px;}
+    .btn-next:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,0.35);}
+    .btn-next:disabled{opacity:0.5;transform:none;}
+    .alert{border-radius:10px;border:none;font-size:0.82rem;padding:9px 14px;margin-bottom:14px;background:rgba(220,53,69,0.15);color:#ff6b7a;}
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="prog-row">
+    <span class="prog-lbl">Question {{ step }} sur {{ total }}</span>
+    <span class="prog-pct">{{ progress }}%</span>
+  </div>
+  <div class="prog-track"><div class="prog-fill" style="width:{{ progress }}%"></div></div>
+
+  {% for message in messages %}
+  <div class="alert">{{ message }}</div>
+  {% endfor %}
+
+  <span class="badge-type">
+    {% if q.type == 'multiple' %}
+      ☑ Plusieurs réponses (max {{ q.max }})
+    {% else %}
+      ◉ Une seule réponse
+    {% endif %}
+  </span>
+
+  <h2>{{ q.text }}</h2>
+  {% if q.subtitle %}<p class="subtitle">{{ q.subtitle }}</p>{% endif %}
+
+  {% if q.type == 'multiple' %}
+  <p class="max-hint">Sélectionne jusqu'à {{ q.max }} choix</p>
+  {% endif %}
+
+  <form method="post" id="stepForm">
+    {% csrf_token %}
+    <div class="options {% if q.choices|length > 4 %}wide{% endif %}" id="optionsGrid">
+      {% for choice in q.choices %}
+      <label class="opt {% if forloop.counter0|stringformat:'s' in selected %}selected{% endif %}"
+             data-idx="{{ forloop.counter0 }}"
+             onclick="selectOpt(this, '{{ q.type }}', {{ q.max }})">
+        {% if q.type == 'multiple' %}
+        <input type="checkbox" name="answer" value="{{ forloop.counter0 }}"
+               {% if forloop.counter0|stringformat:'s' in selected %}checked{% endif %}>
+        {% else %}
+        <input type="radio" name="answer" value="{{ forloop.counter0 }}"
+               {% if forloop.counter0|stringformat:'s' in selected %}checked{% endif %}>
+        {% endif %}
+        {% if choice.emoji %}<span class="emo">{{ choice.emoji }}</span>{% endif %}
+        <span class="lbl">{{ choice.text }}</span>
+        {% if choice.detail %}<span class="det">{{ choice.detail }}</span>{% endif %}
+      </label>
+      {% endfor %}
+    </div>
+
+    <div class="actions">
+      {% if step > 1 %}
+      <a href="{% url 'onboarding_step' step=step|add:'-1' %}" class="btn-back">← Retour</a>
+      {% endif %}
+      <button type="submit" class="btn-next" id="nextBtn">
+        {% if is_last %}Terminer ✓{% else %}Suivant →{% endif %}
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const qType = '{{ q.type }}';
+  const maxChoices = {{ q.max }};
+
+  function selectOpt(lbl, type, max) {
+    if (type === 'single') {
+      document.querySelectorAll('.opt').forEach(l => {
+        l.classList.remove('selected');
+        const inp = l.querySelector('input');
+        if (inp) inp.checked = false;
+      });
+      lbl.classList.add('selected');
+      const inp = lbl.querySelector('input');
+      if (inp) inp.checked = true;
+    } else {
+      const selected = document.querySelectorAll('.opt.selected');
+      if (!lbl.classList.contains('selected') && selected.length >= max) {
+        /* Animation shake si limite atteinte */
+        lbl.style.animation = 'none';
+        lbl.style.border = '1.5px solid #ff6b7a';
+        setTimeout(() => lbl.style.border = '', 800);
+        return;
+      }
+      lbl.classList.toggle('selected');
+      const inp = lbl.querySelector('input');
+      if (inp) inp.checked = lbl.classList.contains('selected');
+    }
+  }
+
+  /* Vérifier qu'une réponse est sélectionnée avant submit */
+  document.getElementById('stepForm').addEventListener('submit', function(e) {
+    const checked = document.querySelectorAll('.opt.selected');
+    if (qType === 'single' && checked.length === 0) {
+      e.preventDefault();
+      alert('Veuillez sélectionner une réponse.');
+    }
+  });
+</script>
+</body>
+</html>

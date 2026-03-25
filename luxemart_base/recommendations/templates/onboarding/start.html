@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Personnalisation — LuxeMart</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+  <style>
+    :root{--gold:#C9A84C;--gold-light:#F0D080;}
+    body{min-height:100vh;background:linear-gradient(135deg,#1A1A2E,#16213E);display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',sans-serif;padding:40px 20px;}
+    .card{background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.25);border-radius:20px;padding:56px 44px;max-width:600px;width:100%;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,0.5);}
+    .wave{font-size:64px;display:block;margin-bottom:20px;animation:wave 2s ease-in-out infinite;}
+    @keyframes wave{0%,100%{transform:rotate(0)}25%{transform:rotate(-10deg)}75%{transform:rotate(10deg)}}
+    h1{color:var(--gold-light);font-size:2rem;font-weight:700;margin-bottom:10px;}
+    .sub{color:rgba(255,255,255,0.55);line-height:1.8;margin-bottom:32px;}
+    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px;}
+    .feat{background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:18px 10px;}
+    .feat .ico{font-size:26px;margin-bottom:6px;display:block;}
+    .feat strong{color:var(--gold-light);font-size:0.88rem;display:block;margin-bottom:4px;}
+    .feat small{color:rgba(255,255,255,0.4);font-size:0.74rem;}
+    .info{background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.15);border-radius:10px;padding:13px 18px;color:rgba(255,255,255,0.4);font-size:0.82rem;margin-bottom:28px;}
+    .info strong{color:var(--gold-light);}
+    .btn-start{display:inline-block;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#1A1A2E;text-decoration:none;padding:15px 44px;border-radius:14px;font-weight:700;font-size:1rem;letter-spacing:1px;transition:all 0.3s;}
+    .btn-start:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(201,168,76,0.35);color:#1A1A2E;}
+    .skip{display:block;margin-top:14px;color:rgba(255,255,255,0.25);font-size:0.8rem;text-decoration:none;}
+    .skip:hover{color:rgba(255,255,255,0.45);}
+  </style>
+</head>
+<body>
+<div class="card">
+  <span class="wave">👋</span>
+  <h1>Bienvenue, {{ request.user.first_name }} !</h1>
+  <p class="sub">
+    Pour vous proposer des recommandations <strong style="color:var(--gold-light)">vraiment personnalisées</strong>,<br>
+    répondez à <strong style="color:var(--gold-light)">{{ total }} questions rapides</strong> — moins de 2 minutes.
+  </p>
+  <div class="features">
+    <div class="feat"><span class="ico">🎯</span><strong>Recommandations</strong><small>Produits pour vous</small></div>
+    <div class="feat"><span class="ico">⚡</span><strong>Instantané</strong><small>Dès la 1ère visite</small></div>
+    <div class="feat"><span class="ico">🔒</span><strong>Privé</strong><small>Données protégées</small></div>
+  </div>
+  <div class="info">⏱ <strong>{{ total }} questions</strong> · environ <strong>90 secondes</strong> · modifiable à tout moment</div>
+  <a href="{% url 'onboarding_step' step=1 %}" class="btn-start">Commencer →</a>
+  <a href="{% url 'home' %}" class="skip">Passer pour l'instant</a>
+</div>
+</body>
+</html>

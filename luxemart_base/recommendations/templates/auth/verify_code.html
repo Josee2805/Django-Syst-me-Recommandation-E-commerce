@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Vérification — LuxeMart</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root{--gold:#C9A84C;--gold-light:#F0D080;}
+    *{box-sizing:border-box;}
+    body{
+      min-height:100vh;
+      background:linear-gradient(135deg,#1A1A2E 0%,#0F3460 55%,#533483 100%);
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Segoe UI',sans-serif;padding:20px;
+    }
+    .card{
+      background:rgba(255,255,255,0.07);backdrop-filter:blur(20px);
+      border:1px solid rgba(201,168,76,0.3);border-radius:20px;
+      padding:48px 40px;width:100%;max-width:460px;
+      box-shadow:0 24px 64px rgba(0,0,0,0.45);
+    }
+    .brand{text-align:center;margin-bottom:28px;}
+    .brand .icon{font-size:48px;display:block;margin-bottom:10px;}
+    .brand h1{color:var(--gold-light);font-size:1.7rem;font-weight:700;letter-spacing:2px;margin:0;}
+    .brand p{color:rgba(255,255,255,0.4);font-size:0.82rem;margin-top:4px;}
+    .step-info{
+      background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);
+      border-radius:12px;padding:14px 18px;margin-bottom:24px;text-align:center;
+    }
+    .step-info p{color:rgba(255,255,255,0.55);font-size:0.85rem;margin:0;line-height:1.6;}
+    .step-info strong{color:var(--gold-light);}
+    .form-label{color:rgba(255,255,255,0.7);font-size:0.85rem;font-weight:500;margin-bottom:6px;}
+    .input-wrap{display:flex;align-items:center;background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.3);border-radius:10px;overflow:hidden;margin-bottom:16px;}
+    .input-wrap .ico{padding:0 14px;color:var(--gold-light);font-size:1rem;}
+    .input-wrap input{flex:1;background:transparent;border:none;color:white;padding:13px 14px 13px 0;font-size:0.95rem;outline:none;}
+    .input-wrap input::placeholder{color:rgba(255,255,255,0.3);}
+    .input-wrap:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.15);}
+    /* Champ code */
+    .code-wrap{display:flex;align-items:center;background:rgba(201,168,76,0.07);border:2px solid rgba(201,168,76,0.35);border-radius:12px;overflow:hidden;margin-bottom:8px;}
+    .code-wrap .ico{padding:0 16px;color:var(--gold-light);font-size:1.1rem;}
+    .code-wrap input{
+      flex:1;background:transparent;border:none;color:var(--gold-light);
+      padding:16px 14px 16px 0;font-size:2rem;font-weight:700;
+      letter-spacing:10px;font-family:monospace;outline:none;text-align:center;
+    }
+    .code-wrap input::placeholder{color:rgba(201,168,76,0.25);letter-spacing:4px;font-size:1.5rem;}
+    .code-wrap:focus-within{border-color:var(--gold);box-shadow:0 0 0 4px rgba(201,168,76,0.2);}
+    .code-hint{color:rgba(255,255,255,0.3);font-size:0.75rem;text-align:center;margin-bottom:24px;}
+    .btn-gold{
+      background:linear-gradient(135deg,var(--gold),var(--gold-light));
+      color:#1A1A2E;border:none;padding:14px;font-weight:700;
+      font-size:1rem;border-radius:12px;width:100%;letter-spacing:1px;
+      transition:all 0.3s;cursor:pointer;
+    }
+    .btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,0.4);}
+    .resend-section{
+      margin-top:20px;padding-top:18px;
+      border-top:1px solid rgba(201,168,76,0.15);text-align:center;
+    }
+    .resend-section p{color:rgba(255,255,255,0.4);font-size:0.82rem;margin-bottom:10px;}
+    .btn-resend{
+      background:transparent;border:1px solid rgba(201,168,76,0.3);
+      color:var(--gold-light);padding:9px 20px;border-radius:10px;
+      font-size:0.83rem;cursor:pointer;transition:all 0.3s;width:100%;
+    }
+    .btn-resend:hover{background:rgba(201,168,76,0.1);border-color:var(--gold);}
+    .back-link{display:block;text-align:center;margin-top:12px;color:rgba(255,255,255,0.3);font-size:0.8rem;text-decoration:none;}
+    .back-link:hover{color:rgba(255,255,255,0.5);}
+    .alert{border-radius:10px;border:none;font-size:0.83rem;padding:10px 14px;margin-bottom:14px;}
+    .alert-danger {background:rgba(220,53,69,0.15);color:#ff6b7a;}
+    .alert-success{background:rgba(40,167,69,0.15);color:#56e87a;}
+    .alert-warning{background:rgba(255,193,7,0.15);color:#ffd60a;}
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="brand">
+    <span class="icon">🔐</span>
+    <h1>LuxeMart</h1>
+    <p>Vérification de votre email</p>
+  </div>
+
+  <div class="step-info">
+    <p>Un code à <strong>6 chiffres</strong> a été envoyé à<br>
+    <strong>{{ pending_email|default:"votre adresse email" }}</strong><br>
+    Vérifiez aussi vos <strong>spams</strong>.</p>
+  </div>
+
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }}">
+    <i class="fas fa-info-circle me-2"></i>{{ message }}
+  </div>
+  {% endfor %}
+
+  {% if dev_code %}
+  <div style="background:rgba(255,193,7,0.1);border:2px dashed rgba(255,193,7,0.5);border-radius:12px;padding:16px;margin-bottom:18px;text-align:center;">
+    <p style="color:#ffd60a;font-size:0.78rem;font-weight:700;margin-bottom:8px;">⚠ MODE TEST — SMTP non configuré</p>
+    <p style="color:rgba(255,255,255,0.45);font-size:0.75rem;margin-bottom:10px;">Votre code de vérification :</p>
+    <span style="font-size:2.2rem;font-weight:700;color:#ffd60a;letter-spacing:10px;font-family:monospace;">{{ dev_code }}</span>
+    <p style="color:rgba(255,255,255,0.25);font-size:0.7rem;margin-top:8px;">Ce bloc disparaît quand Gmail SMTP est configuré dans settings.py</p>
+  </div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+
+    <label class="form-label">Votre email</label>
+    <div class="input-wrap">
+      <span class="ico"><i class="fas fa-envelope"></i></span>
+      <input type="email" name="email" placeholder="votre@email.com"
+             value="{{ pending_email }}" required autocomplete="email">
+    </div>
+
+    <label class="form-label">Code de vérification</label>
+    <div class="code-wrap">
+      <span class="ico"><i class="fas fa-key"></i></span>
+      <input type="text" name="code" placeholder="000000"
+             maxlength="6" inputmode="numeric" pattern="[0-9]{6}"
+             autocomplete="one-time-code" autofocus required
+             oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)">
+    </div>
+    <p class="code-hint">Entrez exactement 6 chiffres · Expire dans 15 min</p>
+
+    <button type="submit" class="btn-gold">
+      <i class="fas fa-check-circle me-2"></i>Vérifier mon code
+    </button>
+  </form>
+
+  <div class="resend-section">
+    <p>Vous n'avez pas reçu le code ?</p>
+    <form method="post" action="{% url 'resend_code' %}">
+      {% csrf_token %}
+      <input type="hidden" name="email" value="{{ pending_email }}">
+      <button type="submit" class="btn-resend">
+        <i class="fas fa-redo me-2"></i>Renvoyer un nouveau code
+      </button>
+    </form>
+  </div>
+
+  <a href="{% url 'register' %}" class="back-link">
+    <i class="fas fa-arrow-left me-1"></i>Recommencer l'inscription
+  </a>
+</div>
+
+<script>
+  /* Focus auto + formatage visuel du code */
+  const codeInput = document.querySelector('input[name="code"]');
+  if (codeInput) {
+    codeInput.focus();
+    codeInput.addEventListener('input', function() {
+      if (this.value.length === 6) {
+        this.style.color = '#56e87a';
+      } else {
+        this.style.color = '#F0D080';
+      }
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Renvoyer la vérification — LuxeMart</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root { --gold: #C9A84C; --gold-light: #F0D080; }
+    body {
+      min-height:100vh; background:linear-gradient(135deg,#1A1A2E,#0F3460);
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Segoe UI',sans-serif; padding:20px;
+    }
+    .card {
+      background:rgba(255,255,255,0.07); backdrop-filter:blur(20px);
+      border:1px solid rgba(201,168,76,0.3); border-radius:16px;
+      padding:48px 40px; max-width:440px; width:100%;
+      box-shadow:0 24px 64px rgba(0,0,0,0.4);
+    }
+    .icon { text-align:center; font-size:44px; margin-bottom:16px; }
+    h2 { text-align:center; color:var(--gold-light); font-size:1.4rem; font-weight:700; margin-bottom:6px; }
+    p  { text-align:center; color:rgba(255,255,255,0.5); font-size:0.88rem; margin-bottom:24px; }
+    .form-label { color:rgba(255,255,255,0.7); font-size:0.85rem; }
+    .input-group-text {
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(201,168,76,0.3); border-right:none; color:var(--gold-light);
+    }
+    .form-control {
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(201,168,76,0.3); border-left:none; color:white; padding:12px;
+    }
+    .form-control:focus { background:rgba(255,255,255,0.08); border-color:var(--gold); color:white; box-shadow:none; }
+    .form-control::placeholder { color:rgba(255,255,255,0.3); }
+    .btn-gold {
+      background:linear-gradient(135deg,var(--gold),var(--gold-light));
+      color:#1A1A2E; border:none; padding:13px; font-weight:700;
+      border-radius:12px; width:100%; transition:all 0.3s; cursor:pointer;
+    }
+    .btn-gold:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(201,168,76,0.4); }
+    .back { text-align:center; margin-top:14px; }
+    .back a { color:rgba(255,255,255,0.35); font-size:0.82rem; text-decoration:none; }
+    .back a:hover { color:var(--gold-light); }
+    .alert { border-radius:10px; border:none; font-size:0.85rem; padding:10px 16px; margin-bottom:14px; }
+    .alert-success { background:rgba(40,167,69,0.15); color:#56e87a; }
+    .alert-danger  { background:rgba(220,53,69,0.15); color:#ff6b7a; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="icon">📬</div>
+  <h2>Renvoyer la vérification</h2>
+  <p>Entrez votre email pour recevoir un nouveau lien.</p>
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-4">
+      <label class="form-label">Adresse email</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+        <input type="email" name="email" class="form-control" placeholder="votre@email.com" required>
+      </div>
+    </div>
+    <button type="submit" class="btn-gold">
+      <i class="fas fa-paper-plane me-2"></i>Renvoyer l'email
+    </button>
+  </form>
+  <div class="back"><a href="{% url 'login' %}"><i class="fas fa-arrow-left me-1"></i>Retour à la connexion</a></div>
+</div>
+</body>
+</html>

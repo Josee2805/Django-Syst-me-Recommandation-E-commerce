@@ -1,0 +1,57 @@
+/*
+  LuxeMart — main.css
+  Styles de base partagés par toute l'application.
+  Personne B complètera ce fichier dans sa branche.
+*/
+
+:root {
+  --gold:       #C9A84C;
+  --gold-light: #F0D080;
+  --gold-soft:  #FDF6E3;
+  --sidebar-w:  260px;
+  --navbar-h:   64px;
+  --radius:     12px;
+  --bg:         #F8F6F0;
+  --card-bg:    #FFFFFF;
+  --text:       #2C2C2C;
+  --text-muted: #888888;
+  --border:     rgba(201,168,76,0.2);
+  --shadow:     0 2px 12px rgba(0,0,0,0.06);
+}
+
+[data-theme="dark"] {
+  --gold-soft:  #1A1A2E;
+  --bg:         #0F0F1A;
+  --card-bg:    #16213E;
+  --text:       #E8E4D8;
+  --text-muted: #888888;
+  --border:     rgba(201,168,76,0.15);
+  --shadow:     0 2px 12px rgba(0,0,0,0.3);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* Selection */
+::selection { background: rgba(201,168,76,0.25); color: var(--text); }
+
+/* Images */
+img { max-width: 100%; display: block; }
+
+/* Links */
+a { transition: color 0.2s; }
+
+/* Focus visible */
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }

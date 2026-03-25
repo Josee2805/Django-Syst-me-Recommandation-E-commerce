@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0F0F1A;font-family:'Segoe UI',Arial,sans-serif;">
+<table width="100%" cellspacing="0" cellpadding="0">
+  <tr><td align="center" style="padding:40px 20px;">
+    <table width="560" style="max-width:560px;width:100%;">
+      <!-- Header -->
+      <tr><td style="background:linear-gradient(135deg,#1A1A2E,#0F3460);border-radius:16px 16px 0 0;padding:36px;text-align:center;">
+        <div style="font-size:48px;margin-bottom:8px;">✨</div>
+        <h1 style="color:#F0D080;font-size:1.8rem;font-weight:700;letter-spacing:3px;margin:0;">LuxeMart</h1>
+        <p style="color:rgba(255,255,255,0.45);margin:6px 0 0;font-size:0.85rem;">Votre boutique d'exception</p>
+      </td></tr>
+      <!-- Body -->
+      <tr><td style="background:#16213E;padding:44px 40px;text-align:center;">
+        <p style="color:rgba(255,255,255,0.7);font-size:1rem;margin:0 0 8px;">Bonjour <strong style="color:#F0D080;">{{ user.first_name }}</strong> 👋</p>
+        <p style="color:rgba(255,255,255,0.5);font-size:0.9rem;margin:0 0 32px;">Votre code de vérification LuxeMart :</p>
+        <!-- Code -->
+        <div style="background:rgba(201,168,76,0.1);border:2px solid rgba(201,168,76,0.4);border-radius:16px;padding:28px;margin:0 0 28px;display:inline-block;min-width:200px;">
+          <span style="font-size:2.8rem;font-weight:700;color:#F0D080;letter-spacing:12px;font-family:monospace;">{{ code }}</span>
+        </div>
+        <p style="color:rgba(255,255,255,0.4);font-size:0.82rem;margin:0 0 24px;">
+          ⏰ Ce code expire dans <strong style="color:#F0D080;">{{ expires_minutes }} minutes</strong>
+        </p>
+        <p style="color:rgba(255,255,255,0.35);font-size:0.78rem;margin:0;">
+          Si vous n'avez pas créé de compte sur LuxeMart, ignorez cet email.
+        </p>
+      </td></tr>
+      <!-- Footer -->
+      <tr><td style="background:#0D1117;border-radius:0 0 16px 16px;padding:20px;text-align:center;">
+        <p style="color:rgba(255,255,255,0.25);font-size:0.75rem;margin:0;">© 2024 LuxeMart — Tous droits réservés</p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>
