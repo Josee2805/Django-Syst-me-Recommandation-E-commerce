@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Email envoyé — RecoShop</title>
+<script>(function(){var t=localStorage.getItem('recoshop-theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'recommendations/css/main.css' %}">
+<style>
+  body { background: var(--bg); min-height: 100vh; display: grid; place-items: center; }
+  .confirm-wrapper {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 60px 24px; max-width: 540px; width: 100%; text-align: center;
+  }
+  .confirm-icon {
+    width: 80px; height: 80px; margin-bottom: 32px;
+    background: var(--accent-dim); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    animation: pulse-ring 2s ease-out infinite;
+  }
+  @keyframes pulse-ring {
+    0%   { box-shadow: 0 0 0 0 rgba(74,158,138,0.4); }
+    70%  { box-shadow: 0 0 0 18px rgba(74,158,138,0); }
+    100% { box-shadow: 0 0 0 0 rgba(74,158,138,0); }
+  }
+  .confirm-icon svg { width: 38px; height: 38px; stroke: var(--accent); }
+  .confirm-badge {
+    display: inline-block; margin-bottom: 20px;
+    padding: 4px 14px; background: var(--accent-dim);
+    border-radius: 20px; font-size: 0.72rem;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .confirm-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.2rem; font-weight: 400;
+    color: var(--text); margin-bottom: 16px; line-height: 1.2;
+  }
+  .confirm-sub {
+    font-size: 0.95rem; color: var(--text-muted);
+    line-height: 1.7; margin-bottom: 36px;
+  }
+  .confirm-sub strong { color: var(--text); }
+  .confirm-card {
+    width: 100%; background: var(--card);
+    border: 1px solid var(--divider); border-radius: 14px;
+    padding: 24px 28px; margin-bottom: 36px; text-align: left;
+  }
+  .confirm-step {
+    display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px;
+  }
+  .confirm-step:last-child { margin-bottom: 0; }
+  .step-num {
+    width: 28px; height: 28px; flex-shrink: 0;
+    background: var(--accent-dim); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; color: var(--accent);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .step-text { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; padding-top: 4px; }
+  .step-text strong { color: var(--text); }
+  .confirm-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .confirm-note {
+    margin-top: 28px; font-size: 0.78rem; color: var(--text-muted); line-height: 1.6;
+  }
+  .confirm-note a { color: var(--accent); text-decoration: none; }
+  .confirm-note a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="confirm-wrapper">
+
+  <div class="confirm-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2"/>
+      <path d="m22 6-10 7L2 6"/>
+      <path d="M2 6v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6"/>
+    </svg>
+  </div>
+
+  <span class="confirm-badge">Vérification en cours</span>
+  <h1 class="confirm-title">Vérifiez votre boîte mail</h1>
+  <p class="confirm-sub">
+    Un email d'activation a été envoyé à votre adresse.<br>
+    <strong>Cliquez sur le lien</strong> pour activer votre compte RecoShop.
+  </p>
+
+  <div class="confirm-card">
+    <div class="confirm-step">
+      <div class="step-num">1</div>
+      <div class="step-text">Ouvrez votre <strong>boîte de réception</strong></div>
+    </div>
+    <div class="confirm-step">
+      <div class="step-num">2</div>
+      <div class="step-text">Recherchez un email de <strong>RecoShop</strong> — vérifiez aussi les spams</div>
+    </div>
+    <div class="confirm-step">
+      <div class="step-num">3</div>
+      <div class="step-text">Cliquez sur <strong>« Activer mon compte »</strong> dans l'email</div>
+    </div>
+  </div>
+
+  <div class="confirm-actions">
+    <a href="{% url 'login' %}" class="btn btn-outline">Déjà activé ? Se connecter</a>
+    <a href="{% url 'register' %}" class="btn btn-primary btn-shimmer">Recréer un compte</a>
+  </div>
+
+  <p class="confirm-note">
+    Le lien est valable <strong>24 heures</strong>.<br>
+    Un problème ? <a href="{% url 'landing' %}">Retour à l'accueil</a>
+  </p>
+
+</div>
+</body>
+</html>

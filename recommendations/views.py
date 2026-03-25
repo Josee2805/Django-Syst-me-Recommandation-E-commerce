@@ -5,6 +5,11 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import Avg, Count, Q
 from django.views.decorators.http import require_POST
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.tokens import default_token_generator
 import json
 
 from .models import CustomUser, Category, Product, Rating, Comment, CartItem, Purchase
@@ -33,10 +38,11 @@ def register_view(request):
     if request.user.is_authenticated:
         return redirect('home')
     if request.method == 'POST':
-        email = request.POST.get('email', '').strip()
+        email    = request.POST.get('email', '').strip()
         username = request.POST.get('username', '').strip()
         password1 = request.POST.get('password1', '')
         password2 = request.POST.get('password2', '')
+
         if password1 != password2:
             messages.error(request, 'Les mots de passe ne correspondent pas.')
         elif CustomUser.objects.filter(email=email).exists():
@@ -44,17 +50,86 @@ def register_view(request):
         elif CustomUser.objects.filter(username=username).exists():
             messages.error(request, 'Ce nom d\'utilisateur est déjà pris.')
         else:
-            user = CustomUser.objects.create_user(username=username, email=email, password=password1)
-            login(request, user)
-            messages.success(request, f'Bienvenue sur LuxeMart, {username} !')
-            return redirect('home')
+            # Compte inactif jusqu'à la confirmation email
+            user = CustomUser.objects.create_user(
+                username=username, email=email, password=password1
+            )
+            user.is_active = False
+            user.save()
+
+            # Génération du lien d'activation
+            uid   = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            domain = request.get_host()
+            protocol = 'https' if request.is_secure() else 'http'
+            activation_link = f"{protocol}://{domain}/activate/{uid}/{token}/"
+
+            # Envoi de l'email HTML
+            subject = "Activez votre compte RecoShop"
+            html_message = render_to_string(
+                'recommendations/emails/activation.html',
+                {'username': username, 'activation_link': activation_link}
+            )
+            try:
+                send_mail(
+                    subject=subject,
+                    message=f"Bonjour {username},\n\nActivez votre compte : {activation_link}",
+                    from_email=None,   # utilise DEFAULT_FROM_EMAIL
+                    recipient_list=[email],
+                    html_message=html_message,
+                    fail_silently=False,
+                )
+                return redirect('email_sent')
+            except Exception as e:
+                # En cas d'erreur SMTP : activer quand même + connecter
+                user.is_active = True
+                user.save()
+                login(request, user)
+                messages.warning(request, f'Compte créé mais email non envoyé ({e}). Vous êtes connecté.')
+                return redirect('home')
+
     return render(request, 'recommendations/register.html')
+
+
+def email_sent_view(request):
+    return render(request, 'recommendations/email_sent.html')
+
+
+def activate_view(request, uidb64, token):
+    try:
+        uid  = force_str(urlsafe_base64_decode(uidb64))
+        user = CustomUser.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user)
+        messages.success(request, f'Bienvenue sur RecoShop, {user.username} ! Votre compte est activé.')
+        return redirect('home')
+    else:
+        return render(request, 'recommendations/activation_invalid.html')
 
 
 @login_required
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+
+# ── LANDING (visiteurs non connectés) ────────────────────────────────────────
+
+def landing_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    return render(request, 'recommendations/landing.html')
+
+
+def index_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    return redirect('landing')
 
 
 # ── HOME ──────────────────────────────────────────────────────────────────────

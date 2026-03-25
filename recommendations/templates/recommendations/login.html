@@ -28,10 +28,30 @@
   }
   .auth-hero-bg {
     position: absolute; inset: 0;
-    background-image: url('https://source.unsplash.com/1200x900/?fashion,luxury,boutique');
-    background-size: cover;
-    background-position: center;
+    overflow: hidden;
   }
+  /* Mosaïque produits */
+  .products-mosaic {
+    position: absolute; inset: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 6px; padding: 6px;
+    transform: rotate(-4deg) scale(1.18);
+    transform-origin: center;
+  }
+  .mosaic-img {
+    border-radius: 10px; overflow: hidden;
+    background: var(--card-hover);
+  }
+  .mosaic-img img {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block;
+    filter: saturate(0.9) brightness(0.96);
+  }
+  /* Span sur 2 colonnes/lignes pour varier */
+  .mosaic-img.span-r2 { grid-row: span 2; }
+  .mosaic-img.span-c2 { grid-column: span 2; }
   .auth-hero-overlay {
     position: absolute; inset: 0;
     background: linear-gradient(
@@ -44,26 +64,27 @@
   .auth-hero-content { position: relative; z-index: 1; }
   .auth-hero-logo {
     position: absolute; top: 40px; left: 60px; z-index: 2;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.8rem; font-weight: 600;
-    background: linear-gradient(135deg, #C8A96E, #2DD4BF);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem; font-weight: 400;
+    color: #fff;
+    letter-spacing: -0.02em;
   }
   .auth-hero-quote {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.5rem;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.45rem;
     font-style: italic;
-    color: rgba(245,245,245,0.85);
+    color: rgba(245,245,245,0.88);
     line-height: 1.5;
     margin-bottom: 20px;
     max-width: 400px;
   }
   .auth-hero-author {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--accent);
-    font-family: 'Space Mono', monospace;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
   }
   .auth-dots { display: flex; gap: 8px; margin-top: 24px; }
   .auth-dot {
@@ -82,8 +103,8 @@
   }
   .auth-form-box { width: 100%; max-width: 380px; }
   .auth-form-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 2.4rem; font-weight: 600;
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem; font-weight: 400;
     color: var(--text); margin-bottom: 6px;
   }
   .auth-form-sub { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 36px; }
@@ -163,7 +184,47 @@
 
   <!-- Gauche -->
   <div class="auth-hero">
-    <div class="auth-hero-bg"></div>
+    <div class="auth-hero-bg">
+      <!-- Mosaïque de produits réels -->
+      <div class="products-mosaic">
+        <div class="mosaic-img span-r2">
+          <img src="https://images.unsplash.com/photo-1695822822491-d92cee704368?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1627544467186-4f4cb4a3c04b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1553531768-c3d6cfd10eeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1593442607435-e4e34991b210?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img span-r2">
+          <img src="https://images.unsplash.com/photo-1680337674070-27a748bd82c1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1606248897732-2c5ffe759c04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1731855315921-7be11aa1879d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1610768399515-8df89e969e11?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img span-c2">
+          <img src="https://images.unsplash.com/photo-1556737137-c2eb736c5e4b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1604543447675-5e7a5c508407?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1648712787208-7d52a79c4273?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1582106316415-d02d4d0e9066?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+      </div>
+    </div>
     <div class="auth-hero-overlay"></div>
     <span class="auth-hero-logo">RecoShop</span>
     <div class="auth-hero-content">
@@ -218,7 +279,7 @@
 
       <!-- Compte démo -->
       <div style="margin-top:32px;padding:16px;background:var(--accent-faint);border:1px solid var(--accent-border);border-radius:10px;">
-        <p style="font-size:.72rem;color:var(--text-muted);margin-bottom:4px;font-weight:500;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.10em;">
+        <p style="font-size:.72rem;color:var(--text-muted);margin-bottom:4px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;text-transform:uppercase;letter-spacing:.10em;">
           Compte démo
         </p>
         <p style="font-size:.85rem;color:var(--accent);">

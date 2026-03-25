@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Activez votre compte RecoShop</title>
+</head>
+<body style="margin:0;padding:0;background:#F5F2EC;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#F5F2EC;padding:40px 0;">
+  <tr>
+    <td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 32px rgba(0,0,0,0.08);">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:#1A2E1A;padding:36px 48px 32px;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <span style="font-size:1.7rem;font-weight:400;color:#ffffff;letter-spacing:-0.02em;font-family:Georgia,serif;">RecoShop</span>
+                </td>
+                <td align="right">
+                  <span style="font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;color:#4A9E8A;font-weight:700;">Activation</span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Divider accent -->
+        <tr>
+          <td style="height:4px;background:linear-gradient(90deg,#4A9E8A,#B85C38,#C8A050);"></td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:48px 48px 36px;">
+            <p style="margin:0 0 8px;font-size:0.75rem;letter-spacing:0.18em;text-transform:uppercase;color:#4A9E8A;font-weight:700;">Bienvenue</p>
+            <h1 style="margin:0 0 20px;font-size:1.9rem;font-weight:400;color:#1A2E1A;line-height:1.25;font-family:Georgia,serif;">
+              Bonjour, {{ username }} !
+            </h1>
+            <p style="margin:0 0 28px;font-size:0.95rem;color:#5A6A5A;line-height:1.7;">
+              Votre compte RecoShop a bien été créé. Il ne vous reste plus qu'une étape : confirmer votre adresse email pour activer votre compte et profiter de recommandations personnalisées.
+            </p>
+
+            <!-- CTA Button -->
+            <table cellpadding="0" cellspacing="0" style="margin:0 0 32px;">
+              <tr>
+                <td style="background:#B85C38;border-radius:10px;">
+                  <a href="{{ activation_link }}"
+                     style="display:inline-block;padding:16px 36px;font-size:0.95rem;font-weight:700;color:#ffffff;text-decoration:none;letter-spacing:0.04em;">
+                    Activer mon compte →
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:0 0 12px;font-size:0.82rem;color:#8A9A8A;line-height:1.6;">
+              Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur :
+            </p>
+            <p style="margin:0;font-size:0.78rem;color:#4A9E8A;word-break:break-all;line-height:1.5;">
+              {{ activation_link }}
+            </p>
+          </td>
+        </tr>
+
+        <!-- Info box -->
+        <tr>
+          <td style="padding:0 48px 40px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5F2EC;border-radius:10px;border-left:3px solid #4A9E8A;">
+              <tr>
+                <td style="padding:16px 20px;">
+                  <p style="margin:0;font-size:0.80rem;color:#5A6A5A;line-height:1.6;">
+                    <strong style="color:#1A2E1A;">Ce lien est valable 24 heures.</strong><br>
+                    Si vous n'avez pas créé de compte sur RecoShop, ignorez simplement cet email.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background:#1A2E1A;padding:24px 48px;">
+            <p style="margin:0;font-size:0.75rem;color:rgba(255,255,255,0.45);line-height:1.6;text-align:center;">
+              © 2025 RecoShop — Système de recommandation e-commerce<br>
+              Vous recevez cet email car vous avez créé un compte sur RecoShop.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>
