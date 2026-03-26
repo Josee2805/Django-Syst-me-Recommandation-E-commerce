@@ -84,6 +84,7 @@ def register_view(request):
                 # En cas d'erreur SMTP : activer quand même + connecter
                 user.is_active = True
                 user.save()
+                user.backend = 'django.contrib.auth.backends.ModelBackend'
                 login(request, user)
                 messages.warning(request, f'Compte créé mais email non envoyé ({e}). Vous êtes connecté.')
                 return redirect('home')
@@ -105,6 +106,7 @@ def activate_view(request, uidb64, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
         login(request, user)
         messages.success(request, f'Bienvenue sur RecoShop, {user.username} ! Votre compte est activé.')
         return redirect('home')
