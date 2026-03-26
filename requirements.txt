@@ -35,5 +35,8 @@ certifi==2026.2.25
 charset-normalizer==3.4.6
 idna==3.11
 
+# Traduction automatique (fetch_images)
+deep-translator==1.11.4
+
 # Timezone
 tzdata==2025.3

@@ -8,7 +8,9 @@
       "Bash(python -c \":*)",
       "Bash(python manage.py fetch_images --categories-only --all)",
       "Bash(python manage.py fetch_images --products-only)",
-      "Bash(python manage.py shell -c \":*)"
+      "Bash(python manage.py shell -c \":*)",
+      "Bash(python manage.py shell -c \"from recommendations.models import Product; p = Product.objects.filter\\(image_url__isnull=True\\); print\\(f''Sans image: {p.count\\(\\)}''\\); p2 = Product.objects.exclude\\(image_url__isnull=True\\); print\\(f''Avec image: {p2.count\\(\\)}''\\)\")",
+      "Bash(pip install:*)"
     ]
   }
 }
