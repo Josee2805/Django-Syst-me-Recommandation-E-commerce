@@ -1,0 +1,228 @@
+{% extends 'recommendations/base.html' %}
+{% load static %}
+
+{% block title %}Vérification du code{% endblock %}
+
+{% block extra_css %}
+<style>
+  .auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: var(--bg);
+  }
+  .auth-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 44px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: var(--shadow-lg);
+  }
+  .auth-brand { text-align: center; margin-bottom: 28px; }
+  .auth-brand .logo-text {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--accent);
+    font-family: 'DM Serif Display', serif;
+  }
+  .verify-icon {
+    width: 64px; height: 64px;
+    background: rgba(212,175,55,0.12);
+    border: 1.5px solid rgba(212,175,55,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin: 0 auto 16px;
+  }
+  .verify-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .verify-desc {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  .dev-code-box {
+    background: rgba(212,175,55,0.08);
+    border: 2px dashed rgba(212,175,55,0.4);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    margin-bottom: 18px;
+  }
+  .dev-code-box p { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; }
+  .dev-code-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 10px;
+    font-family: monospace;
+  }
+  .form-group { margin-bottom: 14px; }
+  .form-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .form-input {
+    width: 100%;
+    padding: 11px 14px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: var(--text);
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .form-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(212,175,55,0.12);
+  }
+  .form-input::placeholder { color: var(--text-muted); }
+  .code-input {
+    font-size: 2rem !important;
+    font-weight: 700;
+    letter-spacing: 10px;
+    text-align: center;
+    font-family: monospace !important;
+    color: var(--accent) !important;
+    border-color: rgba(212,175,55,0.4) !important;
+    padding: 16px !important;
+  }
+  .code-input:focus { border-color: var(--accent) !important; }
+  .btn-auth {
+    width: 100%;
+    padding: 13px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+    margin-top: 4px;
+  }
+  .btn-auth:hover { opacity: 0.9; transform: translateY(-1px); }
+  .resend-section {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+  .resend-section p { font-size: 0.83rem; color: var(--text-muted); margin-bottom: 10px; }
+  .btn-resend {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    padding: 9px 20px;
+    border-radius: 10px;
+    font-size: 0.83rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    width: 100%;
+  }
+  .btn-resend:hover { border-color: var(--accent); color: var(--accent); }
+  .back-link {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  .back-link:hover { color: var(--accent); }
+</style>
+{% endblock %}
+
+{% block auth_content %}
+<div class="auth-page">
+  <div class="auth-card fade-up">
+    <div class="auth-brand">
+      <div class="logo-text">RecoShop</div>
+    </div>
+
+    <div class="verify-icon">🔐</div>
+    <div class="verify-title">Vérifiez votre email</div>
+    <p class="verify-desc">
+      Un code à <strong>6 chiffres</strong> a été envoyé à
+      <strong>{{ pending_email|default:"votre adresse email" }}</strong>.
+      Entrez-le ci-dessous pour activer votre compte.
+    </p>
+
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}success{% endif %} fade-up" style="margin-bottom:14px;">
+      {{ message }}
+    </div>
+    {% endfor %}
+
+    {% if dev_code %}
+    <div class="dev-code-box">
+      <p>⚠ Mode test — SMTP non configuré. Votre code :</p>
+      <div class="dev-code-value">{{ dev_code }}</div>
+      <p style="margin-top:6px;font-size:0.7rem;">Ce bandeau disparaît en production</p>
+    </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label">Votre email</label>
+        <input type="email" name="email" class="form-input"
+               placeholder="votre@email.com"
+               value="{{ pending_email }}" required autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Code de vérification</label>
+        <input type="text" name="code" class="form-input code-input"
+               placeholder="000000"
+               maxlength="6" inputmode="numeric" pattern="[0-9]{6}"
+               autocomplete="one-time-code" autofocus required
+               oninput="this.value=this.value.replace(/\D/g,'').slice(0,6); updateCodeColor(this)">
+      </div>
+
+      <button type="submit" class="btn-auth">Vérifier le code</button>
+    </form>
+
+    <div class="resend-section">
+      <p>Vous n'avez pas reçu le code ?</p>
+      <form method="post" action="{% url 'resend_code' %}">
+        {% csrf_token %}
+        <input type="hidden" name="email" value="{{ pending_email }}">
+        <button type="submit" class="btn-resend">🔄 Renvoyer un nouveau code</button>
+      </form>
+    </div>
+
+    <a href="{% url 'register' %}" class="back-link">← Recommencer l'inscription</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function updateCodeColor(input) {
+  if (input.value.length === 6) {
+    input.style.color = '#27ae60';
+    input.style.borderColor = '#27ae60';
+  } else {
+    input.style.color = 'var(--accent)';
+    input.style.borderColor = 'rgba(212,175,55,0.4)';
+  }
+}
+</script>
+{% endblock %}

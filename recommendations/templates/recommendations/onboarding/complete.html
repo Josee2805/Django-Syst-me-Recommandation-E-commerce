@@ -1,0 +1,103 @@
+{% extends 'recommendations/base.html' %}
+{% load static %}
+{% block title %}C'est parti !{% endblock %}
+
+{% block extra_css %}
+<style>
+  .ob-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: var(--bg);
+  }
+  .ob-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 56px 44px;
+    width: 100%;
+    max-width: 520px;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    animation: fadeUp 0.5s ease;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  .success-icon {
+    font-size: 60px;
+    display: block;
+    margin-bottom: 16px;
+    animation: bounce 0.8s ease;
+  }
+  @keyframes bounce { 0%{transform:scale(0.5)} 70%{transform:scale(1.1)} 100%{transform:scale(1)} }
+  .ob-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .ob-desc { color: var(--text-muted); line-height: 1.7; font-size: 0.9rem; margin-bottom: 24px; }
+  .prefs-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin: 16px 0;
+  }
+  .pref-tag {
+    background: rgba(212,175,55,0.1);
+    border: 1px solid rgba(212,175,55,0.25);
+    color: var(--accent);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+  .btn-discover {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--bg);
+    text-decoration: none;
+    padding: 14px 40px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: opacity 0.2s, transform 0.2s;
+    margin-top: 12px;
+    letter-spacing: 0.3px;
+  }
+  .btn-discover:hover { opacity: 0.9; transform: translateY(-2px); }
+  .note { font-size: 0.78rem; color: var(--text-muted); margin-top: 12px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ob-page">
+  <div class="ob-card">
+    <span class="success-icon">🎉</span>
+    <h1 class="ob-title">Tout est prêt !</h1>
+    <p class="ob-desc">
+      Vos préférences ont été enregistrées. Notre algorithme va maintenant vous
+      proposer des produits qui vous correspondent vraiment.
+    </p>
+
+    {% if ob and ob.preferred_categories %}
+    <div class="prefs-row">
+      {% for cat in ob.preferred_categories %}
+      <span class="pref-tag">{{ cat }}</span>
+      {% endfor %}
+      {% if ob.budget %}
+      <span class="pref-tag">Budget : {{ ob.get_budget_display|default:ob.budget }}</span>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <p class="note">
+      Vos recommandations s'affineront automatiquement au fil de vos achats et notes.
+    </p>
+
+    <a href="{% url 'home' %}" class="btn-discover">Découvrir ma boutique →</a>
+  </div>
+</div>
+{% endblock %}

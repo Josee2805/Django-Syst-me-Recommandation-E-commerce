@@ -1,0 +1,229 @@
+{% extends 'recommendations/base.html' %}
+{% load static %}
+{% block title %}Question {{ step }}/{{ total }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .ob-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: var(--bg);
+  }
+  .ob-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 44px;
+    width: 100%;
+    max-width: 620px;
+    box-shadow: var(--shadow-lg);
+  }
+  .prog-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .prog-lbl { font-size: 0.78rem; color: var(--text-muted); }
+  .prog-pct { font-size: 0.78rem; font-weight: 600; color: var(--accent); }
+  .prog-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.5s;
+  }
+  .type-badge {
+    display: inline-block;
+    background: rgba(212,175,55,0.1);
+    border: 1px solid rgba(212,175,55,0.25);
+    color: var(--accent);
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    letter-spacing: 0.3px;
+  }
+  .ob-question {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .ob-subtitle { font-size: 0.83rem; color: var(--text-muted); margin-bottom: 24px; }
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .options-grid.wide { grid-template-columns: repeat(3,1fr); }
+  @media(max-width:480px) { .options-grid, .options-grid.wide { grid-template-columns: 1fr 1fr; } }
+  .opt-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 12px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    user-select: none;
+    position: relative;
+  }
+  .opt-label:hover { border-color: var(--accent); background: rgba(212,175,55,0.05); }
+  .opt-label.selected { border-color: var(--accent); background: rgba(212,175,55,0.1); }
+  .opt-label.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 0.7rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .opt-label input { display: none; }
+  .opt-emoji { font-size: 26px; line-height: 1; }
+  .opt-text { font-size: 0.85rem; font-weight: 500; color: var(--text); }
+  .opt-detail { font-size: 0.72rem; color: var(--text-muted); }
+  .opt-label.selected .opt-detail { color: rgba(212,175,55,0.8); }
+  .actions { display: flex; gap: 10px; }
+  .btn-back {
+    padding: 12px 20px;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s;
+  }
+  .btn-back:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-next {
+    flex: 1;
+    padding: 13px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .btn-next:hover { opacity: 0.9; transform: translateY(-1px); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ob-page">
+  <div class="ob-card fade-up">
+
+    <div class="prog-row">
+      <span class="prog-lbl">Question {{ step }} sur {{ total }}</span>
+      <span class="prog-pct">{{ progress }}%</span>
+    </div>
+    <div class="prog-track">
+      <div class="prog-fill" style="width:{{ progress }}%"></div>
+    </div>
+
+    {% for message in messages %}
+    <div class="alert alert-error" style="margin-bottom:12px;">{{ message }}</div>
+    {% endfor %}
+
+    <span class="type-badge">
+      {% if q.type == 'multiple' %}☑ Plusieurs réponses (max {{ q.max }})
+      {% else %}◉ Une seule réponse{% endif %}
+    </span>
+
+    <h2 class="ob-question">{{ q.text }}</h2>
+    {% if q.subtitle %}<p class="ob-subtitle">{{ q.subtitle }}</p>{% endif %}
+
+    <form method="post" id="obForm">
+      {% csrf_token %}
+      <div class="options-grid {% if q.choices|length > 4 %}wide{% endif %}">
+        {% for choice in q.choices %}
+        <label class="opt-label {% if forloop.counter0|stringformat:'s' in selected %}selected{% endif %}"
+               onclick="selectOpt(this, '{{ q.type }}', {{ q.max }})">
+          {% if q.type == 'multiple' %}
+            <input type="checkbox" name="answer" value="{{ forloop.counter0 }}"
+                   {% if forloop.counter0|stringformat:'s' in selected %}checked{% endif %}>
+          {% else %}
+            <input type="radio" name="answer" value="{{ forloop.counter0 }}"
+                   {% if forloop.counter0|stringformat:'s' in selected %}checked{% endif %}>
+          {% endif %}
+          {% if choice.emoji %}<span class="opt-emoji">{{ choice.emoji }}</span>{% endif %}
+          <span class="opt-text">{{ choice.text }}</span>
+          {% if choice.detail %}<span class="opt-detail">{{ choice.detail }}</span>{% endif %}
+        </label>
+        {% endfor %}
+      </div>
+
+      <div class="actions">
+        {% if step > 1 %}
+        <a href="{% url 'onboarding_step' step=step|add:'-1' %}" class="btn-back">← Retour</a>
+        {% endif %}
+        <button type="submit" class="btn-next">
+          {% if is_last %}Terminer ✓{% else %}Suivant →{% endif %}
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const qType = '{{ q.type }}';
+const maxChoices = {{ q.max }};
+
+function selectOpt(lbl, type, max) {
+  if (type === 'single') {
+    document.querySelectorAll('.opt-label').forEach(l => {
+      l.classList.remove('selected');
+      const inp = l.querySelector('input');
+      if (inp) inp.checked = false;
+    });
+    lbl.classList.add('selected');
+    const inp = lbl.querySelector('input');
+    if (inp) inp.checked = true;
+  } else {
+    const sel = document.querySelectorAll('.opt-label.selected');
+    if (!lbl.classList.contains('selected') && sel.length >= max) {
+      lbl.style.borderColor = '#e74c3c';
+      setTimeout(() => lbl.style.borderColor = '', 700);
+      return;
+    }
+    lbl.classList.toggle('selected');
+    const inp = lbl.querySelector('input');
+    if (inp) inp.checked = lbl.classList.contains('selected');
+  }
+}
+
+document.getElementById('obForm').addEventListener('submit', function(e) {
+  if (qType === 'single') {
+    const checked = document.querySelectorAll('.opt-label.selected');
+    if (checked.length === 0) {
+      e.preventDefault();
+      alert('Veuillez sélectionner une réponse.');
+    }
+  }
+});
+</script>
+{% endblock %}

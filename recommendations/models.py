@@ -1,7 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
+import random
+from django.utils import timezone
 
+
+# ═══════════════════════════════════════════════════════════════
+# MODÈLES EXISTANTS (ta camarade — NE PAS MODIFIER)
+# ═══════════════════════════════════════════════════════════════
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
@@ -118,3 +124,53 @@ class Purchase(models.Model):
 
     def __str__(self):
         return f"{self.user.email} bought {self.product.name}"
+
+
+# ═══════════════════════════════════════════════════════════════
+# NOUVEAUX MODÈLES — AUTH & ONBOARDING (Personne A)
+# ═══════════════════════════════════════════════════════════════
+
+class EmailVerificationCode(models.Model):
+    """Code OTP à 6 chiffres envoyé par email à l'inscription."""
+    user = models.OneToOneField(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='email_code'
+    )
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    attempts = models.IntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.expires_at = timezone.now() + timezone.timedelta(minutes=15)
+            self.code = str(random.randint(100000, 999999))
+        super().save(*args, **kwargs)
+
+    @property
+    def is_valid(self):
+        return timezone.now() < self.expires_at and self.attempts < 5
+
+    def __str__(self):
+        return f"Code {self.code} → {self.user.email}"
+
+
+class OnboardingAnswer(models.Model):
+    """Réponses du questionnaire de préférences post-inscription."""
+    user = models.OneToOneField(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='onboarding'
+    )
+    gender = models.CharField(max_length=20, blank=True)
+    preferred_categories = models.JSONField(default=list)
+    budget = models.CharField(max_length=20, blank=True)
+    purchase_priority = models.CharField(max_length=50, blank=True)
+    frequency = models.CharField(max_length=30, blank=True)
+    discovery_mode = models.JSONField(default=list)
+    completed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Onboarding de {self.user.email}"

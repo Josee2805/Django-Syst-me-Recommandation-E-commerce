@@ -1,4 +1,6 @@
+{% extends 'recommendations/base.html' %}
 {% load static %}
+<<<<<<< Updated upstream
 <!DOCTYPE html>
 <html lang="fr" data-theme="light">
 <head>
@@ -79,8 +81,114 @@
   @media(max-width:700px){
     .auth-wrapper{ grid-template-columns:1fr; }
     .auth-hero{ display:none; }
+=======
+
+{% block title %}Connexion{% endblock %}
+
+{% block extra_css %}
+<style>
+  .auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: var(--bg);
   }
+  .auth-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 44px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: var(--shadow-lg);
+  }
+  .auth-brand { text-align: center; margin-bottom: 32px; }
+  .auth-brand .logo-text {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+    font-family: 'DM Serif Display', serif;
+    letter-spacing: -0.5px;
+  }
+  .auth-brand p { color: var(--text-muted); font-size: 0.88rem; margin-top: 6px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .form-input {
+    width: 100%;
+    padding: 11px 14px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: var(--text);
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .form-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(212,175,55,0.12);
+  }
+  .form-input::placeholder { color: var(--text-muted); }
+  .form-input.with-toggle { padding-right: 44px; }
+  .toggle-pwd {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    padding: 0;
+  }
+  .toggle-pwd:hover { color: var(--accent); }
+  .btn-auth {
+    width: 100%;
+    padding: 13px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+    margin-top: 8px;
+  }
+  .btn-auth:hover { opacity: 0.9; transform: translateY(-1px); }
+  .auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .auth-footer {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+>>>>>>> Stashed changes
+  }
+  .auth-footer a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .auth-footer a:hover { text-decoration: underline; }
 </style>
+<<<<<<< Updated upstream
 </head>
 <body>
 <div class="auth-wrapper">
@@ -93,9 +201,62 @@
         <div class="auth-hero-dot"></div>
         <div class="auth-hero-dot"></div>
         <div class="auth-hero-dot"></div>
+=======
+{% endblock %}
+
+{% block auth_content %}
+<div class="auth-page">
+  <div class="auth-card fade-up">
+    <div class="auth-brand">
+      <div class="logo-text">RecoShop</div>
+      <p>Votre boutique personnalisée par IA</p>
+    </div>
+
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}success{% endif %} fade-up" style="margin-bottom:16px;">
+      {{ message }}
+    </div>
+    {% endfor %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label">Adresse email</label>
+        <input type="email" name="email" class="form-input"
+               placeholder="votre@email.com" autocomplete="email" autofocus required>
+>>>>>>> Stashed changes
       </div>
+
+      <div class="form-group">
+        <label class="form-label">Mot de passe</label>
+        <div class="input-wrapper">
+          <input type="password" name="password" id="loginPwd" class="form-input with-toggle"
+                 placeholder="••••••••" autocomplete="current-password" required>
+          <button type="button" class="toggle-pwd" onclick="togglePwd()" title="Afficher">
+            <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-auth">Se connecter</button>
+    </form>
+
+    <div class="auth-divider">ou</div>
+    <div class="auth-footer">
+      <p>Pas encore de compte ? <a href="{% url 'register' %}">Créer un compte gratuit</a></p>
+      <p style="margin-top:10px;">
+        <a href="{% url 'verify_code' %}" style="font-weight:400;font-size:0.8rem;">
+          Vérifier mon email →
+        </a>
+      </p>
     </div>
   </div>
+<<<<<<< Updated upstream
 
   <div class="auth-form-side">
     <div class="auth-form-box">
@@ -140,3 +301,23 @@ document.documentElement.setAttribute('data-theme', t);
 </script>
 </body>
 </html>
+=======
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function togglePwd() {
+  const input = document.getElementById('loginPwd');
+  const icon  = document.getElementById('eyeIcon');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    input.type = 'password';
+    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+</script>
+{% endblock %}
+>>>>>>> Stashed changes
