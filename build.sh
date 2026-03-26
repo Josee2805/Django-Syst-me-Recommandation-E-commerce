@@ -16,4 +16,7 @@ python manage.py migrate
 echo "==> Chargement des données initiales (catégories + produits)..."
 python manage.py seed_data
 
+echo "==> Création du superuser si inexistant..."
+python manage.py create_superuser_if_none
+
 echo "==> Build terminé ✓"
