@@ -4,8 +4,6 @@ __pycache__/
 *.pyo
 .env
 .git/
-.gitignore
 db.sqlite3
 media/
 staticfiles/
-*.md
