@@ -14,6 +14,28 @@ DEBUG      = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', '*').split(',') if h.strip()]
 
+# CSRF — domaine Railway + accepter toutes les origines railway.app
+RAILWAY_DOMAIN = os.environ.get('RAILWAY_PUBLIC_DOMAIN', '')
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://*.up.railway.app',
+]
+if RAILWAY_DOMAIN:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{RAILWAY_DOMAIN}')
+
+# Sécurité HTTPS (desactivé pour complications railway)
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+SECURE_HSTS_SECONDS = 31536000
+
+# Indique à Django que la requête vient bien de HTTPS (header proxy Railway)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+ 
+# Clé CSRF — doit être stable entre les requêtes
+# (déjà couverte par SECRET_KEY, mais on s'assure que le middleware est actif)
+CSRF_USE_SESSIONS = False  # Utiliser le cookie standard, pas la session
+
 # CSRF — Railway / Render HTTPS
 CSRF_TRUSTED_ORIGINS = [
     o.strip()
