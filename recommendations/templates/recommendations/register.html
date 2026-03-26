@@ -18,52 +18,58 @@
     display: flex; flex-direction: column;
     justify-content: flex-end; padding: 60px;
   }
-  .auth-hero-bg {
+  .auth-hero-bg { position: absolute; inset: 0; overflow: hidden; }
+  .products-mosaic {
     position: absolute; inset: 0;
-    background-image: url('https://source.unsplash.com/1200x900/?luxury,store,collection');
-    background-size: cover; background-position: center;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 6px; padding: 6px;
+    transform: rotate(-4deg) scale(1.18);
+    transform-origin: center;
   }
+  .mosaic-img { border-radius: 10px; overflow: hidden; }
+  .mosaic-img img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(0.9) brightness(0.96); }
+  .mosaic-img.span-r2 { grid-row: span 2; }
+  .mosaic-img.span-c2 { grid-column: span 2; }
   .auth-hero-overlay {
     position: absolute; inset: 0;
-    background: linear-gradient(to top, rgba(10,10,10,0.96) 0%, rgba(10,10,10,0.55) 50%, rgba(10,10,10,0.25) 100%);
+    background: linear-gradient(to top, rgba(10,10,10,0.96) 0%, rgba(10,10,10,0.55) 50%, rgba(10,10,10,0.22) 100%);
   }
   .auth-hero-logo {
     position: absolute; top: 40px; left: 60px; z-index: 2;
-    font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600;
-    background: linear-gradient(135deg, #C8A96E, #2DD4BF);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    font-family: 'DM Serif Display', serif; font-size: 1.8rem; font-weight: 400;
+    color: #fff; letter-spacing: -0.02em;
   }
   .auth-hero-content { position: relative; z-index: 1; }
   .auth-hero-content h2 {
-    font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600;
-    color: var(--text); margin-bottom: 24px;
+    font-family: 'DM Serif Display', serif; font-size: 2rem; font-weight: 400;
+    color: #fff; margin-bottom: 24px; line-height: 1.2;
   }
-  .feature-list { display: flex; flex-direction: column; gap: 12px; }
+  .feature-list { display: flex; flex-direction: column; gap: 10px; }
   .feature-item {
     display: flex; align-items: center; gap: 12px;
-    color: rgba(245,245,245,0.75); font-size: 0.9rem;
+    color: rgba(245,245,245,0.75); font-size: 0.88rem;
     padding: 10px 0;
-    border-bottom: 1px solid rgba(200,169,110,0.10);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
   }
   .feature-icon {
-    width: 32px; height: 32px;
-    border-radius: 8px;
-    background: var(--accent-faint);
-    border: 1px solid var(--accent-border);
+    width: 32px; height: 32px; border-radius: 8px;
+    background: rgba(74,158,138,0.18);
+    border: 1px solid rgba(74,158,138,0.30);
     display: flex; align-items: center; justify-content: center;
-    font-size: 0.9rem; flex-shrink: 0;
-    color: var(--accent);
+    font-size: 0.85rem; flex-shrink: 0; color: #5BB0A0;
   }
 
   .auth-form-side {
     background: var(--surface);
     display: flex; align-items: center; justify-content: center;
     padding: 40px 48px;
-    border-left: 1px solid rgba(200,169,110,0.12);
+    border-left: 1px solid var(--divider);
     overflow-y: auto;
   }
   .auth-form-box { width: 100%; max-width: 400px; }
-  .auth-form-title { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .auth-form-title { font-family: 'DM Serif Display', serif; font-size: 2.2rem; font-weight: 400; color: var(--text); margin-bottom: 6px; }
   .auth-form-sub   { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 32px; }
 
   .auth-divider { text-align: center; margin: 20px 0; position: relative; color: var(--text-muted); font-size: 0.8rem; }
@@ -118,18 +124,37 @@
 
   <!-- Gauche -->
   <div class="auth-hero">
-    <div class="auth-hero-bg"></div>
+    <div class="auth-hero-bg">
+      <div class="products-mosaic">
+        <div class="mosaic-img span-r2"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=400&q=80" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400&q=80" alt=""></div>
+        <div class="mosaic-img span-r2"><img src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=400&q=80" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1503602642458-232111445657?w=400&q=80" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&q=80" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1560343090-f0409e92791a?w=400&q=80" alt=""></div>
+        <div class="mosaic-img span-c2"><img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&q=80" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&q=80" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=400&q=80" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1617952236317-0bd127407984?w=400&q=80" alt=""></div>
+      </div>
+    </div>
     <div class="auth-hero-overlay"></div>
     <span class="auth-hero-logo">RecoShop</span>
     <div class="auth-hero-content">
       <h2>Rejoignez-nous</h2>
       <div class="feature-list">
         <div class="feature-item">
-          <div class="feature-icon">AI</div>
+          <div class="feature-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+          </div>
           <span>Recommandations personnalisées par IA</span>
         </div>
         <div class="feature-item">
-          <div class="feature-icon">54</div>
+          <div class="feature-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2M8 7V5a2 2 0 0 0-4 0v2"/></svg>
+          </div>
           <span>Accès à +50 produits premium</span>
         </div>
         <div class="feature-item">
@@ -139,8 +164,10 @@
           <span>Panier &amp; historique d'achats</span>
         </div>
         <div class="feature-item">
-          <div class="feature-icon">&#9733;</div>
-          <span>Notation &amp; commentaires</span>
+          <div class="feature-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <span>Notation &amp; avis produits</span>
         </div>
         <div class="feature-item">
           <div class="feature-icon">
