@@ -29,7 +29,12 @@ def login_view(request):
         user = authenticate(request, username=email, password=password)
         if user:
             login(request, user)
-            return redirect(request.GET.get('next', 'home'))
+            next_url = request.GET.get('next', '')
+            if next_url:
+                return redirect(next_url)
+            if not user.onboarding_done:
+                return redirect('onboarding')
+            return redirect('home')
         messages.error(request, 'Email ou mot de passe incorrect.')
     return render(request, 'recommendations/login.html')
 
@@ -109,9 +114,27 @@ def activate_view(request, uidb64, token):
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         login(request, user)
         messages.success(request, f'Bienvenue sur RecoShop, {user.username} ! Votre compte est activé.')
-        return redirect('home')
+        return redirect('onboarding')
     else:
         return render(request, 'recommendations/activation_invalid.html')
+
+
+@login_required
+def onboarding_view(request):
+    if request.user.onboarding_done:
+        return redirect('home')
+    if request.method == 'POST':
+        user = request.user
+        user.gender = request.POST.get('gender', '')
+        interests = request.POST.getlist('interests')[:3]
+        user.interests = ','.join(interests)
+        user.budget = request.POST.get('budget', '')
+        user.purchase_priority = request.POST.get('purchase_priority', '')
+        user.onboarding_done = True
+        user.save()
+        messages.success(request, f'Profil configuré ! Découvrez vos recommandations personnalisées.')
+        return redirect('home')
+    return render(request, 'recommendations/onboarding.html')
 
 
 @login_required

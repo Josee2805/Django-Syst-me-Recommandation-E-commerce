@@ -9,6 +9,7 @@ urlpatterns = [
     path('register/', views.register_view, name='register'),
     path('email-sent/', views.email_sent_view, name='email_sent'),
     path('activate/<uidb64>/<token>/', views.activate_view, name='activate'),
+    path('onboarding/', views.onboarding_view, name='onboarding'),
     path('logout/', views.logout_view, name='logout'),
     path('products/', views.products_view, name='products'),
     path('products/<int:pk>/', views.product_detail_view, name='product_detail'),

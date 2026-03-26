@@ -1,0 +1,546 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Configurez votre profil — RecoShop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/main.css' %}">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+
+  /* ── Wrapper ── */
+  .ob-wrap {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  /* ── Logo ── */
+  .ob-logo {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .ob-logo span {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .ob-logo span em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  /* ── Progress bar ── */
+  .ob-progress {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 36px;
+  }
+  .ob-step-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--divider);
+    background: var(--card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    transition: all .3s ease;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .ob-step-dot.active {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(74,158,138,.18);
+  }
+  .ob-step-dot.done {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--accent);
+  }
+  .ob-step-dot.done::after {
+    content: '✓';
+    font-size: 0.8rem;
+  }
+  .ob-step-dot:not(.done) .dot-num { display: inline; }
+  .ob-step-dot.done .dot-num { display: none; }
+  .ob-step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--divider);
+    transition: background .4s ease;
+  }
+  .ob-step-line.done { background: var(--accent); }
+
+  /* ── Card ── */
+  .ob-card {
+    background: var(--card);
+    border: 1px solid var(--divider);
+    border-radius: 20px;
+    padding: 40px 40px 36px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.06);
+  }
+
+  /* ── Steps (JS show/hide) ── */
+  .ob-step { display: none; }
+  .ob-step.active { display: block; }
+
+  /* ── Question header ── */
+  .ob-q-tag {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .ob-q-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.55rem;
+    color: var(--text);
+    line-height: 1.25;
+    margin-bottom: 6px;
+  }
+  .ob-q-hint {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+
+  /* ── Option grid ── */
+  .ob-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .ob-options.single-col {
+    grid-template-columns: 1fr;
+  }
+
+  .ob-opt {
+    position: relative;
+    cursor: pointer;
+  }
+  .ob-opt input[type="radio"],
+  .ob-opt input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .ob-opt-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border: 2px solid var(--divider);
+    border-radius: 14px;
+    background: var(--bg);
+    transition: all .22s ease;
+    cursor: pointer;
+    user-select: none;
+  }
+  .ob-opt-card:hover {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .ob-opt input:checked + .ob-opt-card {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    box-shadow: 0 0 0 3px rgba(74,158,138,.12);
+  }
+  .ob-opt-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .ob-opt-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.35;
+  }
+  .ob-opt-sub {
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+  /* Checkmark badge */
+  .ob-opt input:checked + .ob-opt-card::after {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 20px;
+    height: 20px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 20px;
+    text-align: center;
+  }
+
+  /* ── Navigation buttons ── */
+  .ob-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .btn-ob-back {
+    background: none;
+    border: none;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 10px 0;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color .2s;
+  }
+  .btn-ob-back:hover { color: var(--text); }
+  .btn-ob-next, .btn-ob-submit {
+    flex: 1;
+    padding: 14px 28px;
+    background: var(--cta, #B85C38);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: .03em;
+    transition: opacity .2s, transform .15s;
+  }
+  .btn-ob-next:hover, .btn-ob-submit:hover { opacity: .9; transform: translateY(-1px); }
+  .btn-ob-skip {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 10px 0;
+    transition: color .2s;
+  }
+  .btn-ob-skip:hover { color: var(--text); }
+
+  /* ── Interests max hint ── */
+  .ob-max-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: -20px;
+    margin-bottom: 24px;
+    text-align: right;
+  }
+  .ob-max-hint span { color: var(--accent); font-weight: 700; }
+
+  /* ── Step animation ── */
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(24px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .ob-step.active { animation: slideIn .3s ease; }
+</style>
+</head>
+<body>
+
+<div class="ob-wrap">
+
+  <!-- Logo -->
+  <div class="ob-logo">
+    <span>Reco<em>Shop</em></span>
+  </div>
+
+  <!-- Progress -->
+  <div class="ob-progress" id="obProgress">
+    <div class="ob-step-dot active" id="dot1"><span class="dot-num">1</span></div>
+    <div class="ob-step-line" id="line1"></div>
+    <div class="ob-step-dot" id="dot2"><span class="dot-num">2</span></div>
+    <div class="ob-step-line" id="line2"></div>
+    <div class="ob-step-dot" id="dot3"><span class="dot-num">3</span></div>
+    <div class="ob-step-line" id="line3"></div>
+    <div class="ob-step-dot" id="dot4"><span class="dot-num">4</span></div>
+  </div>
+
+  <!-- Card -->
+  <div class="ob-card">
+    <form method="post" id="obForm">
+      {% csrf_token %}
+
+      <!-- ── STEP 1 : Genre ── -->
+      <div class="ob-step active" id="step1">
+        <p class="ob-q-tag">Question 1 — Profil</p>
+        <h2 class="ob-q-title">Tu es ?</h2>
+        <p class="ob-q-hint">On personnalise ta boutique selon ton profil.</p>
+        <div class="ob-options">
+          <label class="ob-opt">
+            <input type="radio" name="gender" value="homme">
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">🧔</div>
+              <div>
+                <div class="ob-opt-label">Un homme</div>
+              </div>
+            </div>
+          </label>
+          <label class="ob-opt">
+            <input type="radio" name="gender" value="femme">
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">👩</div>
+              <div>
+                <div class="ob-opt-label">Une femme</div>
+              </div>
+            </div>
+          </label>
+        </div>
+        <div class="ob-nav">
+          <a href="{% url 'home' %}" class="btn-ob-skip">Passer cette étape</a>
+          <button type="button" class="btn-ob-next" onclick="nextStep(1)">Continuer →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 2 : Centres d'intérêt ── -->
+      <div class="ob-step" id="step2">
+        <p class="ob-q-tag">Question 2 — Centres d'intérêt</p>
+        <h2 class="ob-q-title">Quelles catégories t'intéressent ?</h2>
+        <p class="ob-q-hint">Choisis jusqu'à 3 catégories.</p>
+        <div class="ob-options" id="interestsGrid">
+          <label class="ob-opt">
+            <input type="checkbox" name="interests" value="mode">
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">👗</div>
+              <div><div class="ob-opt-label">Mode</div></div>
+            </div>
+          </label>
+          <label class="ob-opt">
+            <input type="checkbox" name="interests" value="electronique">
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">💻</div>
+              <div><div class="ob-opt-label">Électronique</div></div>
+            </div>
+          </label>
+          <label class="ob-opt">
+            <input type="checkbox" name="interests" value="maison">
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">🏡</div>
+              <div><div class="ob-opt-label">Maison</div></div>
+            </div>
+          </label>
+          <label class="ob-opt">
+            <input type="checkbox" name="interests" value="sport">
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">🏋️</div>
+              <div><div class="ob-opt-label">Sport & Fitness</div></div>
+            </div>
+          </label>
+          <label class="ob-opt">
+            <input type="checkbox" name="interests" value="beaute">
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">✨</div>
+              <div><div class="ob-opt-label">Beauté & Soins</div></div>
+            </div>
+          </label>
+          <label class="ob-opt">
+            <input type="checkbox" name="interests" value="alimentation">
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">🥗</div>
+              <div><div class="ob-opt-label">Alimentation & Santé</div></div>
+            </div>
+          </label>
+        </div>
+        <p class="ob-max-hint">Sélection : <span id="interestCount">0</span> / 3</p>
+        <div class="ob-nav">
+          <button type="button" class="btn-ob-back" onclick="prevStep(2)">← Retour</button>
+          <button type="button" class="btn-ob-next" onclick="nextStep(2)">Continuer →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 3 : Budget ── -->
+      <div class="ob-step" id="step3">
+        <p class="ob-q-tag">Question 3 — Budget</p>
+        <h2 class="ob-q-title">Ton budget moyen par achat ?</h2>
+        <p class="ob-q-hint">On adapte les recommandations à ton budget.</p>
+        <div class="ob-options single-col">
+          <label class="ob-opt">
+            <input type="radio" name="budget" value="petit">
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">🪙</div>
+              <div>
+                <div class="ob-opt-label">Petit budget</div>
+                <div class="ob-opt-sub">Moins de 30 000 FCFA</div>
+              </div>
+            </div>
+          </label>
+          <label class="ob-opt">
+            <input type="radio" name="budget" value="moyen">
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">💳</div>
+              <div>
+                <div class="ob-opt-label">Budget moyen</div>
+                <div class="ob-opt-sub">Entre 30 000 et 100 000 FCFA</div>
+              </div>
+            </div>
+          </label>
+          <label class="ob-opt">
+            <input type="radio" name="budget" value="illimite">
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">💎</div>
+              <div>
+                <div class="ob-opt-label">Pas de limite</div>
+                <div class="ob-opt-sub">Je choisis selon la qualité</div>
+              </div>
+            </div>
+          </label>
+        </div>
+        <div class="ob-nav">
+          <button type="button" class="btn-ob-back" onclick="prevStep(3)">← Retour</button>
+          <button type="button" class="btn-ob-next" onclick="nextStep(3)">Continuer →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 4 : Priorité ── -->
+      <div class="ob-step" id="step4">
+        <p class="ob-q-tag">Question 4 — Priorité d'achat</p>
+        <h2 class="ob-q-title">Ce qui influence le plus ton choix ?</h2>
+        <p class="ob-q-hint">On met en avant ce qui compte le plus pour toi.</p>
+        <div class="ob-options">
+          <label class="ob-opt">
+            <input type="radio" name="purchase_priority" value="prix">
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">🏷️</div>
+              <div>
+                <div class="ob-opt-label">Le prix</div>
+                <div class="ob-opt-sub">Toujours le meilleur deal</div>
+              </div>
+            </div>
+          </label>
+          <label class="ob-opt">
+            <input type="radio" name="purchase_priority" value="qualite">
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">🏆</div>
+              <div>
+                <div class="ob-opt-label">La qualité</div>
+                <div class="ob-opt-sub">Rien que le meilleur</div>
+              </div>
+            </div>
+          </label>
+          <label class="ob-opt">
+            <input type="radio" name="purchase_priority" value="promotions">
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">🔥</div>
+              <div>
+                <div class="ob-opt-label">Les promotions</div>
+                <div class="ob-opt-sub">Je surveille les soldes</div>
+              </div>
+            </div>
+          </label>
+          <label class="ob-opt">
+            <input type="radio" name="purchase_priority" value="nouveautes">
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">🆕</div>
+              <div>
+                <div class="ob-opt-label">Les nouveautés</div>
+                <div class="ob-opt-sub">Toujours à la pointe</div>
+              </div>
+            </div>
+          </label>
+        </div>
+        <div class="ob-nav">
+          <button type="button" class="btn-ob-back" onclick="prevStep(4)">← Retour</button>
+          <button type="submit" class="btn-ob-submit">Découvrir ma boutique →</button>
+        </div>
+      </div>
+
+    </form>
+  </div><!-- /ob-card -->
+
+</div><!-- /ob-wrap -->
+
+<script>
+  let currentStep = 1;
+  const TOTAL = 4;
+
+  function showStep(n) {
+    document.querySelectorAll('.ob-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + n).classList.add('active');
+
+    for (let i = 1; i <= TOTAL; i++) {
+      const dot  = document.getElementById('dot' + i);
+      const line = document.getElementById('line' + i);
+      dot.classList.remove('active', 'done');
+      if (i < n) {
+        dot.classList.add('done');
+        if (line) line.classList.add('done');
+      } else if (i === n) {
+        dot.classList.add('active');
+        if (line) line.classList.remove('done');
+      } else {
+        if (line) line.classList.remove('done');
+      }
+    }
+    currentStep = n;
+  }
+
+  function nextStep(from) {
+    if (from === 2) {
+      // Limite à 3 intérêts
+      const checked = document.querySelectorAll('input[name="interests"]:checked');
+      if (checked.length === 0) {
+        // On peut passer sans sélection
+      }
+    }
+    if (from < TOTAL) showStep(from + 1);
+  }
+
+  function prevStep(from) {
+    if (from > 1) showStep(from - 1);
+  }
+
+  // Compteur d'intérêts (max 3)
+  document.querySelectorAll('input[name="interests"]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const checked = document.querySelectorAll('input[name="interests"]:checked');
+      document.getElementById('interestCount').textContent = checked.length;
+      if (checked.length >= 3) {
+        document.querySelectorAll('input[name="interests"]:not(:checked)').forEach(el => {
+          el.closest('.ob-opt').style.opacity = '.4';
+          el.closest('.ob-opt').style.pointerEvents = 'none';
+        });
+      } else {
+        document.querySelectorAll('input[name="interests"]').forEach(el => {
+          el.closest('.ob-opt').style.opacity = '';
+          el.closest('.ob-opt').style.pointerEvents = '';
+        });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
