@@ -3,10 +3,6 @@
 
 set -o errexit
 
-pip install -r requirements.txt
-python manage.py collectstatic --noinput
-python manage.py migrat
-
 echo "==> Installation des dépendances..."
 pip install -r requirements.txt
 
