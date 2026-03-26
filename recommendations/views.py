@@ -92,9 +92,9 @@ def register_view(request):
                     fail_silently=False,
                 )
                 return redirect('email_sent')
-            except Exception:
+            except Exception as e:
                 user.delete()
-                messages.error(request, 'Impossible d\'envoyer l\'email de confirmation. Vérifiez votre adresse ou réessayez plus tard.')
+                messages.error(request, f'Erreur SMTP : {e}')
                 return render(request, 'recommendations/register.html')
 
     return render(request, 'recommendations/register.html')
