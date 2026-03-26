@@ -5,7 +5,10 @@
       "Bash(python -X utf8 manage.py seed_data)",
       "Bash(python -X utf8 manage.py check --deploy)",
       "Bash(python manage.py check)",
-      "Bash(python -c \":*)"
+      "Bash(python -c \":*)",
+      "Bash(python manage.py fetch_images --categories-only --all)",
+      "Bash(python manage.py fetch_images --products-only)",
+      "Bash(python manage.py shell -c \":*)"
     ]
   }
 }

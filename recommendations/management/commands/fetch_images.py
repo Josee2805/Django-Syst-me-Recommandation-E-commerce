@@ -44,43 +44,62 @@ PRODUCT_KEYWORD_MAP = {
 
 # Mots-cles anglais pour les categories (paysage / lifestyle)
 CATEGORY_KEYWORD_MAP = {
-    'electronique':      'technology electronics devices',
-    'electronic':        'technology electronics devices',
-    'mode':              'fashion clothing luxury boutique',
-    'fashion':           'fashion clothing luxury boutique',
-    'vetements':         'clothing fashion apparel store',
-    'maison':            'modern home interior living room',
-    'home':              'modern home interior living room',
-    'sport':             'sport fitness active lifestyle outdoor',
-    'fitness':           'sport fitness gym workout',
-    'beaute':            'beauty cosmetics skincare luxury',
-    'beauty':            'beauty cosmetics skincare luxury',
-    'cosmetique':        'cosmetics perfume beauty products',
-    'cuisine':           'kitchen cooking gourmet food',
-    'kitchen':           'kitchen cooking gourmet food',
-    'jeux':              'games toys entertainment playful',
-    'games':             'games toys entertainment playful',
-    'jouets':            'toys children playful colorful',
-    'voyage':            'travel adventure landscape nature',
-    'travel':            'travel adventure landscape nature',
-    'auto':              'luxury car automotive vehicle',
-    'voiture':           'luxury car automotive vehicle',
-    'automobile':        'luxury car automotive vehicle',
-    'bebe':              'baby nursery soft pastel tender',
-    'baby':              'baby nursery soft pastel tender',
-    'enfant':            'children kids playful colorful',
+    # Electronique
+    'electronique':      'electronics technology gadgets modern',
+    'electronic':        'electronics technology gadgets modern',
     'informatique':      'computer technology workspace minimal',
     'computer':          'computer technology workspace minimal',
-    'livres':            'books library reading knowledge',
-    'books':             'books library reading knowledge',
-    'bijoux':            'jewelry luxury gold diamonds',
-    'jewelry':           'jewelry luxury gold diamonds',
-    'montres':           'luxury watch timepiece elegant',
-    'watches':           'luxury watch timepiece elegant',
-    'sacs':              'luxury handbag leather fashion',
-    'bags':              'luxury handbag leather fashion',
+    # Mode / Vetements
+    'mode':              'fashion luxury clothing boutique elegant',
+    'fashion':           'fashion luxury clothing boutique elegant',
+    'vetements':         'clothing fashion apparel stylish',
     'chaussures':        'shoes sneakers footwear fashion',
     'shoes':             'shoes sneakers footwear fashion',
+    'sacs':              'luxury handbag leather fashion bag',
+    'bags':              'luxury handbag leather fashion bag',
+    # Maison
+    'maison':            'modern home interior scandinavian decor',
+    'home':              'modern home interior living room decor',
+    'deco':              'interior design home decoration elegant',
+    # Sport
+    'sport':             'sport fitness active outdoor athlete',
+    'fitness':           'gym workout fitness equipment',
+    # Beaute / Sante
+    'beaute':            'beauty skincare cosmetics luxury perfume',
+    'beauty':            'beauty skincare cosmetics luxury perfume',
+    'sante':             'health wellness natural organic',
+    'cosmetique':        'cosmetics makeup beauty products',
+    # Cuisine / Food
+    'cuisine':           'gourmet food cooking kitchen chef',
+    'food':              'gourmet food restaurant fine dining',
+    'kitchen':           'kitchen cooking utensils chef',
+    # Jeux / Jouets
+    'jeux':              'games board games entertainment',
+    'games':             'video games entertainment fun',
+    'jouets':            'colorful toys children playful',
+    # Voyage
+    'voyage':            'travel adventure destination wanderlust',
+    'travel':            'travel adventure landscape destination',
+    # Auto / Moto
+    'auto':              'luxury car automotive sports vehicle',
+    'voiture':           'sports car luxury automotive',
+    'automobile':        'car automotive luxury vehicle',
+    'moto':              'motorcycle adventure road freedom',
+    # Bebe / Enfants
+    'bebe':              'baby nursery pastel soft newborn',
+    'baby':              'baby nursery soft tender newborn',
+    'enfant':            'children kids colorful playful',
+    'enfants':           'children kids colorful toys',
+    # Livres / Culture
+    'livres':            'books library reading knowledge',
+    'books':             'books library reading literature',
+    'culture':           'art culture museum gallery',
+    # Bijoux / Luxe
+    'bijoux':            'jewelry gold diamonds luxury accessories',
+    'jewelry':           'jewelry diamonds gold rings luxury',
+    'luxe':              'luxury lifestyle elegant premium',
+    'montres':           'luxury watch timepiece elegant gold',
+    'watches':           'luxury watch timepiece wrist elegant',
 }
 
 
@@ -106,29 +125,36 @@ def get_category_query(category):
     return f"{strip_accents(category.name)} store shopping lifestyle"
 
 
-def fetch_image(query, orientation='squarish'):
+def fetch_image(query, orientation='squarish', size_suffix='&w=800&q=80'):
+    """Cherche une photo sur Unsplash et retourne l'URL avec parametres de taille."""
     try:
         response = requests.get(
             "https://api.unsplash.com/search/photos",
             headers={"Authorization": f"Client-ID {UNSPLASH_KEY}"},
             params={
                 "query": query,
-                "per_page": 3,
+                "per_page": 5,
                 "orientation": orientation,
-                "content_filter": "high"
+                "content_filter": "high",
+                "order_by": "relevant",
             },
-            timeout=10
+            timeout=10,
         )
         if response.status_code == 200:
             results = response.json().get("results", [])
             if results:
-                url = results[0]["urls"]["regular"]
-                return url
+                # Prendre le 2e résultat si disponible (évite les images trop génériques)
+                photo = results[1] if len(results) > 1 else results[0]
+                base_url = photo["urls"]["raw"]
+                return f"{base_url}{size_suffix}"
         elif response.status_code == 403:
             print("  Limite API atteinte (403) - pause 60s")
             time.sleep(60)
         elif response.status_code == 401:
             print("  Authentification echouee (401) - cle API invalide")
+        elif response.status_code == 429:
+            print("  Rate limit (429) - pause 30s")
+            time.sleep(30)
         else:
             print(f"  Erreur HTTP {response.status_code}")
     except Exception as e:
@@ -201,7 +227,7 @@ class Command(BaseCommand):
                     if query != product.name:
                         self.stdout.write(f"    keyword: {query}")
 
-                    image_url = fetch_image(query, orientation='squarish')
+                    image_url = fetch_image(query, orientation='squarish', size_suffix='&w=600&q=80&fit=crop')
 
                     if image_url:
                         product.image_url = image_url
@@ -254,7 +280,7 @@ class Command(BaseCommand):
                     self.stdout.write(f"\n  [{i}/{total}] {name_safe}")
                     self.stdout.write(f"    keyword: {query}")
 
-                    image_url = fetch_image(query, orientation='landscape')
+                    image_url = fetch_image(query, orientation='landscape', size_suffix='&w=900&q=80&fit=crop')
 
                     if image_url:
                         cat.image_url = image_url
