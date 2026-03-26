@@ -9,6 +9,13 @@ class CustomUser(AbstractUser):
     bio = models.TextField(max_length=300, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
 
+    # Onboarding profil
+    gender            = models.CharField(max_length=10,  blank=True, default='')
+    interests         = models.CharField(max_length=200, blank=True, default='')  # slug séparés par virgule
+    budget            = models.CharField(max_length=20,  blank=True, default='')
+    purchase_priority = models.CharField(max_length=20,  blank=True, default='')
+    onboarding_done   = models.BooleanField(default=False)
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
@@ -19,6 +26,9 @@ class CustomUser(AbstractUser):
         if self.profile_pic:
             return self.profile_pic.url
         return None
+
+    def interests_list(self):
+        return [i.strip() for i in self.interests.split(',') if i.strip()]
 
 
 class Category(models.Model):
