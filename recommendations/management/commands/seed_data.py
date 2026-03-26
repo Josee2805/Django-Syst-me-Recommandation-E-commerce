@@ -236,19 +236,22 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f'✅ {created} produits créés, {updated} mis à jour'))
 
         USERS = [
-            ('alice@luxemart.com', 'Alice', 'pass1234'),
-            ('bob@luxemart.com', 'Bob', 'pass1234'),
-            ('clara@luxemart.com', 'Clara', 'pass1234'),
-            ('david@luxemart.com', 'David', 'pass1234'),
-            ('emma@luxemart.com', 'Emma', 'pass1234'),
-            ('farid@luxemart.com', 'Farid', 'pass1234'),
-            ('grace@luxemart.com', 'Grace', 'pass1234'),
-            ('hassan@luxemart.com', 'Hassan', 'pass1234'),
-            ('demo@luxemart.com', 'Demo User', 'demo1234'),
+            ('alice@recoshop.com',  'Alice',  'pass1234'),
+            ('bob@recoshop.com',    'Bob',    'pass1234'),
+            ('clara@recoshop.com',  'Clara',  'pass1234'),
+            ('david@recoshop.com',  'David',  'pass1234'),
+            ('emma@recoshop.com',   'Emma',   'pass1234'),
+            ('farid@recoshop.com',  'Farid',  'pass1234'),
+            ('grace@recoshop.com',  'Grace',  'pass1234'),
+            ('hassan@recoshop.com', 'Hassan', 'pass1234'),
+            ('demo@recoshop.com',   'Demo',   'demo1234'),
         ]
         users = []
         for email, username, password in USERS:
-            u, created = CustomUser.objects.get_or_create(email=email, defaults={'username': username})
+            u, created = CustomUser.objects.get_or_create(
+                email=email,
+                defaults={'username': username}
+            )
             if created:
                 u.set_password(password)
                 u.save()
@@ -264,4 +267,4 @@ class Command(BaseCommand):
                 _, c = Rating.objects.get_or_create(user=user, product=product, defaults={'score': score})
                 if c: rc += 1
         self.stdout.write(self.style.SUCCESS(f'✅ {rc} notes créées'))
-        self.stdout.write(self.style.SUCCESS('\n🎉 Seed terminé ! Compte démo: demo@luxemart.com / demo1234'))
+        self.stdout.write(self.style.SUCCESS('\n🎉 Seed terminé ! Compte démo : demo@recoshop.com / demo1234'))

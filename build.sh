@@ -13,4 +13,7 @@ python manage.py collectstatic --no-input
 echo "==> Application des migrations..."
 python manage.py migrate
 
+echo "==> Chargement des données initiales (catégories + produits)..."
+python manage.py seed_data
+
 echo "==> Build terminé ✓"
