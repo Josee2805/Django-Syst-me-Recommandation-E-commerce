@@ -7,9 +7,7 @@ def build_user_item_matrix(ratings_qs):
     user_ids = list(set(r.user_id for r in ratings_qs))
     item_ids = list(set(r.product_id for r in ratings_qs))
     
-    user_idx = {uid: i for i, uid in enumerate(user_ids)}
-    item_idx = {iid: i for i, iid in enumerate(item_ids)}
-    
+
     matrix = np.zeros((len(user_ids), len(item_ids)))
     for r in ratings_qs:
         matrix[user_idx[r.user_id]][item_idx[r.product_id]] = r.score
