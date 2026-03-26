@@ -55,45 +55,13 @@ def register_view(request):
         elif CustomUser.objects.filter(username=username).exists():
             messages.error(request, 'Ce nom d\'utilisateur est déjà pris.')
         else:
-            # Compte inactif jusqu'à la confirmation email
             user = CustomUser.objects.create_user(
                 username=username, email=email, password=password1
             )
-            user.is_active = False
-            user.save()
-
-            # Génération du lien d'activation
-            uid   = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
-            domain = request.get_host()
-            protocol = 'https' if request.is_secure() else 'http'
-            activation_link = f"{protocol}://{domain}/activate/{uid}/{token}/"
-
-            # Envoi de l'email HTML (uniquement si les credentials Gmail sont configurés)
-            from django.conf import settings as dj_settings
-            if not getattr(dj_settings, 'EMAIL_HOST_USER', None):
-                user.delete()
-                messages.error(request, 'La configuration email est manquante. Contactez l\'administrateur.')
-                return render(request, 'recommendations/register.html')
-
-            try:
-                html_message = render_to_string(
-                    'recommendations/emails/activation.html',
-                    {'username': username, 'activation_link': activation_link}
-                )
-                send_mail(
-                    subject="Activez votre compte RecoShop",
-                    message=f"Bonjour {username},\n\nActivez votre compte : {activation_link}",
-                    from_email=None,
-                    recipient_list=[email],
-                    html_message=html_message,
-                    fail_silently=False,
-                )
-                return redirect('email_sent')
-            except BaseException as e:
-                user.delete()
-                messages.error(request, f'Erreur envoi email : {e}')
-                return render(request, 'recommendations/register.html')
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
+            login(request, user)
+            messages.success(request, f'Bienvenue sur RecoShop, {username} !')
+            return redirect('onboarding')
 
     return render(request, 'recommendations/register.html')
 
