@@ -29,7 +29,12 @@ def login_view(request):
         user = authenticate(request, username=email, password=password)
         if user:
             login(request, user)
-            return redirect(request.GET.get('next', 'home'))
+            next_url = request.GET.get('next', '')
+            if next_url:
+                return redirect(next_url)
+            if not user.onboarding_done:
+                return redirect('onboarding')
+            return redirect('home')
         messages.error(request, 'Email ou mot de passe incorrect.')
     return render(request, 'recommendations/login.html')
 
@@ -64,29 +69,32 @@ def register_view(request):
             protocol = 'https' if request.is_secure() else 'http'
             activation_link = f"{protocol}://{domain}/activate/{uid}/{token}/"
 
-            # Envoi de l'email HTML
-            subject = "Activez votre compte RecoShop"
-            html_message = render_to_string(
-                'recommendations/emails/activation.html',
-                {'username': username, 'activation_link': activation_link}
-            )
+            # Envoi de l'email HTML (uniquement si l'API key Resend est configurée)
+            from django.conf import settings as dj_settings
+            api_key = getattr(dj_settings, 'ANYMAIL', {}).get('RESEND_API_KEY', '')
+            if not api_key:
+                user.delete()
+                messages.error(request, 'La configuration email est manquante. Contactez l\'administrateur.')
+                return render(request, 'recommendations/register.html')
+
             try:
+                html_message = render_to_string(
+                    'recommendations/emails/activation.html',
+                    {'username': username, 'activation_link': activation_link}
+                )
                 send_mail(
-                    subject=subject,
+                    subject="Activez votre compte RecoShop",
                     message=f"Bonjour {username},\n\nActivez votre compte : {activation_link}",
-                    from_email=None,   # utilise DEFAULT_FROM_EMAIL
+                    from_email=None,
                     recipient_list=[email],
                     html_message=html_message,
                     fail_silently=False,
                 )
                 return redirect('email_sent')
             except Exception as e:
-                # En cas d'erreur SMTP : activer quand même + connecter
-                user.is_active = True
-                user.save()
-                login(request, user)
-                messages.warning(request, f'Compte créé mais email non envoyé ({e}). Vous êtes connecté.')
-                return redirect('home')
+                user.delete()
+                messages.error(request, f'Erreur SMTP : {e}')
+                return render(request, 'recommendations/register.html')
 
     return render(request, 'recommendations/register.html')
 
@@ -105,11 +113,30 @@ def activate_view(request, uidb64, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
         login(request, user)
         messages.success(request, f'Bienvenue sur RecoShop, {user.username} ! Votre compte est activé.')
-        return redirect('home')
+        return redirect('onboarding')
     else:
         return render(request, 'recommendations/activation_invalid.html')
+
+
+@login_required
+def onboarding_view(request):
+    if request.user.onboarding_done:
+        return redirect('home')
+    if request.method == 'POST':
+        user = request.user
+        user.gender = request.POST.get('gender', '')
+        interests = request.POST.getlist('interests')[:3]
+        user.interests = ','.join(interests)
+        user.budget = request.POST.get('budget', '')
+        user.purchase_priority = request.POST.get('purchase_priority', '')
+        user.onboarding_done = True
+        user.save()
+        messages.success(request, f'Profil configuré ! Découvrez vos recommandations personnalisées.')
+        return redirect('home')
+    return render(request, 'recommendations/onboarding.html')
 
 
 @login_required
