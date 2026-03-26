@@ -73,7 +73,15 @@ def onboarding_view(request):
         user.purchase_priority = request.POST.get('purchase_priority', '')
         user.onboarding_done = True
         user.save()
-        messages.success(request, f'Profil configuré ! Découvrez vos recommandations personnalisées.')
+
+        # Calculer et persister l'affectation au cluster de profil
+        from .collaborative import assign_to_cluster
+        try:
+            assign_to_cluster(user)
+        except Exception:
+            pass  # Non bloquant
+
+        messages.success(request, 'Profil configuré ! Découvrez vos recommandations personnalisées.')
         return redirect('home')
     return render(request, 'recommendations/onboarding.html')
 

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, Category, Product, Rating, Comment, CartItem, Purchase
+from .models import CustomUser, Category, Product, Rating, Comment, CartItem, Purchase, UserCluster
 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
@@ -35,3 +35,10 @@ class CartItemAdmin(admin.ModelAdmin):
 @admin.register(Purchase)
 class PurchaseAdmin(admin.ModelAdmin):
     list_display = ['user', 'product', 'quantity', 'purchased_at']
+
+@admin.register(UserCluster)
+class UserClusterAdmin(admin.ModelAdmin):
+    list_display = ['user', 'cluster_id', 'updated_at']
+    list_filter = ['cluster_id']
+    search_fields = ['user__email', 'user__username']
+    readonly_fields = ['updated_at']

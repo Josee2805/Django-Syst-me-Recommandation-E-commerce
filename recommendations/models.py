@@ -129,3 +129,19 @@ class Purchase(models.Model):
 
     def __str__(self):
         return f"{self.user.email} bought {self.product.name}"
+
+
+class UserCluster(models.Model):
+    """Persiste l'affectation d'un utilisateur a son cluster de profil."""
+    user = models.OneToOneField(
+        CustomUser, on_delete=models.CASCADE, related_name='cluster_assignment'
+    )
+    cluster_id = models.IntegerField()
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Cluster utilisateur'
+        verbose_name_plural = 'Clusters utilisateurs'
+
+    def __str__(self):
+        return f"{self.user.email} → Cluster {self.cluster_id}"

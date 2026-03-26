@@ -48,18 +48,18 @@
   --shadow: 0 4px 24px rgba(0,0,0,0.3);
   --shadow-lg: 0 12px 48px rgba(0,0,0,0.5);
   /* Nouveau dark */
-  --bg:          #0F1A0F;
-  --bg-rgb:      15, 26, 15;
-  --primary:     #0F1A0F;
+  --bg:          #0d0f26;
+  --bg-rgb:      13, 15, 38;
+  --primary:     #0d0f26;
   --text:        #E8EDE8;
-  --text-muted:  #8A9A8A;
-  --text-sub:    #6A7A6A;
-  --card:        #172417;
-  --divider:     rgba(255,255,255,0.10);
-  --input-bg:    #1E2E1E;
+  --text-muted:  #9098b8;
+  --text-sub:    #6a7299;
+  --card:        #161b3d;
+  --divider:     rgba(255,255,255,0.09);
+  --input-bg:    #1c2148;
   --accent:      #5BB0A0;
   --accent-dim:  rgba(91,176,160,0.12);
-  --shadow-card: 0 4px 24px rgba(0,0,0,0.30);
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.35);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
