@@ -69,11 +69,10 @@ def register_view(request):
             protocol = 'https' if request.is_secure() else 'http'
             activation_link = f"{protocol}://{domain}/activate/{uid}/{token}/"
 
-            # Envoi de l'email HTML (uniquement si les credentials SMTP sont configurés)
+            # Envoi de l'email HTML (uniquement si l'API key Resend est configurée)
             from django.conf import settings as dj_settings
-            smtp_ok = bool(getattr(dj_settings, 'EMAIL_HOST_USER', None))
-
-            if not smtp_ok:
+            api_key = getattr(dj_settings, 'ANYMAIL', {}).get('RESEND_API_KEY', '')
+            if not api_key:
                 user.delete()
                 messages.error(request, 'La configuration email est manquante. Contactez l\'administrateur.')
                 return render(request, 'recommendations/register.html')
