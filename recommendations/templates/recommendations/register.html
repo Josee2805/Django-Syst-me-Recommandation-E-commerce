@@ -7,106 +7,163 @@
 <title>Inscription — RecoShop</title>
 <script>(function(){var t=localStorage.getItem('recoshop-theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/main.css' %}">
 <style>
-  body { background: var(--primary); min-height: 100vh; display: grid; }
-  .auth-wrapper { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
+  body { background: var(--bg); min-height: 100vh; display: grid; }
 
+  .auth-wrapper {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Left panel */
   .auth-hero {
     position: relative; overflow: hidden;
     display: flex; flex-direction: column;
     justify-content: flex-end; padding: 60px;
   }
-  .auth-hero-bg {
+  .auth-hero-bg { position: absolute; inset: 0; overflow: hidden; }
+  .products-mosaic {
     position: absolute; inset: 0;
-    background-image: url('https://source.unsplash.com/1200x900/?luxury,store,collection');
-    background-size: cover; background-position: center;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 6px; padding: 6px;
+    transform: rotate(-4deg) scale(1.18);
+    transform-origin: center;
   }
+  .mosaic-img { border-radius: 10px; overflow: hidden; background: var(--divider); }
+  .mosaic-img img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    filter: saturate(0.85) brightness(0.94);
+  }
+  .mosaic-img.span-r2 { grid-row: span 2; }
+  .mosaic-img.span-c2 { grid-column: span 2; }
   .auth-hero-overlay {
     position: absolute; inset: 0;
-    background: linear-gradient(to top, rgba(10,10,10,0.96) 0%, rgba(10,10,10,0.55) 50%, rgba(10,10,10,0.25) 100%);
+    background: linear-gradient(to top, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.50) 50%, rgba(10,10,10,0.20) 100%);
   }
   .auth-hero-logo {
     position: absolute; top: 40px; left: 60px; z-index: 2;
-    font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600;
-    background: linear-gradient(135deg, #C8A96E, #2DD4BF);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem; color: #fff; letter-spacing: -0.02em;
   }
   .auth-hero-content { position: relative; z-index: 1; }
-  .auth-hero-content h2 {
-    font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600;
-    color: var(--text); margin-bottom: 24px;
+
+  .hero-features { display: flex; flex-direction: column; gap: 0; margin-bottom: 28px; }
+  .hero-feature {
+    display: flex; align-items: center; gap: 14px;
+    padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.68); font-size: 0.875rem;
   }
-  .feature-list { display: flex; flex-direction: column; gap: 12px; }
-  .feature-item {
-    display: flex; align-items: center; gap: 12px;
-    color: rgba(245,245,245,0.75); font-size: 0.9rem;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(200,169,110,0.10);
-  }
-  .feature-icon {
-    width: 32px; height: 32px;
-    border-radius: 8px;
-    background: var(--accent-faint);
-    border: 1px solid var(--accent-border);
+  .hero-feature:last-child { border-bottom: none; }
+  .hero-feature-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: rgba(74,158,138,0.18); border: 1px solid rgba(74,158,138,0.28);
     display: flex; align-items: center; justify-content: center;
-    font-size: 0.9rem; flex-shrink: 0;
-    color: var(--accent);
+    flex-shrink: 0; color: var(--accent);
   }
 
+  .auth-hero-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.35rem; font-style: italic;
+    color: rgba(245,245,245,0.85); line-height: 1.5;
+    margin-bottom: 14px; max-width: 380px;
+  }
+  .auth-hero-tag {
+    font-size: 0.7rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--accent);
+    font-weight: 700;
+  }
+  .auth-dots { display: flex; gap: 8px; margin-top: 20px; }
+  .auth-dot { height: 3px; border-radius: 3px; background: rgba(255,255,255,0.20); }
+  .auth-dot:first-child { width: 24px; background: var(--accent); }
+  .auth-dot:not(:first-child) { width: 8px; }
+
+  /* Right panel */
   .auth-form-side {
-    background: var(--surface);
+    background: var(--card);
     display: flex; align-items: center; justify-content: center;
-    padding: 40px 48px;
-    border-left: 1px solid rgba(200,169,110,0.12);
-    overflow-y: auto;
+    padding: 48px; border-left: 1px solid var(--divider); overflow-y: auto;
   }
   .auth-form-box { width: 100%; max-width: 400px; }
-  .auth-form-title { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
-  .auth-form-sub   { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 32px; }
-
-  .auth-divider { text-align: center; margin: 20px 0; position: relative; color: var(--text-muted); font-size: 0.8rem; }
-  .auth-divider::before, .auth-divider::after { content: ''; position: absolute; top: 50%; width: 42%; height: 1px; background: rgba(200,169,110,0.15); }
-  .auth-divider::before { left: 0; } .auth-divider::after { right: 0; }
-  .auth-link { color: var(--accent); text-decoration: none; font-weight: 500; }
-  .auth-link:hover { text-decoration: underline; }
-
-  /* Float label */
-  .fl-group { position: relative; margin-bottom: 18px; }
-  .fl-group input {
-    width: 100%; background: var(--surface-2);
-    border: 1px solid rgba(200,169,110,0.20); border-radius: 10px;
-    padding: 20px 16px 8px; font-size: 0.9rem; color: var(--text);
-    outline: none; transition: border-color 0.3s;
+  .auth-form-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.2rem; font-weight: 400;
+    color: var(--text); margin-bottom: 6px; letter-spacing: -0.02em;
   }
-  .fl-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200,169,110,0.10); }
+  .auth-form-sub { color: var(--text-muted); font-size: 0.875rem; margin-bottom: 30px; }
+
+  /* Float label inputs */
+  .fl-group { position: relative; margin-bottom: 16px; }
+  .fl-group input {
+    width: 100%; background: var(--input-bg);
+    border: 1.5px solid var(--divider); border-radius: 12px;
+    padding: 22px 16px 8px; font-size: 0.9rem; color: var(--text);
+    outline: none; transition: border-color 0.25s, box-shadow 0.25s;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .fl-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
   .fl-group input::placeholder { opacity: 0; }
   .fl-group label {
     position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
-    font-size: 0.9rem; color: var(--text-muted);
+    font-size: 0.875rem; color: var(--text-muted);
     transition: all 0.2s; pointer-events: none;
   }
   .fl-group input:focus + label,
   .fl-group input:not(:placeholder-shown) + label {
     top: 10px; transform: none;
-    font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.10em;
-    color: var(--accent);
+    font-size: 0.6rem; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--accent);
   }
 
-  .btn-submit { position: relative; overflow: hidden; }
-  .btn-submit.loading { pointer-events: none; opacity: 0.75; }
-  .btn-submit.loading::after {
+  /* Password strength */
+  .pwd-strength { display: flex; gap: 4px; margin-top: 6px; margin-bottom: 4px; }
+  .pwd-bar { height: 3px; flex: 1; border-radius: 3px; background: var(--divider); transition: background 0.3s; }
+  .pwd-bar.weak   { background: #e63946; }
+  .pwd-bar.medium { background: #f4a261; }
+  .pwd-bar.strong { background: var(--accent); }
+
+  /* Submit */
+  .btn-auth {
+    width: 100%; padding: 15px;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 12px;
+    font-size: 0.95rem; font-weight: 600;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer; letter-spacing: 0.02em;
+    transition: opacity 0.2s, transform 0.15s;
+    position: relative; overflow: hidden; margin-top: 8px;
+  }
+  .btn-auth:hover { opacity: 0.92; transform: translateY(-1px); }
+  .btn-auth:active { transform: translateY(0); }
+  .btn-auth.loading { pointer-events: none; opacity: 0.7; color: transparent; }
+  .btn-auth.loading::after {
     content: '';
     position: absolute; top: 50%; left: 50%;
     transform: translate(-50%,-50%);
     width: 18px; height: 18px;
-    border: 2px solid rgba(0,0,0,0.3); border-top-color: #0a0a0a;
+    border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff;
     border-radius: 50%; animation: spin 0.7s linear infinite;
   }
   @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
 
-  @media (max-width: 700px) {
+  .auth-divider {
+    text-align: center; margin: 22px 0;
+    position: relative; color: var(--text-muted); font-size: 0.78rem;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: ''; position: absolute; top: 50%;
+    width: 44%; height: 1px; background: var(--divider);
+  }
+  .auth-divider::before { left: 0; }
+  .auth-divider::after  { right: 0; }
+  .auth-link { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .auth-link:hover { text-decoration: underline; }
+
+  @media (max-width: 768px) {
     .auth-wrapper { grid-template-columns: 1fr; }
     .auth-hero { display: none; }
     .auth-form-side { padding: 40px 24px; }
@@ -116,90 +173,130 @@
 <body>
 <div class="auth-wrapper">
 
-  <!-- Gauche -->
+  <!-- Left panel -->
   <div class="auth-hero">
-    <div class="auth-hero-bg"></div>
+    <div class="auth-hero-bg">
+      <div class="products-mosaic">
+        <div class="mosaic-img span-r2"><img src="https://images.unsplash.com/photo-1695822822491-d92cee704368?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1627544467186-4f4cb4a3c04b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1553531768-c3d6cfd10eeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1593442607435-e4e34991b210?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+        <div class="mosaic-img span-r2"><img src="https://images.unsplash.com/photo-1680337674070-27a748bd82c1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1606248897732-2c5ffe759c04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1731855315921-7be11aa1879d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1610768399515-8df89e969e11?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+        <div class="mosaic-img span-c2"><img src="https://images.unsplash.com/photo-1556737137-c2eb736c5e4b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1604543447675-5e7a5c508407?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1648712787208-7d52a79c4273?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+        <div class="mosaic-img"><img src="https://images.unsplash.com/photo-1582106316415-d02d4d0e9066?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt=""></div>
+      </div>
+    </div>
     <div class="auth-hero-overlay"></div>
     <span class="auth-hero-logo">RecoShop</span>
     <div class="auth-hero-content">
-      <h2>Rejoignez-nous</h2>
-      <div class="feature-list">
-        <div class="feature-item">
-          <div class="feature-icon">AI</div>
-          <span>Recommandations personnalisées par IA</span>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">54</div>
-          <span>Accès à +50 produits premium</span>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <div class="hero-features">
+        <div class="hero-feature">
+          <div class="hero-feature-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
           </div>
-          <span>Panier &amp; historique d'achats</span>
+          <span>Recommandations personnalisees par IA</span>
         </div>
-        <div class="feature-item">
-          <div class="feature-icon">&#9733;</div>
-          <span>Notation &amp; commentaires</span>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 12h10M7 8h10M7 16h6"/></svg>
+        <div class="hero-feature">
+          <div class="hero-feature-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
           </div>
-          <span>Tableau de bord personnalisé</span>
+          <span>Plus de 50 produits premium</span>
         </div>
+        <div class="hero-feature">
+          <div class="hero-feature-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </div>
+          <span>Panier et historique d'achats</span>
+        </div>
+        <div class="hero-feature">
+          <div class="hero-feature-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <span>Notation et avis produits</span>
+        </div>
+      </div>
+      <p class="auth-hero-quote">"Votre boutique, adaptee a vos gouts."</p>
+      <p class="auth-hero-tag">Systeme de recommandation</p>
+      <div class="auth-dots">
+        <div class="auth-dot"></div>
+        <div class="auth-dot"></div>
+        <div class="auth-dot"></div>
       </div>
     </div>
   </div>
 
-  <!-- Droite -->
+  <!-- Right panel -->
   <div class="auth-form-side">
     <div class="auth-form-box">
-      <h2 class="auth-form-title">Créer un compte</h2>
-      <p class="auth-form-sub">Gratuit &amp; sans engagement.</p>
+      <h2 class="auth-form-title">Creer un compte</h2>
+      <p class="auth-form-sub">Gratuit et sans engagement.</p>
 
       {% for message in messages %}
-      <div class="alert alert-{% if message.tags == 'error' %}error{% else %}info{% endif %}">
-        {{ message }}
-      </div>
+      <div class="alert alert-{% if message.tags == 'error' %}error{% else %}info{% endif %}">{{ message }}</div>
       {% endfor %}
 
-      <form method="post" onsubmit="this.querySelector('.btn-submit').classList.add('loading')">
+      <form method="post" id="registerForm">
         {% csrf_token %}
 
         <div class="fl-group">
-          <input type="text" name="username" id="username" placeholder=" " required>
+          <input type="text" name="username" id="username" placeholder=" " required autocomplete="username">
           <label for="username">Nom d'utilisateur</label>
         </div>
 
         <div class="fl-group">
-          <input type="email" name="email" id="email" placeholder=" " required>
+          <input type="email" name="email" id="email" placeholder=" " required autocomplete="email">
           <label for="email">Adresse email</label>
         </div>
 
         <div class="fl-group">
-          <input type="password" name="password1" id="password1" placeholder=" " required>
-          <label for="password1">Mot de passe (8 caractères minimum)</label>
+          <input type="password" name="password1" id="password1" placeholder=" " required autocomplete="new-password" minlength="8">
+          <label for="password1">Mot de passe (8 caracteres minimum)</label>
+        </div>
+        <div class="pwd-strength">
+          <div class="pwd-bar" id="bar1"></div>
+          <div class="pwd-bar" id="bar2"></div>
+          <div class="pwd-bar" id="bar3"></div>
+          <div class="pwd-bar" id="bar4"></div>
         </div>
 
-        <div class="fl-group">
-          <input type="password" name="password2" id="password2" placeholder=" " required>
+        <div class="fl-group" style="margin-top:14px;">
+          <input type="password" name="password2" id="password2" placeholder=" " required autocomplete="new-password">
           <label for="password2">Confirmer le mot de passe</label>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-shimmer btn-submit w-full" style="justify-content:center;margin-top:4px;font-size:1rem;padding:14px;">
-          Créer mon compte →
-        </button>
+        <button type="submit" class="btn-auth" id="submitBtn">Creer mon compte</button>
       </form>
 
       <div class="auth-divider">ou</div>
 
       <p style="text-align:center;font-size:.875rem;color:var(--text-muted);">
-        Déjà un compte ? <a href="{% url 'login' %}" class="auth-link">Se connecter</a>
+        Deja un compte ? <a href="{% url 'login' %}" class="auth-link">Se connecter</a>
       </p>
     </div>
   </div>
 
 </div>
+<script>
+  const p1 = document.getElementById('password1');
+  const bars = ['bar1','bar2','bar3','bar4'].map(id => document.getElementById(id));
+  p1.addEventListener('input', () => {
+    const v = p1.value;
+    let score = 0;
+    if (v.length >= 8) score++;
+    if (/[A-Z]/.test(v)) score++;
+    if (/[0-9]/.test(v)) score++;
+    if (/[^A-Za-z0-9]/.test(v)) score++;
+    const cls = score <= 1 ? 'weak' : score <= 2 ? 'medium' : 'strong';
+    bars.forEach((b, i) => { b.className = 'pwd-bar' + (i < score ? ' ' + cls : ''); });
+  });
+  document.getElementById('registerForm').addEventListener('submit', () => {
+    document.getElementById('submitBtn').classList.add('loading');
+  });
+</script>
 </body>
 </html>

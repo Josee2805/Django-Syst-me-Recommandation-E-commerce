@@ -27,7 +27,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'anymail',
     'recommendations',
 ]
 
@@ -89,9 +88,3 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/home/'
 LOGOUT_REDIRECT_URL = '/landing/'
 
-# ── EMAIL (Resend via HTTP API — SMTP bloqué sur Render free) ────────────────
-EMAIL_BACKEND   = 'anymail.backends.resend.EmailBackend'
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'RecoShop <onboarding@resend.dev>')
-ANYMAIL = {
-    'RESEND_API_KEY': os.environ.get('RESEND_API_KEY', ''),
-}
