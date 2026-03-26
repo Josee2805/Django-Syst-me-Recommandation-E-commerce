@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 # Script de build pour Render (Web Service)
-# Appelé automatiquement à chaque déploiement
 
-set -o errexit   # Quitter immédiatement si une commande échoue
+set -o errexit
+
+pip install -r requirements.txt
+python manage.py collectstatic --noinput
+python manage.py migrat
 
 echo "==> Installation des dépendances..."
 pip install -r requirements.txt
