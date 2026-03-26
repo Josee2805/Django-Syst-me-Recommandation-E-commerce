@@ -5,9 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Configurez votre profil — RecoShop</title>
-<script>(function(){var t=localStorage.getItem('recoshop-theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/main.css' %}">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -16,181 +15,271 @@
     font-family: 'Plus Jakarta Sans', sans-serif;
     background: var(--bg);
     min-height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-    padding: 32px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
   }
 
-  .ob-wrap { width: 100%; max-width: 560px; }
+  /* ── Wrapper ── */
+  .ob-wrap {
+    width: 100%;
+    max-width: 560px;
+  }
 
-  /* Logo */
-  .ob-logo { text-align: center; margin-bottom: 28px; }
-  .ob-logo a {
+  /* ── Logo ── */
+  .ob-logo {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .ob-logo span {
     font-family: 'DM Serif Display', serif;
-    font-size: 1.5rem; color: var(--text);
-    text-decoration: none; letter-spacing: -0.02em;
+    font-size: 1.6rem;
+    color: var(--text);
+    letter-spacing: -0.02em;
   }
-  .ob-logo a span { color: var(--accent); }
+  .ob-logo span em {
+    font-style: normal;
+    color: var(--accent);
+  }
 
-  /* Progress */
-  .ob-progress { display: flex; align-items: center; margin-bottom: 32px; }
+  /* ── Progress bar ── */
+  .ob-progress {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 36px;
+  }
   .ob-step-dot {
-    width: 34px; height: 34px; border-radius: 50%;
-    border: 2px solid var(--divider); background: var(--card);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.75rem; font-weight: 700; color: var(--text-muted);
-    transition: all 0.35s cubic-bezier(.4,0,.2,1);
-    flex-shrink: 0; position: relative; z-index: 1;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--divider);
+    background: var(--card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    transition: all .3s ease;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
   }
   .ob-step-dot.active {
-    border-color: var(--accent); background: var(--accent); color: #fff;
-    box-shadow: 0 0 0 5px var(--accent-dim);
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(74,158,138,.18);
   }
   .ob-step-dot.done {
-    border-color: var(--accent); background: var(--accent-dim); color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--accent);
   }
-  .ob-step-dot.done .dot-num { display: none; }
   .ob-step-dot.done::after {
-    content: ''; display: block; width: 10px; height: 6px;
-    border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent);
-    transform: rotate(-45deg) translateY(-1px);
+    content: '✓';
+    font-size: 0.8rem;
   }
-  .ob-step-line { flex: 1; height: 2px; background: var(--divider); transition: background 0.4s ease; }
+  .ob-step-dot:not(.done) .dot-num { display: inline; }
+  .ob-step-dot.done .dot-num { display: none; }
+  .ob-step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--divider);
+    transition: background .4s ease;
+  }
   .ob-step-line.done { background: var(--accent); }
 
-  /* Card */
+  /* ── Card ── */
   .ob-card {
-    background: var(--card); border: 1px solid var(--divider);
-    border-radius: 20px; padding: 40px 40px 36px;
-    box-shadow: 0 8px 40px rgba(0,0,0,.06); overflow: hidden;
+    background: var(--card);
+    border: 1px solid var(--divider);
+    border-radius: 20px;
+    padding: 40px 40px 36px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.06);
   }
 
-  /* Steps */
+  /* ── Steps (JS show/hide) ── */
   .ob-step { display: none; }
-  .ob-step.active {
-    display: block;
-    animation: stepIn 0.30s cubic-bezier(.4,0,.2,1) both;
-  }
-  @keyframes stepIn {
-    from { opacity: 0; transform: translateX(18px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
+  .ob-step.active { display: block; }
 
-  /* Question header */
+  /* ── Question header ── */
   .ob-q-tag {
-    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.18em;
-    text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .ob-q-tag::before {
-    content: ''; display: block; width: 20px; height: 2px;
-    background: var(--accent); border-radius: 2px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
   }
   .ob-q-title {
-    font-family: 'DM Serif Display', serif; font-size: 1.55rem;
-    color: var(--text); line-height: 1.25; margin-bottom: 6px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.55rem;
+    color: var(--text);
+    line-height: 1.25;
+    margin-bottom: 6px;
   }
-  .ob-q-hint { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 26px; }
-
-  /* Option grid */
-  .ob-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 28px; }
-  .ob-options.col1 { grid-template-columns: 1fr; }
-
-  .ob-opt { position: relative; cursor: pointer; }
-  .ob-opt input { position: absolute; opacity: 0; pointer-events: none; }
-  .ob-opt-card {
-    display: flex; flex-direction: column; gap: 4px;
-    padding: 16px 18px; border: 2px solid var(--divider); border-radius: 14px;
-    background: var(--bg); transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-    cursor: pointer; user-select: none; height: 100%;
-  }
-  .ob-opt-card:hover { border-color: var(--accent); background: var(--accent-dim); }
-  .ob-opt input:checked + .ob-opt-card {
-    border-color: var(--accent); background: var(--accent-dim);
-    box-shadow: 0 0 0 3px rgba(74,158,138,.12);
+  .ob-q-hint {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 28px;
   }
 
-  .ob-opt-check {
-    position: absolute; top: 10px; right: 10px;
-    width: 20px; height: 20px; border: 2px solid var(--divider);
-    border-radius: 50%; background: var(--card); transition: all 0.2s;
-    display: flex; align-items: center; justify-content: center;
+  /* ── Option grid ── */
+  .ob-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .ob-options.single-col {
+    grid-template-columns: 1fr;
+  }
+
+  .ob-opt {
+    position: relative;
+    cursor: pointer;
+  }
+  .ob-opt input[type="radio"],
+  .ob-opt input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
     pointer-events: none;
   }
-  .ob-opt input:checked ~ .ob-opt-check { background: var(--accent); border-color: var(--accent); }
-  .ob-opt input:checked ~ .ob-opt-check::after {
-    content: ''; display: block; width: 6px; height: 4px;
-    border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff;
-    transform: rotate(-45deg) translateY(-1px);
+  .ob-opt-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border: 2px solid var(--divider);
+    border-radius: 14px;
+    background: var(--bg);
+    transition: all .22s ease;
+    cursor: pointer;
+    user-select: none;
+  }
+  .ob-opt-card:hover {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .ob-opt input:checked + .ob-opt-card {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    box-shadow: 0 0 0 3px rgba(74,158,138,.12);
+  }
+  .ob-opt-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .ob-opt-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.35;
+  }
+  .ob-opt-sub {
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+  /* Checkmark badge */
+  .ob-opt input:checked + .ob-opt-card::after {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 20px;
+    height: 20px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 20px;
+    text-align: center;
   }
 
-  .ob-opt-label { font-size: 0.9rem; font-weight: 600; color: var(--text); line-height: 1.3; padding-right: 22px; }
-  .ob-opt-sub   { font-size: 0.75rem; color: var(--text-muted); font-weight: 400; }
-
-  /* Interest pills */
-  .ob-interests-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
-
-  .ob-interest { position: relative; cursor: pointer; }
-  .ob-interest input { position: absolute; opacity: 0; pointer-events: none; }
-  .ob-interest-pill {
-    display: flex; align-items: center; justify-content: center;
-    padding: 12px 10px; border: 2px solid var(--divider); border-radius: 10px;
-    background: var(--bg); text-align: center;
-    font-size: 0.82rem; font-weight: 600; color: var(--text-muted);
-    transition: all 0.2s; cursor: pointer; user-select: none;
+  /* ── Navigation buttons ── */
+  .ob-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
   }
-  .ob-interest-pill:hover { border-color: var(--accent); color: var(--text); background: var(--accent-dim); }
-  .ob-interest input:checked + .ob-interest-pill {
-    border-color: var(--accent); background: var(--accent-dim);
-    color: var(--accent); font-weight: 700;
-    box-shadow: 0 0 0 3px rgba(74,158,138,.10);
-  }
-  .ob-interest.disabled .ob-interest-pill { opacity: 0.35; pointer-events: none; }
-
-  .ob-max-hint { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 22px; text-align: right; }
-  .ob-max-hint strong { color: var(--accent); }
-
-  /* Navigation */
-  .ob-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .btn-ob-back {
-    background: none; border: none; font-size: 0.85rem; color: var(--text-muted);
-    cursor: pointer; padding: 10px 0; font-family: inherit;
-    display: flex; align-items: center; gap: 6px; transition: color 0.2s;
+    background: none;
+    border: none;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 10px 0;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color .2s;
   }
   .btn-ob-back:hover { color: var(--text); }
-
   .btn-ob-next, .btn-ob-submit {
-    flex: 1; padding: 14px 24px;
-    background: var(--accent); color: #fff; border: none; border-radius: 12px;
-    font-size: 0.92rem; font-weight: 700; font-family: inherit; cursor: pointer;
-    letter-spacing: 0.02em; transition: opacity 0.2s, transform 0.15s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
+    flex: 1;
+    padding: 14px 28px;
+    background: var(--cta, #B85C38);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: .03em;
+    transition: opacity .2s, transform .15s;
   }
-  .btn-ob-next:hover, .btn-ob-submit:hover { opacity: 0.9; transform: translateY(-1px); }
-  .btn-ob-next:active, .btn-ob-submit:active { transform: translateY(0); }
-
-  .btn-ob-skip { font-size: 0.78rem; color: var(--text-muted); text-decoration: none; padding: 10px 0; transition: color 0.2s; }
+  .btn-ob-next:hover, .btn-ob-submit:hover { opacity: .9; transform: translateY(-1px); }
+  .btn-ob-skip {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 10px 0;
+    transition: color .2s;
+  }
   .btn-ob-skip:hover { color: var(--text); }
 
-  .arrow-r { width: 15px; height: 15px; transition: transform 0.2s; }
-  .arrow-l { width: 15px; height: 15px; }
-  .btn-ob-next:hover .arrow-r, .btn-ob-submit:hover .arrow-r { transform: translateX(3px); }
-
-  @media (max-width: 540px) {
-    .ob-card { padding: 28px 20px 24px; }
-    .ob-options { grid-template-columns: 1fr; }
-    .ob-interests-grid { grid-template-columns: repeat(2, 1fr); }
+  /* ── Interests max hint ── */
+  .ob-max-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: -20px;
+    margin-bottom: 24px;
+    text-align: right;
   }
+  .ob-max-hint span { color: var(--accent); font-weight: 700; }
+
+  /* ── Step animation ── */
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(24px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .ob-step.active { animation: slideIn .3s ease; }
 </style>
 </head>
 <body>
 
 <div class="ob-wrap">
 
+  <!-- Logo -->
   <div class="ob-logo">
-    <a href="{% url 'home' %}">Reco<span>Shop</span></a>
+    <span>Reco<em>Shop</em></span>
   </div>
 
-  <div class="ob-progress">
+  <!-- Progress -->
+  <div class="ob-progress" id="obProgress">
     <div class="ob-step-dot active" id="dot1"><span class="dot-num">1</span></div>
     <div class="ob-step-line" id="line1"></div>
     <div class="ob-step-dot" id="dot2"><span class="dot-num">2</span></div>
@@ -200,184 +289,198 @@
     <div class="ob-step-dot" id="dot4"><span class="dot-num">4</span></div>
   </div>
 
+  <!-- Card -->
   <div class="ob-card">
     <form method="post" id="obForm">
       {% csrf_token %}
 
-      <!-- Step 1 : Genre -->
+      <!-- ── STEP 1 : Genre ── -->
       <div class="ob-step active" id="step1">
-        <p class="ob-q-tag">Question 1</p>
-        <h2 class="ob-q-title">Vous etes...</h2>
-        <p class="ob-q-hint">Nous adaptons vos recommandations selon votre profil.</p>
+        <p class="ob-q-tag">Question 1 — Profil</p>
+        <h2 class="ob-q-title">Tu es ?</h2>
+        <p class="ob-q-hint">On personnalise ta boutique selon ton profil.</p>
         <div class="ob-options">
           <label class="ob-opt">
             <input type="radio" name="gender" value="homme">
             <div class="ob-opt-card">
-              <div class="ob-opt-label">Homme</div>
-              <div class="ob-opt-sub">Mode, sport, tech</div>
+              <div class="ob-opt-icon">🧔</div>
+              <div>
+                <div class="ob-opt-label">Un homme</div>
+              </div>
             </div>
-            <span class="ob-opt-check"></span>
           </label>
           <label class="ob-opt">
             <input type="radio" name="gender" value="femme">
             <div class="ob-opt-card">
-              <div class="ob-opt-label">Femme</div>
-              <div class="ob-opt-sub">Mode, beaute, maison</div>
+              <div class="ob-opt-icon">👩</div>
+              <div>
+                <div class="ob-opt-label">Une femme</div>
+              </div>
             </div>
-            <span class="ob-opt-check"></span>
           </label>
         </div>
         <div class="ob-nav">
-          <a href="{% url 'home' %}" class="btn-ob-skip">Passer</a>
-          <button type="button" class="btn-ob-next" onclick="nextStep(1)">
-            Continuer
-            <svg class="arrow-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </button>
+          <a href="{% url 'home' %}" class="btn-ob-skip">Passer cette étape</a>
+          <button type="button" class="btn-ob-next" onclick="nextStep(1)">Continuer →</button>
         </div>
       </div>
 
-      <!-- Step 2 : Centres d'interet -->
+      <!-- ── STEP 2 : Centres d'intérêt ── -->
       <div class="ob-step" id="step2">
-        <p class="ob-q-tag">Question 2</p>
-        <h2 class="ob-q-title">Vos categories preferees</h2>
-        <p class="ob-q-hint">Choisissez jusqu'a 3 categories.</p>
-        <div class="ob-interests-grid">
-          <label class="ob-interest">
+        <p class="ob-q-tag">Question 2 — Centres d'intérêt</p>
+        <h2 class="ob-q-title">Quelles catégories t'intéressent ?</h2>
+        <p class="ob-q-hint">Choisis jusqu'à 3 catégories.</p>
+        <div class="ob-options" id="interestsGrid">
+          <label class="ob-opt">
             <input type="checkbox" name="interests" value="mode">
-            <div class="ob-interest-pill">Mode</div>
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">👗</div>
+              <div><div class="ob-opt-label">Mode</div></div>
+            </div>
           </label>
-          <label class="ob-interest">
+          <label class="ob-opt">
             <input type="checkbox" name="interests" value="electronique">
-            <div class="ob-interest-pill">Electronique</div>
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">💻</div>
+              <div><div class="ob-opt-label">Électronique</div></div>
+            </div>
           </label>
-          <label class="ob-interest">
+          <label class="ob-opt">
             <input type="checkbox" name="interests" value="maison">
-            <div class="ob-interest-pill">Maison</div>
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">🏡</div>
+              <div><div class="ob-opt-label">Maison</div></div>
+            </div>
           </label>
-          <label class="ob-interest">
+          <label class="ob-opt">
             <input type="checkbox" name="interests" value="sport">
-            <div class="ob-interest-pill">Sport</div>
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">🏋️</div>
+              <div><div class="ob-opt-label">Sport & Fitness</div></div>
+            </div>
           </label>
-          <label class="ob-interest">
+          <label class="ob-opt">
             <input type="checkbox" name="interests" value="beaute">
-            <div class="ob-interest-pill">Beaute</div>
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">✨</div>
+              <div><div class="ob-opt-label">Beauté & Soins</div></div>
+            </div>
           </label>
-          <label class="ob-interest">
+          <label class="ob-opt">
             <input type="checkbox" name="interests" value="alimentation">
-            <div class="ob-interest-pill">Alimentation</div>
+            <div class="ob-opt-card">
+              <div class="ob-opt-icon">🥗</div>
+              <div><div class="ob-opt-label">Alimentation & Santé</div></div>
+            </div>
           </label>
         </div>
-        <p class="ob-max-hint">Selectionne : <strong id="interestCount">0</strong> / 3</p>
+        <p class="ob-max-hint">Sélection : <span id="interestCount">0</span> / 3</p>
         <div class="ob-nav">
-          <button type="button" class="btn-ob-back" onclick="prevStep(2)">
-            <svg class="arrow-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
-            Retour
-          </button>
-          <button type="button" class="btn-ob-next" onclick="nextStep(2)">
-            Continuer
-            <svg class="arrow-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </button>
+          <button type="button" class="btn-ob-back" onclick="prevStep(2)">← Retour</button>
+          <button type="button" class="btn-ob-next" onclick="nextStep(2)">Continuer →</button>
         </div>
       </div>
 
-      <!-- Step 3 : Budget -->
+      <!-- ── STEP 3 : Budget ── -->
       <div class="ob-step" id="step3">
-        <p class="ob-q-tag">Question 3</p>
-        <h2 class="ob-q-title">Votre budget moyen</h2>
-        <p class="ob-q-hint">Vos recommandations seront adaptees a votre budget.</p>
-        <div class="ob-options col1">
+        <p class="ob-q-tag">Question 3 — Budget</p>
+        <h2 class="ob-q-title">Ton budget moyen par achat ?</h2>
+        <p class="ob-q-hint">On adapte les recommandations à ton budget.</p>
+        <div class="ob-options single-col">
           <label class="ob-opt">
             <input type="radio" name="budget" value="petit">
             <div class="ob-opt-card">
-              <div class="ob-opt-label">Petit budget</div>
-              <div class="ob-opt-sub">Moins de 30 000 FCFA</div>
+              <div class="ob-opt-icon">🪙</div>
+              <div>
+                <div class="ob-opt-label">Petit budget</div>
+                <div class="ob-opt-sub">Moins de 30 000 FCFA</div>
+              </div>
             </div>
-            <span class="ob-opt-check"></span>
           </label>
           <label class="ob-opt">
             <input type="radio" name="budget" value="moyen">
             <div class="ob-opt-card">
-              <div class="ob-opt-label">Budget moyen</div>
-              <div class="ob-opt-sub">Entre 30 000 et 100 000 FCFA</div>
+              <div class="ob-opt-icon">💳</div>
+              <div>
+                <div class="ob-opt-label">Budget moyen</div>
+                <div class="ob-opt-sub">Entre 30 000 et 100 000 FCFA</div>
+              </div>
             </div>
-            <span class="ob-opt-check"></span>
           </label>
           <label class="ob-opt">
             <input type="radio" name="budget" value="illimite">
             <div class="ob-opt-card">
-              <div class="ob-opt-label">Pas de limite</div>
-              <div class="ob-opt-sub">Je choisis selon la qualite</div>
+              <div class="ob-opt-icon">💎</div>
+              <div>
+                <div class="ob-opt-label">Pas de limite</div>
+                <div class="ob-opt-sub">Je choisis selon la qualité</div>
+              </div>
             </div>
-            <span class="ob-opt-check"></span>
           </label>
         </div>
         <div class="ob-nav">
-          <button type="button" class="btn-ob-back" onclick="prevStep(3)">
-            <svg class="arrow-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
-            Retour
-          </button>
-          <button type="button" class="btn-ob-next" onclick="nextStep(3)">
-            Continuer
-            <svg class="arrow-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </button>
+          <button type="button" class="btn-ob-back" onclick="prevStep(3)">← Retour</button>
+          <button type="button" class="btn-ob-next" onclick="nextStep(3)">Continuer →</button>
         </div>
       </div>
 
-      <!-- Step 4 : Priorite d'achat -->
+      <!-- ── STEP 4 : Priorité ── -->
       <div class="ob-step" id="step4">
-        <p class="ob-q-tag">Question 4</p>
-        <h2 class="ob-q-title">Ce qui guide vos achats</h2>
-        <p class="ob-q-hint">On met en avant ce qui compte le plus pour vous.</p>
+        <p class="ob-q-tag">Question 4 — Priorité d'achat</p>
+        <h2 class="ob-q-title">Ce qui influence le plus ton choix ?</h2>
+        <p class="ob-q-hint">On met en avant ce qui compte le plus pour toi.</p>
         <div class="ob-options">
           <label class="ob-opt">
             <input type="radio" name="purchase_priority" value="prix">
             <div class="ob-opt-card">
-              <div class="ob-opt-label">Le prix</div>
-              <div class="ob-opt-sub">Toujours le meilleur deal</div>
+              <div class="ob-opt-icon">🏷️</div>
+              <div>
+                <div class="ob-opt-label">Le prix</div>
+                <div class="ob-opt-sub">Toujours le meilleur deal</div>
+              </div>
             </div>
-            <span class="ob-opt-check"></span>
           </label>
           <label class="ob-opt">
             <input type="radio" name="purchase_priority" value="qualite">
             <div class="ob-opt-card">
-              <div class="ob-opt-label">La qualite</div>
-              <div class="ob-opt-sub">Rien que le meilleur</div>
+              <div class="ob-opt-icon">🏆</div>
+              <div>
+                <div class="ob-opt-label">La qualité</div>
+                <div class="ob-opt-sub">Rien que le meilleur</div>
+              </div>
             </div>
-            <span class="ob-opt-check"></span>
           </label>
           <label class="ob-opt">
             <input type="radio" name="purchase_priority" value="promotions">
             <div class="ob-opt-card">
-              <div class="ob-opt-label">Les promotions</div>
-              <div class="ob-opt-sub">Je surveille les soldes</div>
+              <div class="ob-opt-icon">🔥</div>
+              <div>
+                <div class="ob-opt-label">Les promotions</div>
+                <div class="ob-opt-sub">Je surveille les soldes</div>
+              </div>
             </div>
-            <span class="ob-opt-check"></span>
           </label>
           <label class="ob-opt">
             <input type="radio" name="purchase_priority" value="nouveautes">
             <div class="ob-opt-card">
-              <div class="ob-opt-label">Les nouveautes</div>
-              <div class="ob-opt-sub">Toujours a la pointe</div>
+              <div class="ob-opt-icon">🆕</div>
+              <div>
+                <div class="ob-opt-label">Les nouveautés</div>
+                <div class="ob-opt-sub">Toujours à la pointe</div>
+              </div>
             </div>
-            <span class="ob-opt-check"></span>
           </label>
         </div>
         <div class="ob-nav">
-          <button type="button" class="btn-ob-back" onclick="prevStep(4)">
-            <svg class="arrow-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
-            Retour
-          </button>
-          <button type="submit" class="btn-ob-submit">
-            Decouvrir ma boutique
-            <svg class="arrow-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </button>
+          <button type="button" class="btn-ob-back" onclick="prevStep(4)">← Retour</button>
+          <button type="submit" class="btn-ob-submit">Découvrir ma boutique →</button>
         </div>
       </div>
 
     </form>
-  </div>
+  </div><!-- /ob-card -->
 
-</div>
+</div><!-- /ob-wrap -->
 
 <script>
   let currentStep = 1;
@@ -386,6 +489,7 @@
   function showStep(n) {
     document.querySelectorAll('.ob-step').forEach(s => s.classList.remove('active'));
     document.getElementById('step' + n).classList.add('active');
+
     for (let i = 1; i <= TOTAL; i++) {
       const dot  = document.getElementById('dot' + i);
       const line = document.getElementById('line' + i);
@@ -403,26 +507,40 @@
     currentStep = n;
   }
 
-  function nextStep(from) { if (from < TOTAL) showStep(from + 1); }
-  function prevStep(from)  { if (from > 1)     showStep(from - 1); }
+  function nextStep(from) {
+    if (from === 2) {
+      // Limite à 3 intérêts
+      const checked = document.querySelectorAll('input[name="interests"]:checked');
+      if (checked.length === 0) {
+        // On peut passer sans sélection
+      }
+    }
+    if (from < TOTAL) showStep(from + 1);
+  }
 
-  // Interests counter (max 3)
-  const interestInputs = document.querySelectorAll('input[name="interests"]');
-  const countEl = document.getElementById('interestCount');
-  interestInputs.forEach(cb => {
+  function prevStep(from) {
+    if (from > 1) showStep(from - 1);
+  }
+
+  // Compteur d'intérêts (max 3)
+  document.querySelectorAll('input[name="interests"]').forEach(cb => {
     cb.addEventListener('change', () => {
       const checked = document.querySelectorAll('input[name="interests"]:checked');
-      countEl.textContent = checked.length;
-      interestInputs.forEach(el => {
-        const pill = el.closest('.ob-interest');
-        if (checked.length >= 3 && !el.checked) {
-          pill.classList.add('disabled');
-        } else {
-          pill.classList.remove('disabled');
-        }
-      });
+      document.getElementById('interestCount').textContent = checked.length;
+      if (checked.length >= 3) {
+        document.querySelectorAll('input[name="interests"]:not(:checked)').forEach(el => {
+          el.closest('.ob-opt').style.opacity = '.4';
+          el.closest('.ob-opt').style.pointerEvents = 'none';
+        });
+      } else {
+        document.querySelectorAll('input[name="interests"]').forEach(el => {
+          el.closest('.ob-opt').style.opacity = '';
+          el.closest('.ob-opt').style.pointerEvents = '';
+        });
+      }
     });
   });
 </script>
+
 </body>
 </html>

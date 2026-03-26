@@ -297,21 +297,26 @@ def checkout(request):
 
 @login_required
 def profile_view(request):
-    user = request.user
+    user      = request.user
     purchases = Purchase.objects.filter(user=user).select_related('product__category').order_by('-purchased_at')
-    ratings = Rating.objects.filter(user=user).select_related('product').order_by('-created_at')
-    
-    rec_ids = hybrid_recommendations(user, n=8)
-    
+    ratings   = Rating.objects.filter(user=user).select_related('product__category').order_by('-created_at')
+
+    recommendations = hybrid_recommendations(user, n=8)
+
     eval_data = None
     if ratings.count() >= 3:
-        eval_data = evaluate_recommender(user, [p.id for p in rec_ids])
-    
+        raw = evaluate_recommender(user, [p.id for p in recommendations])
+        eval_data = {
+            'precision': round(raw['precision'] * 100, 1),
+            'recall':    round(raw['recall'] * 100, 1),
+            'f1':        round(raw['f1'] * 100, 1),
+        }
+
     return render(request, 'recommendations/profile.html', {
-        'purchases': purchases,
-        'ratings': ratings,
-        'recommendations': rec_ids,
-        'eval_data': eval_data,
+        'purchases':       purchases,
+        'ratings':         ratings,
+        'recommendations': recommendations,
+        'eval_data':       eval_data,
     })
 
 
@@ -341,16 +346,50 @@ def update_profile(request):
 
 @login_required
 def recommendations_view(request):
-    recs = hybrid_recommendations(request.user, n=20)
-    user_ratings = Rating.objects.filter(user=request.user).count()
+    from .collaborative import user_based_recommendations, item_based_recommendations
+    from .content_based import content_based_for_user
+
+    user         = request.user
+    all_products = Product.objects.select_related('category').all()
+    ratings_qs   = Rating.objects.all()
+    user_ratings = ratings_qs.filter(user=user).count()
+
+    # Recommandations hybrides (résultat principal)
+    recs = hybrid_recommendations(user, n=20)
+
+    # Algorithme collaboratif (user-based)
+    collab_ids = user_based_recommendations(user.id, ratings_qs, n=10)
+    collab_map  = {p.id: p for p in all_products.filter(id__in=collab_ids)}
+    collaborative_recs = [collab_map[pid] for pid in collab_ids if pid in collab_map]
+
+    # Algorithme contenu
+    rated_ids   = list(ratings_qs.filter(user=user).values_list('product_id', flat=True))
+    content_ids = content_based_for_user(rated_ids, all_products, n=10)
+    content_map  = {p.id: p for p in all_products.filter(id__in=content_ids)}
+    content_recs = [content_map[pid] for pid in content_ids if pid in content_map]
+
+    # Algorithme hybride (subset pour la colonne)
+    hybrid_recs = recs[:10]
+
+    # Métriques — converties en pourcentages pour l'affichage
     eval_data = None
     if user_ratings >= 3:
-        eval_data = evaluate_recommender(request.user, [p.id for p in recs])
-    
+        raw = evaluate_recommender(user, [p.id for p in recs])
+        eval_data = {
+            'precision':  round(raw['precision'] * 100, 1),
+            'recall':     round(raw['recall'] * 100, 1),
+            'f1':         round(raw['f1'] * 100, 1),
+            'relevant_count':    raw['relevant_count'],
+            'recommended_count': raw['recommended_count'],
+        }
+
     return render(request, 'recommendations/recommendations.html', {
-        'recommendations': recs,
-        'eval_data': eval_data,
-        'user_ratings': user_ratings,
+        'recommendations':    recs,
+        'collaborative_recs': collaborative_recs,
+        'content_recs':       content_recs,
+        'hybrid_recs':        hybrid_recs,
+        'eval_data':          eval_data,
+        'user_ratings':       user_ratings,
     })
 
 

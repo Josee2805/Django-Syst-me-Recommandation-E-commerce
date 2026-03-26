@@ -13,7 +13,7 @@ PRODUCT_KEYWORD_OVERRIDES = {
     'iPhone 15 Pro':             'premium smartphone titanium close-up',
     'Samsung Galaxy S24':        'android smartphone dark elegant',
     'Samsung Galaxy S24 Ultra':  'android smartphone black',
-    'AirPods Pro':               'wireless earbuds white case',
+    'AirPods Pro':               'wireless earphones audio minimal white',
     'GoPro Hero 12':             'action camera waterproof',
     # Sport
     'Montre GPS Garmin':         'GPS sport smartwatch fitness',
