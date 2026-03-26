@@ -235,23 +235,29 @@ class Command(BaseCommand):
                 updated += 1
         self.stdout.write(self.style.SUCCESS(f'✅ {created} produits créés, {updated} mis à jour'))
 
+        # (email, username, password, gender, interests, budget, priority)
         USERS = [
-            ('alice@luxemart.com', 'Alice', 'pass1234'),
-            ('bob@luxemart.com', 'Bob', 'pass1234'),
-            ('clara@luxemart.com', 'Clara', 'pass1234'),
-            ('david@luxemart.com', 'David', 'pass1234'),
-            ('emma@luxemart.com', 'Emma', 'pass1234'),
-            ('farid@luxemart.com', 'Farid', 'pass1234'),
-            ('grace@luxemart.com', 'Grace', 'pass1234'),
-            ('hassan@luxemart.com', 'Hassan', 'pass1234'),
-            ('demo@luxemart.com', 'Demo User', 'demo1234'),
+            ('alice@luxemart.com',  'Alice',     'pass1234', 'femme',  'mode,beaute,maison',         'moyen',    'qualite'),
+            ('bob@luxemart.com',    'Bob',        'pass1234', 'homme',  'electronique,sport,jeux',    'illimite', 'nouveautes'),
+            ('clara@luxemart.com',  'Clara',      'pass1234', 'femme',  'beaute,mode,alimentation',   'petit',    'prix'),
+            ('david@luxemart.com',  'David',      'pass1234', 'homme',  'electronique,maison',        'moyen',    'qualite'),
+            ('emma@luxemart.com',   'Emma',       'pass1234', 'femme',  'sport,alimentation,beaute',  'moyen',    'promotions'),
+            ('farid@luxemart.com',  'Farid',      'pass1234', 'homme',  'electronique,sport',         'illimite', 'qualite'),
+            ('grace@luxemart.com',  'Grace',      'pass1234', 'femme',  'mode,maison,beaute',         'moyen',    'nouveautes'),
+            ('hassan@luxemart.com', 'Hassan',     'pass1234', 'homme',  'sport,electronique',         'petit',    'prix'),
+            ('demo@luxemart.com',   'Demo User',  'demo1234', 'homme',  'electronique,mode',          'moyen',    'qualite'),
         ]
         users = []
-        for email, username, password in USERS:
+        for email, username, password, gender, interests, budget, priority in USERS:
             u, created = CustomUser.objects.get_or_create(email=email, defaults={'username': username})
             if created:
                 u.set_password(password)
-                u.save()
+            u.gender = gender
+            u.interests = interests
+            u.budget = budget
+            u.purchase_priority = priority
+            u.onboarding_done = True
+            u.save()
             users.append(u)
         self.stdout.write(self.style.SUCCESS(f'✅ {len(users)} utilisateurs'))
 

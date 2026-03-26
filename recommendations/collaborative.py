@@ -1,5 +1,6 @@
 import numpy as np
 from collections import defaultdict
+from django.db.models import Avg, Count
 
 
 def build_user_item_matrix(ratings_qs):
@@ -97,3 +98,78 @@ def item_based_recommendations(target_user_id, ratings_qs, n=10):
     
     sorted_items = sorted(scores.items(), key=lambda x: x[1], reverse=True)
     return [pid for pid, _ in sorted_items[:n]]
+
+
+# ── CLUSTERING (Cold Start) ───────────────────────────────────────────────────
+
+INTEREST_ORDER = ['mode', 'electronique', 'maison', 'sport', 'beaute', 'alimentation']
+BUDGET_ORDER   = ['petit', 'moyen', 'illimite']
+PRIORITY_ORDER = ['prix', 'qualite', 'promotions', 'nouveautes']
+GENDER_ORDER   = ['homme', 'femme']
+
+
+def build_user_profile_vector(user):
+    """Encode onboarding profile as a numeric feature vector (15 dims)."""
+    gender_vec   = [1.0 if user.gender == g else 0.0 for g in GENDER_ORDER]
+    interests    = user.interests_list()
+    interest_vec = [1.0 if cat in interests else 0.0 for cat in INTEREST_ORDER]
+    budget_vec   = [1.0 if user.budget == b else 0.0 for b in BUDGET_ORDER]
+    priority_vec = [1.0 if user.purchase_priority == p else 0.0 for p in PRIORITY_ORDER]
+    return np.array(gender_vec + interest_vec + budget_vec + priority_vec, dtype=float)
+
+
+def cluster_based_recommendations(user, all_users_qs, ratings_qs, all_products, n=12, n_clusters=4):
+    """
+    Assign the user to a profile cluster, then recommend products
+    highly rated by members of that cluster.
+    Falls back to empty list if not enough data.
+    """
+    try:
+        from sklearn.cluster import KMeans
+    except ImportError:
+        return []
+
+    profiled_users = list(
+        all_users_qs.filter(onboarding_done=True).exclude(pk=user.pk)
+    )
+    if len(profiled_users) < 3:
+        return []
+
+    X = np.array([build_user_profile_vector(u) for u in profiled_users])
+
+    # Degenerate case: all profiles identical
+    if X.std() < 1e-9:
+        return []
+
+    actual_k = min(n_clusters, len(profiled_users))
+    km = KMeans(n_clusters=actual_k, n_init=10, random_state=42)
+    labels = km.fit_predict(X)
+
+    user_vec   = build_user_profile_vector(user).reshape(1, -1)
+    user_label = int(km.predict(user_vec)[0])
+
+    cluster_user_ids = [
+        profiled_users[i].pk
+        for i, lbl in enumerate(labels)
+        if lbl == user_label
+    ]
+    if not cluster_user_ids:
+        return []
+
+    cluster_ratings = ratings_qs.filter(user_id__in=cluster_user_ids)
+    if not cluster_ratings.exists():
+        return []
+
+    top_products = (
+        cluster_ratings
+        .values('product_id')
+        .annotate(avg_score=Avg('score'), votes=Count('id'))
+        .order_by('-avg_score', '-votes')
+    )
+
+    top_ids = [r['product_id'] for r in top_products[:n]]
+    if not top_ids:
+        return []
+
+    products_map = {p.id: p for p in all_products.filter(id__in=top_ids)}
+    return [products_map[pid] for pid in top_ids if pid in products_map]

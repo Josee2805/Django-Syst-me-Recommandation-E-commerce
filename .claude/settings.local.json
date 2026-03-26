@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python manage.py seed_data)",
+      "Bash(python -X utf8 manage.py seed_data)",
+      "Bash(python -X utf8 manage.py check --deploy)"
+    ]
+  }
+}
