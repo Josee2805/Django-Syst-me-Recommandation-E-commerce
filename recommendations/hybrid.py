@@ -4,10 +4,7 @@ from .models import Rating, Product
 
 
 def hybrid_recommendations(user, n=12, alpha=0.5):
-    """
-    Hybrid recommender: alpha * collaborative + (1-alpha) * content_based.
-    Handles cold start automatically.
-    """
+    
     all_products = Product.objects.select_related('category').all()
     ratings_qs = Rating.objects.all()
     user_ratings = ratings_qs.filter(user=user)
