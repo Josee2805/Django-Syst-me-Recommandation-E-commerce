@@ -69,7 +69,7 @@ def register_view(request):
             protocol = 'https' if request.is_secure() else 'http'
             activation_link = f"{protocol}://{domain}/activate/{uid}/{token}/"
 
-            # Envoi de l'email HTML (uniquement si les credentials SMTP sont configurés)
+            # Envoi de l'email HTML (uniquement si les credentials Gmail sont configurés)
             from django.conf import settings as dj_settings
             if not getattr(dj_settings, 'EMAIL_HOST_USER', None):
                 user.delete()
@@ -90,9 +90,9 @@ def register_view(request):
                     fail_silently=False,
                 )
                 return redirect('email_sent')
-            except Exception as e:
+            except BaseException as e:
                 user.delete()
-                messages.error(request, f'Erreur SMTP : {e}')
+                messages.error(request, f'Erreur envoi email : {e}')
                 return render(request, 'recommendations/register.html')
 
     return render(request, 'recommendations/register.html')
