@@ -73,31 +73,29 @@ def register_view(request):
             from django.conf import settings as dj_settings
             smtp_ok = bool(getattr(dj_settings, 'EMAIL_HOST_USER', None))
 
-            if smtp_ok:
-                try:
-                    html_message = render_to_string(
-                        'recommendations/emails/activation.html',
-                        {'username': username, 'activation_link': activation_link}
-                    )
-                    send_mail(
-                        subject="Activez votre compte RecoShop",
-                        message=f"Bonjour {username},\n\nActivez votre compte : {activation_link}",
-                        from_email=None,
-                        recipient_list=[email],
-                        html_message=html_message,
-                        fail_silently=False,
-                    )
-                    return redirect('email_sent')
-                except Exception:
-                    pass  # SMTP a échoué → on active directement ci-dessous
+            if not smtp_ok:
+                user.delete()
+                messages.error(request, 'La configuration email est manquante. Contactez l\'administrateur.')
+                return render(request, 'recommendations/register.html')
 
-            # Pas de config SMTP ou échec : activer directement + connecter
-            user.is_active = True
-            user.save()
-            user.backend = 'django.contrib.auth.backends.ModelBackend'
-            login(request, user)
-            messages.success(request, f'Bienvenue {username} ! Configurez votre profil.')
-            return redirect('onboarding')
+            try:
+                html_message = render_to_string(
+                    'recommendations/emails/activation.html',
+                    {'username': username, 'activation_link': activation_link}
+                )
+                send_mail(
+                    subject="Activez votre compte RecoShop",
+                    message=f"Bonjour {username},\n\nActivez votre compte : {activation_link}",
+                    from_email=None,
+                    recipient_list=[email],
+                    html_message=html_message,
+                    fail_silently=False,
+                )
+                return redirect('email_sent')
+            except Exception:
+                user.delete()
+                messages.error(request, 'Impossible d\'envoyer l\'email de confirmation. Vérifiez votre adresse ou réessayez plus tard.')
+                return render(request, 'recommendations/register.html')
 
     return render(request, 'recommendations/register.html')
 
