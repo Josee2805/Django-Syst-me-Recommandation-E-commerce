@@ -1,142 +1,296 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="fr" data-theme="light">
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Connexion — LuxeMart</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap">
-<link rel="stylesheet" href="{% static 'css/main.css' %}">
+<title>Connexion — RecoShop</title>
+<script>(function(){var t=localStorage.getItem('recoshop-theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'recommendations/css/main.css' %}">
 <style>
-  body { display:block; min-height:100vh; background:var(--off-white); }
+  body { background: var(--primary); min-height: 100vh; display: grid; }
   .auth-wrapper {
     min-height: 100vh;
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
+
+  /* ── Gauche : Image + Citation ── */
   .auth-hero {
-    background: linear-gradient(160deg, #1a1a18 0%, #2c2a1e 60%, #3d3520 100%);
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: flex-start;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
     padding: 60px;
-    position: relative; overflow: hidden;
   }
-  .auth-hero::before {
-    content: '';
+  .auth-hero-bg {
     position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 30% 50%, rgba(212,175,55,0.18) 0%, transparent 65%);
+    overflow: hidden;
+  }
+  /* Mosaïque produits */
+  .products-mosaic {
+    position: absolute; inset: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 6px; padding: 6px;
+    transform: rotate(-4deg) scale(1.18);
+    transform-origin: center;
+  }
+  .mosaic-img {
+    border-radius: 10px; overflow: hidden;
+    background: var(--card-hover);
+  }
+  .mosaic-img img {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block;
+    filter: saturate(0.9) brightness(0.96);
+  }
+  /* Span sur 2 colonnes/lignes pour varier */
+  .mosaic-img.span-r2 { grid-row: span 2; }
+  .mosaic-img.span-c2 { grid-column: span 2; }
+  .auth-hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(10,10,10,0.95) 0%,
+      rgba(10,10,10,0.50) 50%,
+      rgba(10,10,10,0.20) 100%
+    );
   }
   .auth-hero-content { position: relative; z-index: 1; }
-  .auth-hero h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 3.5rem; font-weight: 600;
-    color: var(--gold);
-    line-height: 1; margin-bottom: 8px;
+  .auth-hero-logo {
+    position: absolute; top: 40px; left: 60px; z-index: 2;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem; font-weight: 400;
+    color: #fff;
+    letter-spacing: -0.02em;
   }
-  .auth-hero-sub {
-    font-size: 0.85rem; letter-spacing: 0.2em;
-    color: rgba(255,255,255,0.4);
-    text-transform: uppercase; margin-bottom: 40px;
+  .auth-hero-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.45rem;
+    font-style: italic;
+    color: rgba(245,245,245,0.88);
+    line-height: 1.5;
+    margin-bottom: 20px;
+    max-width: 400px;
   }
-  .auth-hero-tagline {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.4rem; font-style: italic;
-    color: rgba(255,255,255,0.7); line-height: 1.5;
-    max-width: 340px;
+  .auth-hero-author {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
   }
-  .auth-hero-dots { display:flex; gap:8px; margin-top:40px; }
-  .auth-hero-dot {
-    width:8px; height:8px; border-radius:50%;
-    background: rgba(212,175,55,0.3);
+  .auth-dots { display: flex; gap: 8px; margin-top: 24px; }
+  .auth-dot {
+    height: 3px; border-radius: 3px;
+    background: rgba(200,169,110,0.35);
   }
-  .auth-hero-dot:first-child { background: var(--gold); width:24px; border-radius:4px; }
+  .auth-dot:first-child { width: 24px; background: var(--accent); }
+  .auth-dot:not(:first-child) { width: 8px; }
 
+  /* ── Droite : Formulaire ── */
   .auth-form-side {
+    background: var(--surface);
     display: flex; align-items: center; justify-content: center;
-    padding: 60px 40px;
-    background: var(--white);
+    padding: 60px 48px;
+    border-left: 1px solid rgba(200,169,110,0.12);
   }
   .auth-form-box { width: 100%; max-width: 380px; }
   .auth-form-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 2rem; font-weight: 600;
-    color: var(--text-dark); margin-bottom: 6px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem; font-weight: 400;
+    color: var(--text); margin-bottom: 6px;
   }
-  .auth-form-subtitle { color: var(--text-muted); font-size:.875rem; margin-bottom:32px; }
+  .auth-form-sub { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 36px; }
+
   .auth-divider {
-    text-align:center; margin:24px 0;
-    position:relative; color:var(--text-light); font-size:.8rem;
+    text-align: center; margin: 24px 0;
+    position: relative; color: var(--text-muted); font-size: 0.8rem;
   }
   .auth-divider::before, .auth-divider::after {
-    content:''; position:absolute; top:50%; width:42%; height:1px;
-    background:var(--gold-border);
+    content: ''; position: absolute; top: 50%;
+    width: 42%; height: 1px;
+    background: rgba(200,169,110,0.15);
   }
-  .auth-divider::before { left:0; }
-  .auth-divider::after { right:0; }
-  .auth-link { color:var(--gold); text-decoration:none; font-weight:500; }
-  .auth-link:hover { text-decoration:underline; }
+  .auth-divider::before { left: 0; }
+  .auth-divider::after  { right: 0; }
+  .auth-link { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .auth-link:hover { text-decoration: underline; }
 
-  @media(max-width:700px){
-    .auth-wrapper{ grid-template-columns:1fr; }
-    .auth-hero{ display:none; }
+  /* Float label */
+  .fl-group { position: relative; margin-bottom: 20px; }
+  .fl-group input {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid rgba(200,169,110,0.20);
+    border-radius: 10px;
+    padding: 20px 16px 8px;
+    font-size: 0.9rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .fl-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200,169,110,0.10); }
+  .fl-group input::placeholder { opacity: 0; }
+  .fl-group label {
+    position: absolute;
+    left: 16px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    transition: all 0.2s;
+    pointer-events: none;
+  }
+  .fl-group input:focus + label,
+  .fl-group input:not(:placeholder-shown) + label {
+    top: 10px;
+    transform: none;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    color: var(--accent);
+  }
+
+  /* Submit loading */
+  .btn-submit { position: relative; overflow: hidden; }
+  .btn-submit.loading { pointer-events: none; opacity: 0.75; }
+  .btn-submit.loading::after {
+    content: '';
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 18px; height: 18px;
+    border: 2px solid rgba(0,0,0,0.3);
+    border-top-color: #0a0a0a;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+  @media (max-width: 700px) {
+    .auth-wrapper { grid-template-columns: 1fr; }
+    .auth-hero { display: none; }
+    .auth-form-side { padding: 40px 24px; }
   }
 </style>
 </head>
 <body>
 <div class="auth-wrapper">
+
+  <!-- Gauche -->
   <div class="auth-hero">
+    <div class="auth-hero-bg">
+      <!-- Mosaïque de produits réels -->
+      <div class="products-mosaic">
+        <div class="mosaic-img span-r2">
+          <img src="https://images.unsplash.com/photo-1695822822491-d92cee704368?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1627544467186-4f4cb4a3c04b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1553531768-c3d6cfd10eeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1593442607435-e4e34991b210?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img span-r2">
+          <img src="https://images.unsplash.com/photo-1680337674070-27a748bd82c1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1606248897732-2c5ffe759c04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1731855315921-7be11aa1879d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1610768399515-8df89e969e11?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img span-c2">
+          <img src="https://images.unsplash.com/photo-1556737137-c2eb736c5e4b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1604543447675-5e7a5c508407?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1648712787208-7d52a79c4273?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+        <div class="mosaic-img">
+          <img src="https://images.unsplash.com/photo-1582106316415-d02d4d0e9066?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="">
+        </div>
+      </div>
+    </div>
+    <div class="auth-hero-overlay"></div>
+    <span class="auth-hero-logo">RecoShop</span>
     <div class="auth-hero-content">
-      <h1>✦ LuxeMart</h1>
-      <p class="auth-hero-sub">L'art du shopping</p>
-      <p class="auth-hero-tagline">"Découvrez des produits choisis avec soin, recommandés rien que pour vous."</p>
-      <div class="auth-hero-dots">
-        <div class="auth-hero-dot"></div>
-        <div class="auth-hero-dot"></div>
-        <div class="auth-hero-dot"></div>
+      <p class="auth-hero-quote">
+        "Découvrez des produits choisis avec soin, recommandés rien que pour vous."
+      </p>
+      <p class="auth-hero-author">Système de recommandation</p>
+      <div class="auth-dots">
+        <div class="auth-dot"></div>
+        <div class="auth-dot"></div>
+        <div class="auth-dot"></div>
       </div>
     </div>
   </div>
 
+  <!-- Droite -->
   <div class="auth-form-side">
     <div class="auth-form-box">
       <h2 class="auth-form-title">Connexion</h2>
-      <p class="auth-form-subtitle">Ravi de vous revoir ✨</p>
+      <p class="auth-form-sub">Ravi de vous revoir.</p>
 
       {% for message in messages %}
-      <div class="alert alert-{% if message.tags == 'error' %}error{% else %}info{% endif %}">{{ message }}</div>
+      <div class="alert alert-{% if message.tags == 'error' %}error{% else %}info{% endif %}">
+        {{ message }}
+      </div>
       {% endfor %}
 
-      <form method="post">
+      <form method="post" onsubmit="this.querySelector('.btn-submit').classList.add('loading')">
         {% csrf_token %}
-        <div class="form-group">
-          <label class="form-label">Adresse email</label>
-          <input type="email" name="email" class="form-input" placeholder="vous@exemple.com" required autofocus>
+
+        <div class="fl-group">
+          <input type="email" name="email" id="email" placeholder=" " required autofocus>
+          <label for="email">Adresse email</label>
         </div>
-        <div class="form-group">
-          <label class="form-label">Mot de passe</label>
-          <input type="password" name="password" class="form-input" placeholder="••••••••" required>
+
+        <div class="fl-group">
+          <input type="password" name="password" id="password" placeholder=" " required>
+          <label for="password">Mot de passe</label>
         </div>
-        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;">
+
+        <button type="submit" class="btn btn-primary btn-shimmer btn-submit w-full" style="justify-content:center;margin-top:4px;font-size:1rem;padding:14px;">
           Se connecter →
         </button>
       </form>
 
       <div class="auth-divider">ou</div>
+
       <p style="text-align:center;font-size:.875rem;color:var(--text-muted);">
         Pas encore de compte ?
         <a href="{% url 'register' %}" class="auth-link">Créer un compte</a>
       </p>
 
-      <div style="margin-top:32px;padding:16px;background:var(--gold-faint);border:1px solid var(--gold-border);border-radius:var(--radius-sm);">
-        <p style="font-size:.75rem;color:var(--text-muted);margin-bottom:4px;font-weight:500;">💡 Compte démo</p>
-        <p style="font-size:.8rem;color:var(--gold);">demo@luxemart.com <span style="color:var(--text-muted);">/</span> demo1234</p>
+      <!-- Compte démo -->
+      <div style="margin-top:32px;padding:16px;background:var(--accent-faint);border:1px solid var(--accent-border);border-radius:10px;">
+        <p style="font-size:.72rem;color:var(--text-muted);margin-bottom:4px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;text-transform:uppercase;letter-spacing:.10em;">
+          Compte démo
+        </p>
+        <p style="font-size:.85rem;color:var(--accent);">
+          demo@recoshop.com
+          <span style="color:var(--text-muted);margin:0 4px;">/</span>
+          demo1234
+        </p>
       </div>
     </div>
   </div>
+
 </div>
-<script>
-const t = localStorage.getItem('theme') || 'light';
-document.documentElement.setAttribute('data-theme', t);
-</script>
 </body>
 </html>

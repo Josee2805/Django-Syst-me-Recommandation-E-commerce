@@ -1,39 +1,78 @@
-<a href="{% url 'product_detail' product.pk %}" class="product-card">
-  <div class="product-card-image" style="background:linear-gradient(135deg,{{ product.image_color }}22 0%,{{ product.image_color }}11 100%);">
+<div class="product-card" data-reveal>
+
+  <!-- Image -->
+  <div class="product-card__image"
+       style="background:linear-gradient(135deg,{{ product.image_color }}22 0%,{{ product.image_color }}11 100%);">
+
+    <img src="{{ product.image_url }}"
+         alt="{{ product.name }}"
+         loading="lazy"
+         onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=500&q=80'">
+
+    <!-- Overlay bouton panier -->
+    <div class="product-card__overlay">
+      <button class="btn btn-cta btn-sm"
+              onclick="event.preventDefault(); addToCart({{ product.pk }}, event)">
+        + Panier
+      </button>
+    </div>
+
+    <!-- Badge vedette -->
     {% if product.is_featured %}
-    <span class="product-card-badge">Vedette</span>
+    <span class="badge badge--featured">Vedette</span>
     {% endif %}
+
+    <!-- Badge algorithme -->
+    {% if product.algorithm %}
+    <span class="badge badge--{{ product.algorithm }}">{{ product.algorithm_label }}</span>
+    {% endif %}
+
+    <!-- Badge réduction -->
     {% if product.discount_percent > 0 %}
     <span class="discount-badge">-{{ product.discount_percent }}%</span>
     {% endif %}
-    <span class="product-card-emoji">{{ product.image_emoji }}</span>
   </div>
-  <div class="product-card-body">
-    <div class="product-card-category">{{ product.category.name }}</div>
-    <div class="product-card-name">{{ product.name }}</div>
-    {% if product.brand %}
-    <div class="product-card-brand">{{ product.brand }}</div>
-    {% endif %}
-    <div class="product-card-stars">
-      {% with avg=product.average_rating %}
-      {% for i in "12345" %}
-        {% if forloop.counter <= avg %}
-        <span class="star">★</span>
-        {% else %}
-        <span class="star empty">★</span>
-        {% endif %}
-      {% endfor %}
-      <span class="rating-count">({{ product.rating_count }})</span>
-      {% endwith %}
-    </div>
-    <div class="product-card-footer">
-      <div>
-        <span class="product-card-price">{{ product.price }} €</span>
-        {% if product.original_price %}
-        <span class="product-card-original">{{ product.original_price }} €</span>
+
+  <!-- Infos -->
+  <a href="{% url 'product_detail' product.pk %}"
+     style="display:block;text-decoration:none;color:inherit;">
+    <div class="product-card__info">
+
+      <div class="product-card__category">{{ product.category.name }}</div>
+      <h3 class="product-card__name">{{ product.name }}</h3>
+
+      {% if product.brand %}
+      <div class="product-card__brand">{{ product.brand }}</div>
+      {% endif %}
+
+      <!-- Etoiles -->
+      <div class="product-card__stars">
+        {% with avg=product.average_rating %}
+        {% for i in "12345" %}
+          {% if forloop.counter <= avg %}
+          <span class="star">&#9733;</span>
+          {% else %}
+          <span class="star empty">&#9733;</span>
+          {% endif %}
+        {% endfor %}
+        <span class="rating-count">({{ product.rating_count }})</span>
+        {% endwith %}
+      </div>
+
+      <!-- Prix -->
+      <div class="product-card__footer">
+        <div>
+          <span class="product-card__price">{{ product.price }} FCFA</span>
+          {% if product.original_price %}
+          <span class="product-card__original">{{ product.original_price }} FCFA</span>
+          {% endif %}
+        </div>
+        {% if product.score %}
+        <span class="product-card__score">{{ product.score }}% match</span>
         {% endif %}
       </div>
-      <button class="btn-add-cart" onclick="event.preventDefault();addToCart({{ product.pk }})" title="Ajouter au panier">+</button>
+
     </div>
-  </div>
-</a>
+  </a>
+
+</div>

@@ -1,53 +1,93 @@
 {% extends 'recommendations/base.html' %}
+{% load static %}
 {% block title %}Mon Profil{% endblock %}
+
 {% block content %}
 
-<div class="page-header">
-  <h2>👤 Mon Profil</h2>
-  <p>Gérez votre compte et consultez vos statistiques</p>
-</div>
+<!-- En-tête profil avec image background -->
+<div style="position:relative;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:32px;min-height:220px;">
 
-<div style="display:grid;grid-template-columns:340px 1fr;gap:28px;align-items:start;">
+  <!-- Image lifestyle -->
+  <div style="position:absolute;inset:0;
+              background-image:url('https://plus.unsplash.com/premium_photo-1764420142456-7225162392e3?q=80&w=1356&auto=format&fit=crop&ixlib=rb-4.1.0');
+              background-size:cover;
+              background-position:center 25%;
+              background-attachment:fixed;
+              z-index:0;"></div>
+  <!-- Overlay dégradé -->
+  <div style="position:absolute;inset:0;
+              background:linear-gradient(135deg, rgba(14,17,14,0.82) 0%, rgba(14,17,14,0.60) 60%, rgba(74,158,138,0.18) 100%);
+              z-index:1;"></div>
 
-  <!-- Left: Profile Card + Edit -->
-  <div style="display:flex;flex-direction:column;gap:20px;">
-    
-    <!-- Profile card -->
-    <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);overflow:hidden;">
-      <div style="background:linear-gradient(135deg,#1a1a18,#2c2a1e);padding:32px;text-align:center;position:relative;">
-        <div style="width:90px;height:90px;border-radius:50%;border:3px solid var(--gold);margin:0 auto 16px;overflow:hidden;background:var(--gold-faint);display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:600;color:var(--gold);">
-          {% if user.profile_pic %}
-          <img src="{{ user.profile_pic.url }}" style="width:100%;height:100%;object-fit:cover;" alt="Photo de profil">
-          {% else %}
-          {{ user.username|first|upper }}
-          {% endif %}
-        </div>
-        <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:#fff;margin-bottom:4px;">{{ user.username }}</h2>
-        <p style="font-size:.8rem;color:rgba(255,255,255,0.5);">{{ user.email }}</p>
-        {% if user.bio %}
-        <p style="font-size:.82rem;color:rgba(255,255,255,0.6);margin-top:10px;font-style:italic;">{{ user.bio }}</p>
-        {% endif %}
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
-        <div style="padding:16px;text-align:center;border-right:1px solid var(--gold-border);">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:var(--gold);">{{ purchases|length }}</div>
-          <div style="font-size:.72rem;color:var(--text-muted);">Achats</div>
-        </div>
-        <div style="padding:16px;text-align:center;">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:var(--gold);">{{ ratings|length }}</div>
-          <div style="font-size:.72rem;color:var(--text-muted);">Notes</div>
-        </div>
-      </div>
+  <!-- Contenu -->
+  <div style="position:relative;z-index:2;padding:36px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+
+    <!-- Avatar -->
+    <div class="profile-avatar" style="width:88px;height:88px;font-size:2.2rem;border:3px solid rgba(255,255,255,0.25);box-shadow:0 4px 20px rgba(0,0,0,0.4);">
+      {% if user.profile_pic %}
+        <img src="{{ user.profile_pic.url }}" alt="">
+      {% else %}
+        {{ user.username|first|upper }}
+      {% endif %}
     </div>
 
-    <!-- Edit form -->
-    <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:24px;">
-      <h3 style="font-size:1rem;font-weight:600;margin-bottom:20px;color:var(--text-dark);">✏️ Modifier le profil</h3>
+    <div style="flex:1;min-width:180px;">
+      <h1 style="font-family:'DM Serif Display',serif;font-size:1.8rem;font-weight:400;color:#fff;margin-bottom:3px;letter-spacing:-0.02em;text-shadow:0 2px 12px rgba(0,0,0,0.4);">
+        {{ user.username }}
+      </h1>
+      <p style="font-size:.875rem;color:rgba(255,255,255,0.65);margin-bottom:6px;">{{ user.email }}</p>
+      {% if user.bio %}
+      <p style="font-size:.875rem;color:rgba(255,255,255,0.55);font-style:italic;">{{ user.bio }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Stats rapides -->
+    <div style="display:flex;gap:40px;flex-wrap:wrap;">
+      <div style="text-align:center;">
+        <div style="font-family:'DM Serif Display',serif;font-size:2.2rem;color:#fff;">
+          <span data-count="{{ purchases|length }}">{{ purchases|length }}</span>
+        </div>
+        <div style="font-size:.68rem;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:.12em;margin-top:2px;font-weight:600;">Achats</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:'DM Serif Display',serif;font-size:2.2rem;color:#fff;">
+          <span data-count="{{ ratings|length }}">{{ ratings|length }}</span>
+        </div>
+        <div style="font-size:.68rem;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:.12em;margin-top:2px;font-weight:600;">Notes</div>
+      </div>
+      {% if eval_data %}
+      <div style="text-align:center;">
+        <div style="font-family:'DM Serif Display',serif;font-size:2.2rem;color:var(--badge-algo);">
+          {{ eval_data.f1 }}
+        </div>
+        <div style="font-size:.68rem;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:.12em;margin-top:2px;font-weight:600;">F1-Score</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Navigation par onglets -->
+<div class="profile-tabs">
+  <button class="profile-tab-btn active" onclick="switchTab('compte', this)">Mon compte</button>
+  <button class="profile-tab-btn" onclick="switchTab('dashboard', this)">Tableau de bord</button>
+  <button class="profile-tab-btn" onclick="switchTab('recommandations', this)">Recommandations</button>
+</div>
+
+<!-- ═══════ ONGLET 1 — MON COMPTE ═══════ -->
+<div id="tab-compte" class="profile-tab-panel active">
+  <div style="display:grid;grid-template-columns:380px 1fr;gap:24px;align-items:start;">
+
+    <!-- Formulaire édition -->
+    <div style="background:var(--card);border:1px solid var(--divider);border-radius:var(--radius-md);padding:28px;">
+      <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);margin-bottom:20px;">
+        Informations personnelles
+      </h3>
       <form method="post" action="{% url 'update_profile' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
           <label class="form-label">Photo de profil</label>
-          <input type="file" name="profile_pic" accept="image/*" class="form-input" style="padding:6px;">
+          <input type="file" name="profile_pic" accept="image/*" class="form-input" style="padding:8px;">
         </div>
         <div class="form-group">
           <label class="form-label">Nom d'utilisateur</label>
@@ -55,10 +95,17 @@
         </div>
         <div class="form-group">
           <label class="form-label">Bio</label>
-          <textarea name="bio" class="form-input" rows="2" placeholder="Quelques mots sur vous…">{{ user.bio }}</textarea>
+          <textarea name="bio" class="form-input" rows="3" placeholder="Quelques mots sur vous…">{{ user.bio }}</textarea>
         </div>
-        <div style="height:1px;background:var(--gold-border);margin:16px 0;"></div>
-        <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:12px;">Laisser vide pour ne pas changer le mot de passe</p>
+
+        <div class="divider" style="margin:20px 0;"></div>
+
+        <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);margin-bottom:16px;">
+          Changer le mot de passe
+        </h3>
+        <p style="font-size:.75rem;color:var(--text-muted);margin-bottom:14px;">
+          Laisser vide pour conserver le mot de passe actuel.
+        </p>
         <div class="form-group">
           <label class="form-label">Nouveau mot de passe</label>
           <input type="password" name="new_password1" class="form-input" placeholder="••••••••">
@@ -67,93 +114,195 @@
           <label class="form-label">Confirmer</label>
           <input type="password" name="new_password2" class="form-input" placeholder="••••••••">
         </div>
-        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Sauvegarder</button>
+        <button type="submit" class="btn btn-primary w-full" style="margin-top:8px;">
+          Enregistrer les modifications
+        </button>
       </form>
     </div>
-  </div>
 
-  <!-- Right: Stats + History -->
-  <div style="display:flex;flex-direction:column;gap:24px;">
-
-    <!-- Eval stats -->
-    {% if eval_data %}
-    <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:24px;">
-      <h3 style="font-size:1rem;font-weight:600;margin-bottom:20px;color:var(--text-dark);">📊 Performance des recommandations</h3>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
-        <div style="text-align:center;padding:16px;background:var(--gold-faint);border-radius:var(--radius-sm);border:1px solid var(--gold-border);">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:var(--gold);">{{ eval_data.precision }}</div>
-          <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px;">Précision</div>
-        </div>
-        <div style="text-align:center;padding:16px;background:var(--gold-faint);border-radius:var(--radius-sm);border:1px solid var(--gold-border);">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:var(--gold);">{{ eval_data.recall }}</div>
-          <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px;">Rappel</div>
-        </div>
-        <div style="text-align:center;padding:16px;background:var(--gold-faint);border-radius:var(--radius-sm);border:1px solid var(--gold-border);">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:var(--gold);">{{ eval_data.f1 }}</div>
-          <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px;">F1-Score</div>
-        </div>
-      </div>
-    </div>
-    {% endif %}
-
-    <!-- My ratings -->
-    {% if ratings %}
-    <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:24px;">
-      <h3 style="font-size:1rem;font-weight:600;margin-bottom:16px;color:var(--text-dark);">⭐ Mes notes récentes</h3>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        {% for rating in ratings|slice:":8" %}
-        <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--cream);border-radius:var(--radius-sm);">
-          <span style="font-size:1.5rem;">{{ rating.product.image_emoji }}</span>
-          <div style="flex:1;min-width:0;">
-            <a href="{% url 'product_detail' rating.product.pk %}" style="font-size:.875rem;font-weight:500;color:var(--text-dark);text-decoration:none;">{{ rating.product.name|truncatechars:35 }}</a>
-            <div style="font-size:.72rem;color:var(--text-muted);">{{ rating.product.category.name }}</div>
+    <!-- Infos compte -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div style="background:var(--card);border:1px solid var(--divider);border-radius:var(--radius-md);padding:24px;">
+        <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);margin-bottom:16px;">
+          Détails du compte
+        </h3>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--divider);">
+            <span style="font-size:.875rem;color:var(--text-muted);">Identifiant</span>
+            <span style="font-size:.875rem;font-weight:600;color:var(--text);">{{ user.username }}</span>
           </div>
-          <div style="display:flex;gap:1px;">
-            {% for i in "12345" %}
-            <span style="color:{% if forloop.counter <= rating.score %}var(--gold){% else %}var(--gold-border){% endif %};">★</span>
-            {% endfor %}
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--divider);">
+            <span style="font-size:.875rem;color:var(--text-muted);">Email</span>
+            <span style="font-size:.875rem;font-weight:600;color:var(--text);">{{ user.email }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--divider);">
+            <span style="font-size:.875rem;color:var(--text-muted);">Membre depuis</span>
+            <span style="font-size:.875rem;font-weight:600;color:var(--text);">{{ user.date_joined|date:"d/m/Y" }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
+            <span style="font-size:.875rem;color:var(--text-muted);">Statut</span>
+            <span style="font-size:.75rem;font-weight:700;color:var(--accent);background:var(--accent-dim);border:1px solid var(--accent-border);padding:3px 12px;border-radius:var(--pill);">Actif</span>
           </div>
         </div>
-        {% endfor %}
       </div>
     </div>
-    {% endif %}
-
-    <!-- Purchase history -->
-    {% if purchases %}
-    <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:24px;">
-      <h3 style="font-size:1rem;font-weight:600;margin-bottom:16px;color:var(--text-dark);">🧾 Historique d'achats</h3>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        {% for purchase in purchases|slice:":10" %}
-        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--cream);border-radius:var(--radius-sm);">
-          <span style="font-size:1.5rem;">{{ purchase.product.image_emoji }}</span>
-          <div style="flex:1;min-width:0;">
-            <a href="{% url 'product_detail' purchase.product.pk %}" style="font-size:.875rem;font-weight:500;color:var(--text-dark);text-decoration:none;">{{ purchase.product.name|truncatechars:35 }}</a>
-            <div style="font-size:.72rem;color:var(--text-muted);">{{ purchase.purchased_at|date:"d/m/Y" }} · ×{{ purchase.quantity }}</div>
-          </div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--gold);">{{ purchase.product.price }} €</div>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-    {% endif %}
-
-    <!-- Recommendations preview -->
-    {% if recommendations %}
-    <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:24px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-        <h3 style="font-size:1rem;font-weight:600;color:var(--text-dark);">✨ Recommandé pour vous</h3>
-        <a href="{% url 'recommendations' %}" class="btn btn-outline btn-sm">Voir tout</a>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
-        {% for product in recommendations|slice:":4" %}
-        {% include 'recommendations/partials/product_card.html' with product=product %}
-        {% endfor %}
-      </div>
-    </div>
-    {% endif %}
 
   </div>
 </div>
 
+<!-- ═══════ ONGLET 2 — TABLEAU DE BORD ═══════ -->
+<div id="tab-dashboard" class="profile-tab-panel">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+
+    <!-- Historique d'achats -->
+    <div style="background:var(--card);border:1px solid var(--divider);border-radius:var(--radius-md);padding:24px;">
+      <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);margin-bottom:20px;">
+        Historique d'achats
+      </h3>
+      {% if purchases %}
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        {% for purchase in purchases|slice:":12" %}
+        <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--card-2);border:1px solid var(--divider);border-radius:var(--radius);" data-reveal>
+          <div style="width:44px;height:44px;border-radius:var(--radius);background:var(--bg-elevated);border:1px solid var(--divider);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">
+            {% if purchase.product.image_url %}
+            <img src="{{ purchase.product.image_url }}" style="width:100%;height:100%;object-fit:cover;" alt="" onerror="this.style.display='none'">
+            {% endif %}
+          </div>
+          <div style="flex:1;min-width:0;">
+            <a href="{% url 'product_detail' purchase.product.pk %}"
+               style="font-size:.875rem;font-weight:600;color:var(--text);text-decoration:none;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+              {{ purchase.product.name|truncatechars:32 }}
+            </a>
+            <div style="font-size:.72rem;color:var(--text-muted);margin-top:1px;">
+              {{ purchase.purchased_at|date:"d/m/Y" }} &nbsp;·&nbsp; x{{ purchase.quantity }}
+            </div>
+          </div>
+          <div style="font-size:.875rem;font-weight:700;color:var(--price-color);white-space:nowrap;">
+            {{ purchase.product.price }} F
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p style="font-size:.875rem;color:var(--text-muted);text-align:center;padding:24px 0;">
+        Aucun achat pour le moment.
+      </p>
+      {% endif %}
+    </div>
+
+    <!-- Colonne droite : Notes + Performance -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+
+      <!-- Historique de notes -->
+      <div style="background:var(--card);border:1px solid var(--divider);border-radius:var(--radius-md);padding:24px;">
+        <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);margin-bottom:20px;">
+          Produits notés
+        </h3>
+        {% if ratings %}
+        <div class="timeline">
+          {% for rating in ratings|slice:":8" %}
+          <div class="timeline-item">
+            <div class="timeline-dot" style="overflow:hidden;padding:0;">
+              {% if rating.product.image_url %}
+              <img src="{{ rating.product.image_url }}" style="width:100%;height:100%;object-fit:cover;" alt="" onerror="this.style.display='none'">
+              {% endif %}
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-content__title">
+                <a href="{% url 'product_detail' rating.product.pk %}" style="color:var(--text);">
+                  {{ rating.product.name|truncatechars:38 }}
+                </a>
+              </div>
+              <div class="timeline-content__sub" style="display:flex;align-items:center;gap:6px;">
+                <span>{{ rating.product.category.name }}</span>
+                <span style="color:var(--badge-algo);letter-spacing:1px;">
+                  {% for i in "12345" %}{% if forloop.counter <= rating.score %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}
+                </span>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p style="font-size:.875rem;color:var(--text-muted);text-align:center;padding:16px 0;">
+          Aucune note pour le moment.
+        </p>
+        {% endif %}
+      </div>
+
+      <!-- Performance algorithme -->
+      {% if eval_data %}
+      <div style="background:var(--card);border:1px solid var(--divider);border-radius:var(--radius-md);padding:24px;">
+        <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);margin-bottom:20px;">
+          Performance des recommandations
+        </h3>
+        <div class="progress-row">
+          <span class="progress-label">Précision</span>
+          <div class="progress-track">
+            <div class="progress-fill" style="width:{{ eval_data.precision }}%;background:var(--accent);"></div>
+          </div>
+          <span class="progress-value">{{ eval_data.precision }}</span>
+        </div>
+        <div class="progress-row">
+          <span class="progress-label">Rappel</span>
+          <div class="progress-track">
+            <div class="progress-fill" style="width:{{ eval_data.recall }}%;background:var(--cta);"></div>
+          </div>
+          <span class="progress-value" style="color:var(--cta);">{{ eval_data.recall }}</span>
+        </div>
+        <div class="progress-row" style="margin-bottom:0;">
+          <span class="progress-label">F1-Score</span>
+          <div class="progress-track">
+            <div class="progress-fill" style="width:{{ eval_data.f1 }}%;background:linear-gradient(90deg,var(--accent),var(--cta));"></div>
+          </div>
+          <span class="progress-value" style="color:var(--badge-algo);">{{ eval_data.f1 }}</span>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ ONGLET 3 — RECOMMANDATIONS ═══════ -->
+<div id="tab-recommandations" class="profile-tab-panel">
+  {% if recommendations %}
+  <div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div>
+      <p style="font-size:.875rem;color:var(--text-sub);">
+        Sélection personnalisée basée sur vos achats et vos préférences.
+      </p>
+    </div>
+    <a href="{% url 'recommendations' %}" class="btn btn-outline btn-sm">
+      Voir toutes les recommandations &rarr;
+    </a>
+  </div>
+  <div class="products-grid">
+    {% for product in recommendations %}
+    {% include 'recommendations/partials/product_card.html' with product=product %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon" style="font-size:3rem;opacity:.15;">&#9675;</div>
+    <h3>Pas encore de recommandations</h3>
+    <p>Notez des produits et effectuez des achats pour que l'algorithme apprenne vos préférences.</p>
+    <a href="{% url 'products' %}" class="btn btn-primary" style="margin-top:20px;">
+      Parcourir la boutique
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function switchTab(name, btn) {
+  document.querySelectorAll('.profile-tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.profile-tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
 {% endblock %}

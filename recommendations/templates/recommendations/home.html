@@ -1,58 +1,118 @@
 {% extends 'recommendations/base.html' %}
+{% load static %}
 {% block title %}Accueil{% endblock %}
+
 {% block content %}
 
-<!-- Hero Banner -->
-<div style="background:linear-gradient(135deg,#1a1a18 0%,#2c2a1e 50%,#3d3520 100%);border-radius:20px;padding:48px 48px;margin-bottom:32px;position:relative;overflow:hidden;">
-  <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(212,175,55,0.2) 0%,transparent 60%);pointer-events:none;"></div>
-  <div style="position:relative;z-index:1;max-width:560px;">
-    <p style="font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(212,175,55,0.7);margin-bottom:12px;">Bienvenue, {{ user.username }} ✦</p>
-    <h1 style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:600;color:#fff;line-height:1.1;margin-bottom:16px;">
-      Votre boutique<br><span style="color:var(--gold);">sur-mesure</span>
+<!-- ═══════ HERO ═══════ -->
+<div class="hero" style="margin:-40px -32px 0 -32px;width:calc(100% + 64px);position:relative;min-height:92vh;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+
+  <!-- Background image avec parallax -->
+  <div style="position:absolute;inset:0;
+              background-image:url('https://plus.unsplash.com/premium_photo-1673127327273-7523894b60b6?q=80&w=1184&auto=format&fit=crop');
+              background-size:cover;
+              background-position:center 30%;
+              background-attachment:fixed;
+              transform:scale(1.04);
+              transition:transform .6s ease;
+              z-index:0;"
+       id="heroBg"></div>
+
+  <!-- Overlay dégradé sombre -->
+  <div style="position:absolute;inset:0;
+              background:linear-gradient(
+                to bottom,
+                rgba(10,14,10,0.30) 0%,
+                rgba(10,14,10,0.55) 40%,
+                rgba(10,14,10,0.75) 100%
+              );
+              z-index:1;"></div>
+
+  <!-- Contenu centré -->
+  <div class="hero-content" style="position:relative;z-index:2;text-align:center;padding:80px 24px;max-width:780px;margin:0 auto;">
+
+    <p style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:18px;opacity:0;animation:fadeUp .8s .4s forwards;">
+      Bienvenue, {{ user.username }}
+    </p>
+
+    <h1 class="hero-title" data-animate-chars style="color:#fff;text-shadow:0 2px 24px rgba(0,0,0,0.35);">
+      Découvrez l'<em>Extraordinaire</em>
     </h1>
-    <p style="color:rgba(255,255,255,0.6);font-size:.95rem;line-height:1.6;margin-bottom:28px;">
+
+    <p class="hero-sub" style="color:rgba(255,255,255,0.80);max-width:520px;margin:0 auto 36px;">
       {% if is_cold_start %}
-        Découvrez notre sélection. Notez des produits pour recevoir des recommandations personnalisées.
+        Explorez notre sélection et notez des produits pour recevoir des recommandations personnalisées.
       {% else %}
-        Nos algorithmes ont trouvé {{ recommendations|length }} recommandations rien que pour vous.
+        Nos algorithmes ont sélectionné {{ recommendations|length }} recommandations rien que pour vous.
       {% endif %}
     </p>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;">
-      <a href="{% url 'products' %}" class="btn btn-primary">Explorer la boutique →</a>
-      <a href="{% url 'recommendations' %}" class="btn" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);">Mes recommandations ✨</a>
+
+    <div class="hero-cta" style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+      <a href="{% url 'products' %}" class="btn btn-cta btn-lg btn-shimmer">
+        Explorer la boutique &rarr;
+      </a>
+      <a href="{% url 'recommendations' %}"
+         class="btn btn-lg" style="background:rgba(255,255,255,0.10);color:#fff;border:1px solid rgba(255,255,255,0.28);backdrop-filter:blur(8px);">
+        Mes recommandations
+      </a>
     </div>
   </div>
-  <div style="position:absolute;right:48px;top:50%;transform:translateY(-50%);font-size:8rem;opacity:0.15;pointer-events:none;">✦</div>
+
+  <!-- Indicateur scroll -->
+  <div class="scroll-indicator"
+       style="position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:2;"
+       onclick="document.querySelector('.section').scrollIntoView({behavior:'smooth'})">
+    Scroll
+  </div>
 </div>
 
-<!-- Stats Row -->
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;">
-  {% for cat in categories|slice:":4" %}
-  <a href="{% url 'products' %}?category={{ cat.slug }}" style="text-decoration:none;">
-    <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:20px;text-align:center;transition:all .25s;cursor:pointer;" onmouseover="this.style.borderColor='var(--gold)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--gold-border)';this.style.transform=''">
-      <div style="font-size:2rem;margin-bottom:8px;">{{ cat.icon }}</div>
-      <div style="font-size:.8rem;font-weight:500;color:var(--text-dark);">{{ cat.name }}</div>
-      <div style="font-size:.7rem;color:var(--text-muted);margin-top:3px;">{{ cat.product_count }} produits</div>
+<!-- ═══════ CATEGORIES ═══════ -->
+{% if categories %}
+<div class="section container" style="padding-left:0;padding-right:0;margin-top:60px;">
+  <div class="section-header">
+    <div>
+      <span class="section-label">Explorer par univers</span>
+      <h2 class="section-title">Nos Catégories</h2>
     </div>
-  </a>
-  {% endfor %}
-</div>
+    <a href="{% url 'products' %}" class="btn btn-outline btn-sm">Voir tout &rarr;</a>
+  </div>
 
-<!-- Recommendations -->
+  <div class="categories-grid">
+    {% for cat in categories|slice:":6" %}
+    <a href="{% url 'products' %}?category={{ cat.slug }}" class="category-card" data-reveal data-reveal-delay="{{ forloop.counter0|add:0 }}00">
+      <div class="category-card__img"
+           style="background-image:url('{% if cat.image_url %}{{ cat.image_url }}{% else %}https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&q=80{% endif %}');"></div>
+      <div class="category-card__overlay"></div>
+      <div class="category-card__label">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,0.6);margin-bottom:3px;">{{ cat.product_count }} articles</div>
+        {{ cat.name }}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- ═══════ RECOMMANDATIONS ═══════ -->
 {% if recommendations %}
-<div style="margin-bottom:40px;">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-    <h2 class="section-title" style="margin-bottom:0;flex:1;">
-      {% if is_cold_start %}🔥 Sélection du moment{% else %}✨ Recommandé pour vous{% endif %}
-    </h2>
-    <a href="{% url 'recommendations' %}" class="btn btn-outline btn-sm">Voir tout</a>
+<div class="section container" style="padding-left:0;padding-right:0;margin-top:60px;">
+  <div class="section-header" style="margin-bottom:32px;">
+    <div>
+      <span class="section-label">{% if is_cold_start %}Sélection du moment{% else %}Personnalisé pour vous{% endif %}</span>
+      <h2 class="section-title" style="text-align:left;">
+        {% if is_cold_start %}Produits Populaires{% else %}Sélection pour vous{% endif %}
+      </h2>
+    </div>
+    <a href="{% url 'recommendations' %}" class="btn btn-outline btn-sm">Voir tout &rarr;</a>
   </div>
+
   {% if is_cold_start %}
-  <div class="alert alert-info" style="margin-bottom:16px;">
-    💡 Notez des produits pour recevoir des recommandations personnalisées basées sur vos goûts !
+  <div class="alert alert-info" style="margin-bottom:24px;">
+    Notez des produits pour recevoir des recommandations personnalisées basées sur vos goûts.
   </div>
   {% endif %}
-  <div class="products-grid">
+
+  <div class="products-carousel">
     {% for product in recommendations %}
     {% include 'recommendations/partials/product_card.html' with product=product %}
     {% endfor %}
@@ -60,11 +120,18 @@
 </div>
 {% endif %}
 
-<!-- Featured Products -->
+<!-- ═══════ PRODUITS VEDETTES ═══════ -->
 {% if featured %}
-<div style="margin-bottom:40px;">
-  <h2 class="section-title">⭐ Produits vedettes</h2>
-  <div class="products-grid">
+<div class="section container" style="padding-left:0;padding-right:0;margin-top:60px;">
+  <div class="section-header" style="margin-bottom:32px;">
+    <div>
+      <span class="section-label">Coup de coeur</span>
+      <h2 class="section-title" style="text-align:left;">Produits Vedettes</h2>
+    </div>
+    <a href="{% url 'products' %}" class="btn btn-outline btn-sm">Tout voir &rarr;</a>
+  </div>
+
+  <div class="products-carousel">
     {% for product in featured %}
     {% include 'recommendations/partials/product_card.html' with product=product %}
     {% endfor %}
@@ -72,11 +139,18 @@
 </div>
 {% endif %}
 
-<!-- Top Rated -->
+<!-- ═══════ MIEUX NOTES ═══════ -->
 {% if top_rated %}
-<div style="margin-bottom:40px;">
-  <h2 class="section-title">🏆 Mieux notés</h2>
-  <div class="products-grid">
+<div class="section container" style="padding-left:0;padding-right:0;margin-top:60px;">
+  <div class="section-header" style="margin-bottom:32px;">
+    <div>
+      <span class="section-label">Excellence</span>
+      <h2 class="section-title" style="text-align:left;">Mieux Notés</h2>
+    </div>
+    <a href="{% url 'products' %}?sort=rating" class="btn btn-outline btn-sm">Voir tout &rarr;</a>
+  </div>
+
+  <div class="products-grid" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr));">
     {% for product in top_rated %}
     {% include 'recommendations/partials/product_card.html' with product=product %}
     {% endfor %}
@@ -84,19 +158,26 @@
 </div>
 {% endif %}
 
-<!-- All Categories -->
-<div style="margin-bottom:40px;">
-  <h2 class="section-title">🗂️ Toutes les catégories</h2>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">
-    {% for cat in categories %}
-    <a href="{% url 'products' %}?category={{ cat.slug }}" style="text-decoration:none;">
-      <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:24px 16px;text-align:center;transition:all .25s;" onmouseover="this.style.borderColor='var(--gold)';this.style.background='var(--gold-faint)'" onmouseout="this.style.borderColor='var(--gold-border)';this.style.background='var(--white)'">
-        <div style="font-size:2.2rem;margin-bottom:10px;">{{ cat.icon }}</div>
-        <div style="font-size:.85rem;font-weight:500;color:var(--text-dark);">{{ cat.name }}</div>
-        <div style="font-size:.72rem;color:var(--gold);margin-top:4px;">{{ cat.product_count }} articles</div>
+<!-- ═══════ STATS ═══════ -->
+<div style="margin-top:60px;">
+  <div class="divider"></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:20px 0;">
+    <div class="stat-card" data-reveal>
+      <div class="stat-card__value">
+        <span data-count="{{ categories|length }}">{{ categories|length }}</span>
       </div>
-    </a>
-    {% endfor %}
+      <div class="stat-card__label">Catégories</div>
+    </div>
+    <div class="stat-card" data-reveal data-reveal-delay="100">
+      <div class="stat-card__value">
+        <span data-count="{{ featured|length|add:recommendations|length }}">—</span>
+      </div>
+      <div class="stat-card__label">Produits sélectionnés</div>
+    </div>
+    <div class="stat-card" data-reveal data-reveal-delay="200">
+      <div class="stat-card__value" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.6rem;font-weight:800;">3</div>
+      <div class="stat-card__label">Algorithmes actifs</div>
+    </div>
   </div>
 </div>
 

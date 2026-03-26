@@ -27,6 +27,7 @@ class Category(models.Model):
     icon = models.CharField(max_length=50, default='📦')
     description = models.TextField(blank=True)
     image_color = models.CharField(max_length=20, default='#D4AF37')
+    image_url = models.URLField(blank=True, null=True)
 
     class Meta:
         verbose_name_plural = 'Categories'

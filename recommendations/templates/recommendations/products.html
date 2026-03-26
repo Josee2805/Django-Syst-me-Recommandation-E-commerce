@@ -1,70 +1,165 @@
 {% extends 'recommendations/base.html' %}
-{% block title %}Boutique{% endblock %}
+{% load static %}
+{% block title %}
+  {% if current_category %}{{ current_category.name }}{% elif search_q %}"{{ search_q }}"{% else %}Boutique{% endif %}
+{% endblock %}
+
 {% block content %}
 
-<div class="page-header">
-  <h2>{% if current_category %}{{ current_category.icon }} {{ current_category.name }}{% elif search_q %}🔍 "{{ search_q }}"{% else %}🛍️ Toute la boutique{% endif %}</h2>
-  <p>
-    {% if products %}{{ products|length }} produit{{ products|length|pluralize }} disponible{{ products|length|pluralize }}
-    {% else %}Aucun produit trouvé{% endif %}
-  </p>
-</div>
+<!-- Page header avec image boutique luxe -->
+<div style="position:relative;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:32px;min-height:180px;display:flex;align-items:center;">
 
-<!-- Catégories chips -->
-<div class="category-chips">
-  <a href="{% url 'products' %}" class="category-chip {% if not current_category and not search_q %}active{% endif %}">🛍️ Tout</a>
-  {% for cat in categories %}
-  <a href="{% url 'products' %}?category={{ cat.slug }}" class="category-chip {% if current_category.slug == cat.slug %}active{% endif %}">
-    {{ cat.icon }} {{ cat.name }}
-    <span style="opacity:.6;font-size:.7rem;">({{ cat.product_count }})</span>
-  </a>
-  {% endfor %}
-</div>
+  <!-- Background boutique / luxe -->
+  <div style="position:absolute;inset:0;
+              background-image:url('https://images.unsplash.com/photo-1769981653696-5ce5a59263bf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080');
+              background-size:cover;
+              background-position:center 40%;
+              background-attachment:fixed;
+              z-index:0;"></div>
+  <!-- Overlay chaud, cohérent palette terracotta/vert -->
+  <div style="position:absolute;inset:0;
+              background:linear-gradient(110deg, rgba(12,10,8,0.86) 0%, rgba(40,24,16,0.65) 100%);
+              z-index:1;"></div>
 
-<!-- Filtres & Tri -->
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-  <form action="{% url 'products' %}" method="get" style="display:flex;gap:8px;align-items:center;">
-    {% if current_category %}<input type="hidden" name="category" value="{{ current_category.slug }}">{% endif %}
-    <div style="position:relative;">
-      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-light);font-size:.85rem;">🔍</span>
-      <input type="text" name="q" value="{{ search_q }}" placeholder="Rechercher…" class="form-input"
-             style="padding-left:36px;width:240px;border-radius:30px;">
-    </div>
-    <button type="submit" class="btn btn-primary btn-sm">Chercher</button>
-    {% if search_q or current_category %}
-      <a href="{% url 'products' %}" class="btn btn-outline btn-sm">✕ Effacer</a>
-    {% endif %}
-  </form>
-
-  <!-- Sort links -->
-  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-    <span style="font-size:.8rem;color:var(--text-muted);">Trier :</span>
-    <a href="?{% if current_category %}category={{ current_category.slug }}&{% endif %}{% if search_q %}q={{ search_q }}&{% endif %}sort=featured"
-       class="category-chip {% if sort == 'featured' or not sort %}active{% endif %}" style="padding:4px 12px;font-size:.75rem;">⭐ Vedettes</a>
-    <a href="?{% if current_category %}category={{ current_category.slug }}&{% endif %}{% if search_q %}q={{ search_q }}&{% endif %}sort=rating"
-       class="category-chip {% if sort == 'rating' %}active{% endif %}" style="padding:4px 12px;font-size:.75rem;">🏆 Note</a>
-    <a href="?{% if current_category %}category={{ current_category.slug }}&{% endif %}{% if search_q %}q={{ search_q }}&{% endif %}sort=price_asc"
-       class="category-chip {% if sort == 'price_asc' %}active{% endif %}" style="padding:4px 12px;font-size:.75rem;">Prix ↑</a>
-    <a href="?{% if current_category %}category={{ current_category.slug }}&{% endif %}{% if search_q %}q={{ search_q }}&{% endif %}sort=price_desc"
-       class="category-chip {% if sort == 'price_desc' %}active{% endif %}" style="padding:4px 12px;font-size:.75rem;">Prix ↓</a>
-    <a href="?{% if current_category %}category={{ current_category.slug }}&{% endif %}{% if search_q %}q={{ search_q }}&{% endif %}sort=newest"
-       class="category-chip {% if sort == 'newest' %}active{% endif %}" style="padding:4px 12px;font-size:.75rem;">🆕 Récents</a>
+  <!-- Contenu -->
+  <div style="position:relative;z-index:2;padding:36px 44px;">
+    <p style="font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--cta);margin-bottom:10px;">
+      {% if current_category %}Catégorie{% elif search_q %}Recherche{% else %}Notre sélection{% endif %}
+    </p>
+    <h2 style="font-family:'DM Serif Display',serif;font-size:2rem;font-weight:400;color:#fff;margin-bottom:8px;letter-spacing:-0.02em;text-shadow:0 2px 16px rgba(0,0,0,0.5);">
+      {% if current_category %}{{ current_category.name }}
+      {% elif search_q %}&laquo;&nbsp;{{ search_q }}&nbsp;&raquo;
+      {% else %}Boutique
+      {% endif %}
+    </h2>
+    <p style="font-size:.875rem;color:rgba(255,255,255,0.60);">
+      {% if products %}{{ products|length }} produit{{ products|length|pluralize }} disponible{{ products|length|pluralize }}
+      {% else %}Aucun produit trouvé{% endif %}
+    </p>
   </div>
 </div>
 
-{% if products %}
-<div class="products-grid">
-  {% for product in products %}
-  {% include 'recommendations/partials/product_card.html' with product=product %}
-  {% endfor %}
-</div>
-{% else %}
-<div class="empty-state">
-  <div class="empty-state-icon">🔍</div>
-  <h3>Aucun produit trouvé</h3>
-  <p>Essayez d'autres mots-clés ou explorez une autre catégorie.</p>
-  <a href="{% url 'products' %}" class="btn btn-primary" style="margin-top:20px;">Voir tous les produits</a>
-</div>
-{% endif %}
+<!-- Layout avec sidebar filtres -->
+<div class="layout-with-sidebar">
+
+  <!-- ── Sidebar filtres ── -->
+  <aside class="filters-sidebar">
+
+    <!-- Recherche -->
+    <div class="filter-group">
+      <div class="filter-title">Recherche</div>
+      <form action="{% url 'products' %}" method="get">
+        {% if current_category %}
+        <input type="hidden" name="category" value="{{ current_category.slug }}">
+        {% endif %}
+        <input type="text" name="q" value="{{ search_q }}" placeholder="Mot-clé, marque…" class="form-input" style="border-radius:var(--pill);">
+        <button type="submit" class="btn btn-primary btn-sm w-full" style="margin-top:10px;">
+          Rechercher
+        </button>
+        {% if search_q or current_category %}
+        <a href="{% url 'products' %}" class="btn btn-ghost btn-sm w-full" style="margin-top:6px;">
+          Effacer les filtres
+        </a>
+        {% endif %}
+      </form>
+    </div>
+
+    <div class="divider" style="margin:20px 0;"></div>
+
+    <!-- Catégories -->
+    <div class="filter-group">
+      <div class="filter-title">Catégories</div>
+      <div style="display:flex;flex-direction:column;gap:2px;">
+        <a href="{% url 'products' %}"
+           style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:var(--radius);font-size:.85rem;text-decoration:none;transition:all var(--transition);
+           {% if not current_category and not search_q %}background:var(--accent-dim);color:var(--accent);font-weight:600;{% else %}color:var(--text-sub);{% endif %}">
+          <span>Toutes les catégories</span>
+          <span style="font-size:.7rem;font-weight:600;{% if not current_category and not search_q %}color:var(--accent);{% else %}color:var(--text-muted);{% endif %}">
+            {% with total=0 %}{{ categories|length }}{% endwith %}
+          </span>
+        </a>
+        {% for cat in categories %}
+        <a href="{% url 'products' %}?category={{ cat.slug }}"
+           style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:var(--radius);font-size:.85rem;text-decoration:none;transition:all var(--transition);
+           {% if current_category.slug == cat.slug %}background:var(--accent-dim);color:var(--accent);font-weight:600;border-left:2px solid var(--accent);padding-left:8px;{% else %}color:var(--text-sub);{% endif %}">
+          <span>{{ cat.name }}</span>
+          <span style="font-size:.7rem;font-weight:600;background:var(--card-2);padding:1px 7px;border-radius:10px;
+          {% if current_category.slug == cat.slug %}background:var(--accent-border);color:var(--accent);{% else %}color:var(--text-muted);{% endif %}">
+            {{ cat.product_count }}
+          </span>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="divider" style="margin:20px 0;"></div>
+
+    <!-- Prix -->
+    <div class="filter-group">
+      <div class="filter-title">Prix maximum</div>
+      <input type="range" class="range-slider" id="priceRange" min="0" max="500000" step="5000" value="500000">
+      <div style="display:flex;justify-content:space-between;margin-top:8px;">
+        <span style="font-size:.72rem;color:var(--text-muted);">0 FCFA</span>
+        <span style="font-size:.78rem;color:var(--accent);font-weight:700;" id="priceDisplay">500 000 FCFA</span>
+      </div>
+    </div>
+
+    <div class="divider" style="margin:20px 0;"></div>
+
+    <!-- Trier par -->
+    <div class="filter-group">
+      <div class="filter-title">Trier par</div>
+      <div style="display:flex;flex-direction:column;gap:2px;">
+          {% for label, value in sort_options %}
+        <a href="?{% if current_category %}category={{ current_category.slug }}&{% endif %}{% if search_q %}q={{ search_q }}&{% endif %}sort={{ value }}"
+           style="display:flex;align-items:center;padding:8px 10px;border-radius:var(--radius);font-size:.85rem;text-decoration:none;transition:all var(--transition);
+           {% if sort == value %}background:var(--accent-dim);color:var(--accent);font-weight:600;{% else %}color:var(--text-sub);{% endif %}">
+          {{ label }}
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ── Grille produits ── -->
+  <div>
+    {% if products %}
+    <div class="products-grid">
+      {% for product in products %}
+      {% include 'recommendations/partials/product_card.html' with product=product %}
+      {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <div class="pagination">
+      {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}{% if current_category %}&category={{ current_category.slug }}{% endif %}{% if search_q %}&q={{ search_q }}{% endif %}" class="page-link">&larr;</a>
+      {% endif %}
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <span class="page-link active">{{ num }}</span>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <a href="?page={{ num }}{% if current_category %}&category={{ current_category.slug }}{% endif %}{% if search_q %}&q={{ search_q }}{% endif %}" class="page-link">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% if current_category %}&category={{ current_category.slug }}{% endif %}{% if search_q %}&q={{ search_q }}{% endif %}" class="page-link">&rarr;</a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+      <h3>Aucun produit trouvé</h3>
+      <p>Essayez d'autres mots-clés ou explorez une autre catégorie.</p>
+      <a href="{% url 'products' %}" class="btn btn-primary" style="margin-top:20px;">
+        Voir tous les produits
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+</div><!-- /layout-with-sidebar -->
 
 {% endblock %}

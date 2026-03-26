@@ -1,96 +1,143 @@
 {% extends 'recommendations/base.html' %}
+{% load static %}
 {% block title %}{{ product.name }}{% endblock %}
+
 {% block content %}
 
 <!-- Breadcrumb -->
-<div style="display:flex;align-items:center;gap:8px;margin-bottom:24px;font-size:.8rem;color:var(--text-muted);">
-  <a href="{% url 'home' %}" style="color:var(--text-muted);text-decoration:none;">Accueil</a>
-  <span>›</span>
-  <a href="{% url 'products' %}" style="color:var(--text-muted);text-decoration:none;">Boutique</a>
-  <span>›</span>
-  <a href="{% url 'products' %}?category={{ product.category.slug }}" style="color:var(--text-muted);text-decoration:none;">{{ product.category.name }}</a>
-  <span>›</span>
-  <span style="color:var(--gold);">{{ product.name }}</span>
+<div class="breadcrumb">
+  <a href="{% url 'home' %}">Accueil</a>
+  <span>&rsaquo;</span>
+  <a href="{% url 'products' %}">Boutique</a>
+  <span>&rsaquo;</span>
+  <a href="{% url 'products' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
+  <span>&rsaquo;</span>
+  <span>{{ product.name }}</span>
 </div>
 
-<!-- Product Main -->
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:40px;">
+<!-- Layout 2 colonnes -->
+<div style="display:grid;grid-template-columns:60% 40%;gap:40px;margin-bottom:60px;align-items:start;">
 
-  <!-- Image -->
-  <div style="background:linear-gradient(135deg,{{ product.image_color }}22 0%,{{ product.image_color }}11 100%);border-radius:20px;border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;min-height:400px;position:relative;">
-    {% if product.is_featured %}
-    <span style="position:absolute;top:16px;left:16px;background:var(--gold);color:#1a1a18;font-size:.7rem;font-weight:600;padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;">Vedette</span>
-    {% endif %}
-    {% if product.discount_percent > 0 %}
-    <span style="position:absolute;top:16px;right:16px;background:#e63946;color:white;font-size:.75rem;font-weight:600;padding:4px 10px;border-radius:20px;">-{{ product.discount_percent }}%</span>
-    {% endif %}
-    <span style="font-size:9rem;filter:drop-shadow(0 16px 32px rgba(0,0,0,0.2));">{{ product.image_emoji }}</span>
+  <!-- Gauche : Image -->
+  <div style="position:relative;">
+    <div style="background:linear-gradient(135deg,{{ product.image_color }}22 0%,{{ product.image_color }}11 100%);border-radius:var(--radius-lg);border:1px solid var(--divider);overflow:hidden;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;position:relative;">
+
+      {% if product.is_featured %}
+      <span class="badge badge--featured" style="top:16px;left:16px;">Vedette</span>
+      {% endif %}
+      {% if product.discount_percent > 0 %}
+      <span class="discount-badge" style="top:16px;right:16px;font-size:.8rem;padding:4px 12px;">
+        -{{ product.discount_percent }}%
+      </span>
+      {% endif %}
+
+      <img src="{{ product.image_url }}"
+           alt="{{ product.name }}"
+           loading="lazy"
+           style="width:100%;height:100%;object-fit:cover;"
+           onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=500&q=80'">
+    </div>
   </div>
 
-  <!-- Info -->
-  <div style="display:flex;flex-direction:column;justify-content:center;">
-    <div style="font-size:.75rem;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;font-weight:500;margin-bottom:8px;">
-      {{ product.category.icon }} {{ product.category.name }}
+  <!-- Droite sticky : Infos -->
+  <div style="position:sticky;top:calc(var(--navbar-h) + 20px);">
+
+    <!-- Catégorie -->
+    <div style="margin-bottom:12px;">
+      <span style="font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);">
+        {{ product.category.name }}
+      </span>
     </div>
-    <h1 style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:600;color:var(--text-dark);line-height:1.2;margin-bottom:8px;">{{ product.name }}</h1>
+
+    <!-- Nom -->
+    <h1 style="font-family:'DM Serif Display',serif;font-size:2.2rem;font-weight:400;color:var(--text);line-height:1.15;margin-bottom:10px;letter-spacing:-0.02em;">
+      {{ product.name }}
+    </h1>
+
     {% if product.brand %}
-    <p style="color:var(--text-muted);font-size:.875rem;margin-bottom:16px;">par <strong>{{ product.brand }}</strong></p>
+    <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:16px;">
+      par <strong style="color:var(--text);">{{ product.brand }}</strong>
+    </p>
     {% endif %}
 
-    <!-- Stars -->
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;">
+    <!-- Etoiles -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
       {% with avg=product.average_rating %}
-      <div style="display:flex;gap:2px;">
+      <div style="display:flex;gap:3px;">
         {% for i in "12345" %}
           {% if forloop.counter <= avg %}
-          <span style="color:var(--gold);font-size:1.1rem;">★</span>
+          <span style="color:var(--badge-algo);font-size:1.1rem;">&#9733;</span>
           {% else %}
-          <span style="color:var(--gold-border);font-size:1.1rem;">★</span>
+          <span style="color:var(--divider);font-size:1.1rem;">&#9733;</span>
           {% endif %}
         {% endfor %}
       </div>
-      <span style="font-weight:600;color:var(--text-dark);">{{ avg }}</span>
+      <span style="font-weight:600;color:var(--text);">{{ avg }}</span>
       <span style="color:var(--text-muted);font-size:.85rem;">({{ product.rating_count }} avis)</span>
       {% endwith %}
     </div>
 
-    <!-- Price -->
+    <!-- Prix -->
     <div style="margin-bottom:24px;">
-      <span style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:600;color:var(--gold);">{{ product.price }} €</span>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:2rem;font-weight:800;color:var(--price-color);">
+        {{ product.price }} FCFA
+      </span>
       {% if product.original_price %}
-      <span style="font-size:1.1rem;color:var(--text-light);text-decoration:line-through;margin-left:10px;">{{ product.original_price }} €</span>
+      <span style="font-size:1rem;color:var(--text-muted);text-decoration:line-through;margin-left:10px;">
+        {{ product.original_price }} FCFA
+      </span>
       {% endif %}
     </div>
 
     <!-- Description -->
-    <p style="color:var(--text-muted);font-size:.9rem;line-height:1.7;margin-bottom:24px;">{{ product.description }}</p>
+    <p style="color:var(--text-sub);font-size:.9rem;line-height:1.75;margin-bottom:24px;">
+      {{ product.description }}
+    </p>
 
     <!-- Tags -->
     {% if product.get_tags_list %}
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;">
       {% for tag in product.get_tags_list %}
-      <span style="background:var(--gold-faint);border:1px solid var(--gold-border);color:var(--gold-dark);font-size:.72rem;padding:3px 10px;border-radius:20px;">{{ tag }}</span>
+      <span style="background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);font-size:.7rem;padding:3px 10px;border-radius:var(--pill);font-weight:600;text-transform:uppercase;letter-spacing:.06em;">
+        {{ tag }}
+      </span>
       {% endfor %}
     </div>
     {% endif %}
 
     <!-- Stock -->
-    <p style="font-size:.8rem;color:{% if product.stock > 10 %}#166534{% else %}#991b1b{% endif %};margin-bottom:20px;">
-      {% if product.stock > 10 %}✅ En stock ({{ product.stock }} disponibles){% else %}⚠️ Stock limité ({{ product.stock }} restants){% endif %}
+    <p style="font-size:.82rem;margin-bottom:24px;">
+      {% if product.stock > 10 %}
+      <span style="color:var(--accent);font-weight:600;">En stock</span>
+      <span style="color:var(--text-muted);margin-left:6px;">({{ product.stock }} disponibles)</span>
+      {% else %}
+      <span style="color:var(--cta);font-weight:600;">Stock limité</span>
+      <span style="color:var(--text-muted);margin-left:6px;">({{ product.stock }} restants)</span>
+      {% endif %}
     </p>
 
     <!-- Actions -->
-    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;">
       {% if in_cart %}
-      <a href="{% url 'cart' %}" class="btn btn-primary">🛒 Voir le panier</a>
+      <a href="{% url 'cart' %}" class="btn btn-cta btn-lg btn-shimmer">
+        Voir le panier &rarr;
+      </a>
       {% else %}
-      <button onclick="addToCart({{ product.pk }})" class="btn btn-primary">🛒 Ajouter au panier</button>
+      <button onclick="addToCart({{ product.pk }}, event)" class="btn btn-cta btn-lg btn-shimmer">
+        Ajouter au panier
+      </button>
+      {% endif %}
+
+      {% if product.algorithm %}
+      <button onclick="openModal('whyModal')" class="btn btn-outline btn-lg">
+        Pourquoi recommandé ?
+      </button>
       {% endif %}
     </div>
 
-    <!-- User Rating -->
-    <div style="margin-top:28px;padding:20px;background:var(--cream);border-radius:var(--radius);border:1px solid var(--gold-border);">
-      <p style="font-size:.8rem;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">
+    <!-- Notation -->
+    <div style="background:var(--card);border:1px solid var(--divider);border-radius:var(--radius);padding:20px;">
+      <p style="font-size:.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.10em;margin-bottom:12px;">
         {% if user_rating %}Votre note : {{ user_rating.score }}/5{% else %}Notez ce produit{% endif %}
       </p>
       <form method="post" id="ratingForm">
@@ -99,7 +146,9 @@
         <input type="hidden" name="score" id="ratingScore" value="{{ user_rating.score|default:'' }}">
         <div class="stars-interactive" id="starsContainer">
           {% for i in "12345" %}
-          <button type="button" class="star-btn {% if user_rating.score >= forloop.counter %}filled{% endif %}" data-val="{{ forloop.counter }}" onclick="setRating({{ forloop.counter }})">★</button>
+          <button type="button" class="star-btn {% if user_rating.score >= forloop.counter %}filled{% endif %}"
+                  data-val="{{ forloop.counter }}"
+                  onclick="setRating({{ forloop.counter }})">&#9733;</button>
           {% endfor %}
         </div>
         <button type="submit" class="btn btn-outline btn-sm" style="margin-top:12px;">
@@ -107,57 +156,90 @@
         </button>
       </form>
     </div>
+
   </div>
 </div>
 
-<!-- Comments -->
-<div style="margin-bottom:40px;">
-  <h2 class="section-title">💬 Avis clients</h2>
+<!-- Modal "Pourquoi recommandé ?" -->
+{% if product.algorithm %}
+<div class="modal-overlay" id="whyModal">
+  <div class="modal">
+    <button class="modal__close" onclick="closeModal('whyModal')">&times;</button>
+    <div style="font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">
+      Algorithme &middot; {{ product.algorithm }}
+    </div>
+    <h2 class="modal__title">Pourquoi ce produit ?</h2>
+    <p class="modal__sub">Voici comment notre système a sélectionné ce produit pour vous.</p>
+    <div class="algo-explanation">
+      {% if product.algorithm == 'collaborative' %}
+      <p><strong>Filtrage collaboratif</strong> — Des utilisateurs ayant des goûts similaires aux vôtres ont apprécié ce produit. Notre algorithme analyse vos notes et celles d'autres utilisateurs pour trouver des correspondances.</p>
+      {% elif product.algorithm == 'content' %}
+      <p><strong>Basé sur le contenu</strong> — Ce produit partage des caractéristiques (catégorie, tags, prix) avec des produits que vous avez déjà notés positivement. L'algorithme analyse les attributs de vos favoris.</p>
+      {% elif product.algorithm == 'hybrid' %}
+      <p><strong>Hybride</strong> — Ce produit a été sélectionné par notre algorithme hybride qui combine filtrage collaboratif et contenu pour maximiser la précision de la recommandation.</p>
+      {% else %}
+      <p>Ce produit a été sélectionné par nos algorithmes de recommandation basés sur votre historique et vos préférences.</p>
+      {% endif %}
+      {% if product.score %}
+      <p style="margin-top:12px;font-size:.85rem;font-weight:700;color:var(--accent);">
+        Score de correspondance : {{ product.score }}%
+      </p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}
 
-  <!-- Add comment -->
-  <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:24px;margin-bottom:24px;">
-    <h3 style="font-size:1rem;font-weight:500;margin-bottom:16px;color:var(--text-dark);">Laisser un avis</h3>
+<!-- Avis clients -->
+<div style="margin-bottom:60px;">
+  <h2 class="section-title" style="text-align:left;font-size:1.5rem;margin-bottom:24px;">Avis clients</h2>
+
+  <div style="background:var(--card);border:1px solid var(--divider);border-radius:var(--radius-md);padding:24px;margin-bottom:24px;">
+    <h3 style="font-size:.875rem;font-weight:600;margin-bottom:16px;color:var(--text);">Laisser un avis</h3>
     <form method="post">
       {% csrf_token %}
       <input type="hidden" name="action" value="comment">
-      <textarea name="content" class="form-input" placeholder="Partagez votre expérience avec ce produit…" rows="3"></textarea>
-      <button type="submit" class="btn btn-primary btn-sm" style="margin-top:12px;">Publier l'avis</button>
+      <textarea name="content" class="form-input"
+                placeholder="Partagez votre expérience avec ce produit…" rows="3"></textarea>
+      <button type="submit" class="btn btn-primary btn-sm" style="margin-top:12px;">
+        Publier l'avis
+      </button>
     </form>
   </div>
 
   {% if comments %}
-  <div style="display:flex;flex-direction:column;gap:16px;">
+  <div style="display:flex;flex-direction:column;gap:12px;">
     {% for comment in comments %}
-    <div style="background:var(--white);border:1px solid var(--gold-border);border-radius:var(--radius);padding:20px;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-        <div style="width:36px;height:36px;border-radius:50%;background:var(--gold-faint);border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.85rem;color:var(--gold);">
+    <div style="background:var(--card);border:1px solid var(--divider);border-radius:var(--radius-md);padding:20px;" data-reveal>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--accent-dim);border:1px solid var(--accent-border);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:var(--accent);overflow:hidden;flex-shrink:0;">
           {% if comment.user.profile_pic %}
-          <img src="{{ comment.user.profile_pic.url }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="">
+          <img src="{{ comment.user.profile_pic.url }}" style="width:100%;height:100%;object-fit:cover;" alt="">
           {% else %}
           {{ comment.user.username|first|upper }}
           {% endif %}
         </div>
         <div>
-          <div style="font-weight:500;font-size:.875rem;color:var(--text-dark);">{{ comment.user.username }}</div>
-          <div style="font-size:.72rem;color:var(--text-light);">{{ comment.created_at|date:"d F Y" }}</div>
+          <div style="font-weight:600;font-size:.875rem;color:var(--text);">{{ comment.user.username }}</div>
+          <div style="font-size:.72rem;color:var(--text-muted);">{{ comment.created_at|date:"d F Y" }}</div>
         </div>
       </div>
-      <p style="color:var(--text-muted);font-size:.9rem;line-height:1.6;">{{ comment.content }}</p>
+      <p style="color:var(--text-sub);font-size:.9rem;line-height:1.65;">{{ comment.content }}</p>
     </div>
     {% endfor %}
   </div>
   {% else %}
-  <div class="empty-state" style="padding:30px;">
-    <p style="color:var(--text-muted);">Aucun avis pour l'instant. Soyez le premier à commenter !</p>
+  <div class="empty-state" style="padding:40px;">
+    <p>Aucun avis pour l'instant. Soyez le premier à commenter.</p>
   </div>
   {% endif %}
 </div>
 
-<!-- Similar Products -->
+<!-- Produits similaires -->
 {% if similar_products %}
-<div>
-  <h2 class="section-title">🔗 Produits similaires</h2>
-  <div class="products-grid">
+<div style="margin-bottom:40px;">
+  <h2 class="section-title" style="text-align:left;font-size:1.5rem;margin-bottom:24px;">Produits similaires</h2>
+  <div class="products-carousel">
     {% for p in similar_products %}
     {% include 'recommendations/partials/product_card.html' with product=p %}
     {% endfor %}
@@ -166,6 +248,7 @@
 {% endif %}
 
 {% endblock %}
+
 {% block extra_js %}
 <script>
 function setRating(val) {

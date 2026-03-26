@@ -1,95 +1,205 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="fr" data-theme="light">
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Inscription — LuxeMart</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap">
-<link rel="stylesheet" href="{% static 'css/main.css' %}">
+<title>Inscription — RecoShop</title>
+<script>(function(){var t=localStorage.getItem('recoshop-theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'recommendations/css/main.css' %}">
 <style>
-  body { display:block; min-height:100vh; background:var(--off-white); }
-  .auth-wrapper { min-height:100vh; display:grid; grid-template-columns:1fr 1fr; }
+  body { background: var(--primary); min-height: 100vh; display: grid; }
+  .auth-wrapper { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
+
   .auth-hero {
-    background: linear-gradient(160deg, #1a1a18 0%, #2c2a1e 60%, #3d3520 100%);
-    display:flex; flex-direction:column; justify-content:center; align-items:flex-start;
-    padding:60px; position:relative; overflow:hidden;
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+    justify-content: flex-end; padding: 60px;
   }
-  .auth-hero::before {
-    content:''; position:absolute; inset:0;
-    background:radial-gradient(ellipse at 30% 50%, rgba(212,175,55,0.18) 0%, transparent 65%);
+  .auth-hero-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://source.unsplash.com/1200x900/?luxury,store,collection');
+    background-size: cover; background-position: center;
   }
-  .auth-hero-content { position:relative; z-index:1; }
-  .auth-hero h1 { font-family:'Cormorant Garamond',serif; font-size:3.5rem; font-weight:600; color:var(--gold); line-height:1; margin-bottom:8px; }
-  .auth-hero-sub { font-size:.85rem; letter-spacing:.2em; color:rgba(255,255,255,0.4); text-transform:uppercase; margin-bottom:40px; }
-  .feature-list { list-style:none; margin-top:32px; }
-  .feature-list li { color:rgba(255,255,255,0.7); font-size:.9rem; padding:8px 0; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(212,175,55,0.1); }
-  .feature-list li span { color:var(--gold); }
-  .auth-form-side { display:flex; align-items:center; justify-content:center; padding:40px; background:var(--white); }
-  .auth-form-box { width:100%; max-width:400px; }
-  .auth-form-title { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:600; color:var(--text-dark); margin-bottom:6px; }
-  .auth-form-subtitle { color:var(--text-muted); font-size:.875rem; margin-bottom:28px; }
-  .auth-link { color:var(--gold); text-decoration:none; font-weight:500; }
-  .auth-divider { text-align:center; margin:20px 0; position:relative; color:var(--text-light); font-size:.8rem; }
-  .auth-divider::before,.auth-divider::after { content:''; position:absolute; top:50%; width:42%; height:1px; background:var(--gold-border); }
-  .auth-divider::before{left:0;} .auth-divider::after{right:0;}
-  @media(max-width:700px){.auth-wrapper{grid-template-columns:1fr;} .auth-hero{display:none;}}
+  .auth-hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(10,10,10,0.96) 0%, rgba(10,10,10,0.55) 50%, rgba(10,10,10,0.25) 100%);
+  }
+  .auth-hero-logo {
+    position: absolute; top: 40px; left: 60px; z-index: 2;
+    font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600;
+    background: linear-gradient(135deg, #C8A96E, #2DD4BF);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .auth-hero-content { position: relative; z-index: 1; }
+  .auth-hero-content h2 {
+    font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600;
+    color: var(--text); margin-bottom: 24px;
+  }
+  .feature-list { display: flex; flex-direction: column; gap: 12px; }
+  .feature-item {
+    display: flex; align-items: center; gap: 12px;
+    color: rgba(245,245,245,0.75); font-size: 0.9rem;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(200,169,110,0.10);
+  }
+  .feature-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--accent-faint);
+    border: 1px solid var(--accent-border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; flex-shrink: 0;
+    color: var(--accent);
+  }
+
+  .auth-form-side {
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px 48px;
+    border-left: 1px solid rgba(200,169,110,0.12);
+    overflow-y: auto;
+  }
+  .auth-form-box { width: 100%; max-width: 400px; }
+  .auth-form-title { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .auth-form-sub   { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 32px; }
+
+  .auth-divider { text-align: center; margin: 20px 0; position: relative; color: var(--text-muted); font-size: 0.8rem; }
+  .auth-divider::before, .auth-divider::after { content: ''; position: absolute; top: 50%; width: 42%; height: 1px; background: rgba(200,169,110,0.15); }
+  .auth-divider::before { left: 0; } .auth-divider::after { right: 0; }
+  .auth-link { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .auth-link:hover { text-decoration: underline; }
+
+  /* Float label */
+  .fl-group { position: relative; margin-bottom: 18px; }
+  .fl-group input {
+    width: 100%; background: var(--surface-2);
+    border: 1px solid rgba(200,169,110,0.20); border-radius: 10px;
+    padding: 20px 16px 8px; font-size: 0.9rem; color: var(--text);
+    outline: none; transition: border-color 0.3s;
+  }
+  .fl-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200,169,110,0.10); }
+  .fl-group input::placeholder { opacity: 0; }
+  .fl-group label {
+    position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    font-size: 0.9rem; color: var(--text-muted);
+    transition: all 0.2s; pointer-events: none;
+  }
+  .fl-group input:focus + label,
+  .fl-group input:not(:placeholder-shown) + label {
+    top: 10px; transform: none;
+    font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.10em;
+    color: var(--accent);
+  }
+
+  .btn-submit { position: relative; overflow: hidden; }
+  .btn-submit.loading { pointer-events: none; opacity: 0.75; }
+  .btn-submit.loading::after {
+    content: '';
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 18px; height: 18px;
+    border: 2px solid rgba(0,0,0,0.3); border-top-color: #0a0a0a;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+  @media (max-width: 700px) {
+    .auth-wrapper { grid-template-columns: 1fr; }
+    .auth-hero { display: none; }
+    .auth-form-side { padding: 40px 24px; }
+  }
 </style>
 </head>
 <body>
 <div class="auth-wrapper">
+
+  <!-- Gauche -->
   <div class="auth-hero">
+    <div class="auth-hero-bg"></div>
+    <div class="auth-hero-overlay"></div>
+    <span class="auth-hero-logo">RecoShop</span>
     <div class="auth-hero-content">
-      <h1>✦ LuxeMart</h1>
-      <p class="auth-hero-sub">Rejoignez-nous</p>
-      <ul class="feature-list">
-        <li><span>✦</span> Recommandations personnalisées par IA</li>
-        <li><span>✦</span> Accès à +50 produits premium</li>
-        <li><span>✦</span> Panier & historique d'achats</li>
-        <li><span>✦</span> Notation & commentaires</li>
-        <li><span>✦</span> Profil personnalisable</li>
-      </ul>
+      <h2>Rejoignez-nous</h2>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-icon">AI</div>
+          <span>Recommandations personnalisées par IA</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">54</div>
+          <span>Accès à +50 produits premium</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </div>
+          <span>Panier &amp; historique d'achats</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">&#9733;</div>
+          <span>Notation &amp; commentaires</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 12h10M7 8h10M7 16h6"/></svg>
+          </div>
+          <span>Tableau de bord personnalisé</span>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- Droite -->
   <div class="auth-form-side">
     <div class="auth-form-box">
       <h2 class="auth-form-title">Créer un compte</h2>
-      <p class="auth-form-subtitle">Gratuit & sans engagement ✨</p>
+      <p class="auth-form-sub">Gratuit &amp; sans engagement.</p>
+
       {% for message in messages %}
-      <div class="alert alert-{% if message.tags == 'error' %}error{% else %}info{% endif %}">{{ message }}</div>
+      <div class="alert alert-{% if message.tags == 'error' %}error{% else %}info{% endif %}">
+        {{ message }}
+      </div>
       {% endfor %}
-      <form method="post">
+
+      <form method="post" onsubmit="this.querySelector('.btn-submit').classList.add('loading')">
         {% csrf_token %}
-        <div class="form-group">
-          <label class="form-label">Nom d'utilisateur</label>
-          <input type="text" name="username" class="form-input" placeholder="votre_pseudo" required>
+
+        <div class="fl-group">
+          <input type="text" name="username" id="username" placeholder=" " required>
+          <label for="username">Nom d'utilisateur</label>
         </div>
-        <div class="form-group">
-          <label class="form-label">Adresse email</label>
-          <input type="email" name="email" class="form-input" placeholder="vous@exemple.com" required>
+
+        <div class="fl-group">
+          <input type="email" name="email" id="email" placeholder=" " required>
+          <label for="email">Adresse email</label>
         </div>
-        <div class="form-group">
-          <label class="form-label">Mot de passe</label>
-          <input type="password" name="password1" class="form-input" placeholder="8 caractères minimum" required>
+
+        <div class="fl-group">
+          <input type="password" name="password1" id="password1" placeholder=" " required>
+          <label for="password1">Mot de passe (8 caractères minimum)</label>
         </div>
-        <div class="form-group">
-          <label class="form-label">Confirmer le mot de passe</label>
-          <input type="password" name="password2" class="form-input" placeholder="••••••••" required>
+
+        <div class="fl-group">
+          <input type="password" name="password2" id="password2" placeholder=" " required>
+          <label for="password2">Confirmer le mot de passe</label>
         </div>
-        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;">
+
+        <button type="submit" class="btn btn-primary btn-shimmer btn-submit w-full" style="justify-content:center;margin-top:4px;font-size:1rem;padding:14px;">
           Créer mon compte →
         </button>
       </form>
+
       <div class="auth-divider">ou</div>
+
       <p style="text-align:center;font-size:.875rem;color:var(--text-muted);">
         Déjà un compte ? <a href="{% url 'login' %}" class="auth-link">Se connecter</a>
       </p>
     </div>
   </div>
+
 </div>
-<script>
-const t = localStorage.getItem('theme')||'light';
-document.documentElement.setAttribute('data-theme',t);
-</script>
 </body>
 </html>

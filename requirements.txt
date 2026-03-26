@@ -1,0 +1,36 @@
+# Web server & static files
+gunicorn==25.2.0
+whitenoise==6.12.0
+python-dotenv==1.2.2
+
+# Django
+Django==5.2.12
+asgiref==3.11.1
+sqlparse==0.5.5
+
+# Database (PostgreSQL pour Render, SQLite en local)
+psycopg2-binary==2.9.11
+dj-database-url==3.1.2
+
+# Machine Learning (recommandations)
+scikit-learn==1.8.0
+numpy==2.4.3
+scipy==1.17.1
+joblib==1.5.0
+threadpoolctl==3.6.0
+
+# Data
+pandas==3.0.1
+python-dateutil==2.9.0.post0
+six==1.17.0
+
+# HTTP & images
+requests==2.32.5
+Pillow==12.1.1
+urllib3==2.6.3
+certifi==2026.2.25
+charset-normalizer==3.4.6
+idna==3.11
+
+# Timezone
+tzdata==2025.3

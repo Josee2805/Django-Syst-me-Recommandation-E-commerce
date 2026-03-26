@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\ADMIN\Desktop\AS3\Django\Projet1\ecommerce_reco\venv
+set VIRTUAL_ENV=C:\Users\LENOVO\Desktop\ECOLE\ENSAE\AS3_2025_2026\Semestre_1\django\Projet\Django-Syst-me-Recommandation-E-commerce\venv
 
 if not defined PROMPT set PROMPT=$P$G
 
