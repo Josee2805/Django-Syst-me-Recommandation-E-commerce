@@ -101,10 +101,10 @@
           </a>
           {% endfor %}
         {% else %}
-          {% for product in recommendations|slice:":5" %}
-          <a href="{% url 'product_detail' product.pk %}" class="algo-col__item">
+          {% for rec in recommendations|slice:":5" %}
+          <a href="{% url 'product_detail' rec.product.pk %}" class="algo-col__item">
             <span class="algo-col__item-rank">{{ forloop.counter }}</span>
-            <span class="algo-col__item-name">{{ product.name|truncatechars:28 }}</span>
+            <span class="algo-col__item-name">{{ rec.product.name|truncatechars:28 }}</span>
           </a>
           {% empty %}
           <p style="font-size:.8rem;color:var(--text-muted);padding:12px;text-align:center;">
@@ -134,10 +134,10 @@
           </a>
           {% endfor %}
         {% else %}
-          {% for product in recommendations|slice:"5:10" %}
-          <a href="{% url 'product_detail' product.pk %}" class="algo-col__item">
+          {% for rec in recommendations|slice:"5:10" %}
+          <a href="{% url 'product_detail' rec.product.pk %}" class="algo-col__item">
             <span class="algo-col__item-rank">{{ forloop.counter }}</span>
-            <span class="algo-col__item-name">{{ product.name|truncatechars:28 }}</span>
+            <span class="algo-col__item-name">{{ rec.product.name|truncatechars:28 }}</span>
           </a>
           {% empty %}
           <p style="font-size:.8rem;color:var(--text-muted);padding:12px;text-align:center;">
@@ -167,10 +167,10 @@
           </a>
           {% endfor %}
         {% else %}
-          {% for product in recommendations|slice:":5" %}
-          <a href="{% url 'product_detail' product.pk %}" class="algo-col__item">
+          {% for rec in recommendations|slice:":5" %}
+          <a href="{% url 'product_detail' rec.product.pk %}" class="algo-col__item">
             <span class="algo-col__item-rank">{{ forloop.counter }}</span>
-            <span class="algo-col__item-name">{{ product.name|truncatechars:28 }}</span>
+            <span class="algo-col__item-name">{{ rec.product.name|truncatechars:28 }}</span>
           </a>
           {% empty %}
           <p style="font-size:.8rem;color:var(--text-muted);padding:12px;text-align:center;">
@@ -210,8 +210,8 @@
 
   {% if recommendations %}
   <div class="products-grid">
-    {% for product in recommendations %}
-    {% include 'recommendations/partials/product_card.html' with product=product %}
+    {% for rec in recommendations %}
+    {% include 'recommendations/partials/product_card.html' with product=rec.product source=rec.source reason=rec.reason score=rec.score %}
     {% endfor %}
   </div>
   {% else %}

@@ -22,9 +22,14 @@
     <span class="badge badge--featured">Vedette</span>
     {% endif %}
 
-    <!-- Badge algorithme -->
-    {% if product.algorithm %}
-    <span class="badge badge--{{ product.algorithm }}">{{ product.algorithm_label }}</span>
+    <!-- Badge source algorithme -->
+    {% if source %}
+    <span class="badge badge--{{ source }}">
+      {% if source == 'collaborative' %}Collaboratif
+      {% elif source == 'content' %}Contenu
+      {% elif source == 'hybrid' %}Hybride
+      {% else %}Tendance{% endif %}
+    </span>
     {% endif %}
 
     <!-- Badge réduction -->
@@ -40,6 +45,9 @@
 
       <div class="product-card__category">{{ product.category.name }}</div>
       <h3 class="product-card__name">{{ product.name }}</h3>
+      {% if reason %}
+      <p class="product-card__reason">{{ reason }}</p>
+      {% endif %}
 
       {% if product.brand %}
       <div class="product-card__brand">{{ product.brand }}</div>

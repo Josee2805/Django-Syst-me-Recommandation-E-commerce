@@ -278,8 +278,8 @@
     </a>
   </div>
   <div class="products-grid">
-    {% for product in recommendations %}
-    {% include 'recommendations/partials/product_card.html' with product=product %}
+    {% for rec in recommendations %}
+    {% include 'recommendations/partials/product_card.html' with product=rec.product source=rec.source reason=rec.reason score=rec.score %}
     {% endfor %}
   </div>
   {% else %}
