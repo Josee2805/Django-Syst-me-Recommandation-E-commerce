@@ -127,23 +127,67 @@ def hybrid_recommendations(user, n=12):
 
 
 def cold_start_recommendations(user, all_products, n=12, exclude_ids=None):
-    """Nouveaux users : produits populaires/vedettes avec raison basée sur le profil."""
-    exclude_ids  = exclude_ids or []
+    """
+    Cold start personnalisé : priorité aux catégories d'intérêt de l'utilisateur.
+    Deux utilisateurs avec des intérêts différents obtiennent des produits différents.
+    """
+    exclude_ids    = exclude_ids or []
     user_interests = user.interests_list() if hasattr(user, 'interests_list') else []
 
-    products = list(
-        all_products.exclude(id__in=exclude_ids)
-        .annotate(avg_rating=Avg('ratings__score'), rating_count=Count('ratings'))
-        .order_by('-is_featured', '-avg_rating', '-rating_count')[:n]
+    base_qs = (
+        all_products
+        .exclude(id__in=exclude_ids)
+        .annotate(
+            avg_rating   = Avg('ratings__score'),
+            rating_count = Count('ratings'),
+        )
     )
 
+    products  = []
+    seen_ids  = set()
+
+    # ── 1. Produits dans les catégories d'intérêt ─────────────────────────────
+    if user_interests:
+        interest_products = list(
+            base_qs
+            .filter(category__slug__in=user_interests)
+            .order_by('-avg_rating', '-rating_count')[:n]
+        )
+        for p in interest_products:
+            if p.id not in seen_ids:
+                products.append(p)
+                seen_ids.add(p.id)
+
+    # ── 2. Compléter avec des produits vedettes d'autres catégories ───────────
+    if len(products) < n:
+        featured = list(
+            base_qs
+            .filter(is_featured=True)
+            .exclude(id__in=list(seen_ids))
+            .order_by('-avg_rating', '-rating_count')[:n - len(products)]
+        )
+        for p in featured:
+            if p.id not in seen_ids:
+                products.append(p)
+                seen_ids.add(p.id)
+
+    # ── 3. Compléter avec les produits les mieux notés toutes catégories ──────
+    if len(products) < n:
+        filler = list(
+            base_qs
+            .exclude(id__in=list(seen_ids))
+            .order_by('-avg_rating', '-rating_count')[:n - len(products)]
+        )
+        for p in filler:
+            if p.id not in seen_ids:
+                products.append(p)
+                seen_ids.add(p.id)
+
+    # ── Construction du résultat ───────────────────────────────────────────────
     result = []
-    for p in products:
-        if user_interests and any(
-            interest.lower() in p.category.name.lower() or interest.lower() in (p.tags or '').lower()
-            for interest in user_interests
-        ):
-            reason = f"Tendance dans votre catégorie préférée : {p.category.name}"
+    for p in products[:n]:
+        if user_interests and p.category.slug in user_interests:
+            reason = f"Dans votre catégorie préférée : {p.category.name}"
         elif p.is_featured:
             reason = "Produit vedette de la boutique"
         else:
