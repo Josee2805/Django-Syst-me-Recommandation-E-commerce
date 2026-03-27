@@ -5,10 +5,8 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import Avg, Count, Q
 from django.views.decorators.http import require_POST
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
 from django.contrib.auth.tokens import default_token_generator
 import json
 
@@ -55,38 +53,12 @@ def register_view(request):
         elif CustomUser.objects.filter(username=username).exists():
             messages.error(request, 'Ce nom d\'utilisateur est déjà pris.')
         else:
-            # Compte inactif jusqu'à la confirmation email
             user = CustomUser.objects.create_user(
                 username=username, email=email, password=password1
             )
-            user.is_active = False
-            user.save()
-
-            # Lien d'activation
-            uid   = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
-            protocol = 'https' if request.is_secure() else 'http'
-            domain   = request.get_host()
-            activation_link = f"{protocol}://{domain}/activate/{uid}/{token}/"
-
-            try:
-                html_message = render_to_string(
-                    'recommendations/emails/activation.html',
-                    {'username': username, 'activation_link': activation_link}
-                )
-                send_mail(
-                    subject="Activez votre compte RecoShop",
-                    message=f"Bonjour {username},\n\nActivez votre compte : {activation_link}",
-                    from_email=None,
-                    recipient_list=[email],
-                    html_message=html_message,
-                    fail_silently=False,
-                )
-                return redirect('email_sent')
-            except Exception as e:
-                user.delete()
-                messages.error(request, f'Erreur envoi email : {e}')
-                return render(request, 'recommendations/register.html')
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
+            login(request, user)
+            return redirect('onboarding')
 
     return render(request, 'recommendations/register.html')
 
