@@ -11,5 +11,6 @@ python manage.py collectstatic --noinput
 
 echo "==> Application des migrations..."
 python manage.py migrate
+python manage.py seed_data
 
 echo "==> Build terminé ✓"
