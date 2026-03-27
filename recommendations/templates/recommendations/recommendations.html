@@ -36,20 +36,7 @@
 <!-- Métriques globales -->
 {% if eval_data %}
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:40px;">
-  <div class="stat-card" data-reveal>
-    <div class="stat-card__value">
-      <span data-count="{{ eval_data.precision|floatformat:0 }}">{{ eval_data.precision }}</span>
-    </div>
-    <div class="stat-card__label">Précision globale</div>
-    <div style="margin-top:8px;font-size:.75rem;color:var(--text-muted);">Taux de recommandations pertinentes</div>
-  </div>
-  <div class="stat-card" data-reveal data-reveal-delay="100">
-    <div class="stat-card__value">
-      <span data-count="{{ eval_data.recall|floatformat:0 }}">{{ eval_data.recall }}</span>
-    </div>
-    <div class="stat-card__label">Recall global</div>
-    <div style="margin-top:8px;font-size:.75rem;color:var(--text-muted);">Couverture des produits pertinents</div>
-  </div>
+
   <div class="stat-card" data-reveal data-reveal-delay="200">
     <div class="stat-card__value">
       <span data-count="{{ user_ratings }}">{{ user_ratings }}</span>
