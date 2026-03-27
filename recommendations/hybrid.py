@@ -13,15 +13,25 @@ def hybrid_recommendations(user, n=12):
     ratings_qs = Rating.objects.all()
     user_ratings = ratings_qs.filter(user=user)
 
-    if user_ratings.count() == 0:
+    user_rating_count = user_ratings.count()
+    if user_rating_count == 0:
         return cold_start_recommendations(user, all_products, n)
 
     rated_ids = list(user_ratings.values_list('product_id', flat=True))
 
     # ── Récupérer les recommandations de chaque source ────────────────────────
-    user_recs    = user_based_recommendations(user.id, ratings_qs, n=n * 3)
-    item_recs    = item_based_recommendations(user.id, ratings_qs, n=n * 3)
-    content_recs, content_sources = content_based_for_user_with_source(rated_ids, all_products, n=n * 3)
+    try:
+        user_recs = user_based_recommendations(user.id, ratings_qs, n=n * 3)
+    except Exception:
+        user_recs = []
+    try:
+        item_recs = item_based_recommendations(user.id, ratings_qs, n=n * 3)
+    except Exception:
+        item_recs = []
+    try:
+        content_recs, content_sources = content_based_for_user_with_source(rated_ids, all_products, n=n * 3)
+    except Exception:
+        content_recs, content_sources = [], {}
 
     # ── Scores par rang normalisés ─────────────────────────────────────────────
     def rank_scores(id_list):
