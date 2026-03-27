@@ -318,16 +318,16 @@ def profile_view(request):
     purchases = Purchase.objects.filter(user=user).select_related('product__category').order_by('-purchased_at')
     ratings = Rating.objects.filter(user=user).select_related('product').order_by('-created_at')
     
-    rec_ids = hybrid_recommendations(user, n=8)
-    
+    rec_data = hybrid_recommendations(user, n=8)
+
     eval_data = None
     if ratings.count() >= 3:
-        eval_data = evaluate_recommender(user, [p.id for p in rec_ids])
-    
+        eval_data = evaluate_recommender(user, [r['product'].id for r in rec_data])
+
     return render(request, 'recommendations/profile.html', {
         'purchases': purchases,
         'ratings': ratings,
-        'recommendations': rec_ids,
+        'recommendations': rec_data,
         'eval_data': eval_data,
     })
 
@@ -362,7 +362,7 @@ def recommendations_view(request):
     user_ratings = Rating.objects.filter(user=request.user).count()
     eval_data = None
     if user_ratings >= 3:
-        eval_data = evaluate_recommender(request.user, [p.id for p in recs])
+        eval_data = evaluate_recommender(request.user, [r['product'].id for r in recs])
     
     return render(request, 'recommendations/recommendations.html', {
         'recommendations': recs,
