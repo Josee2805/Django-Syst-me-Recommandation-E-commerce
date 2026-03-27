@@ -1,0 +1,1034 @@
+\documentclass[12pt,a4paper]{report}
+
+% ── Encodage et langue ────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+
+% ── Mise en page ──────────────────────────────────────────────────────────────
+\usepackage[top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% ── Typographie ───────────────────────────────────────────────────────────────
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% ── Graphiques et couleurs ────────────────────────────────────────────────────
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds}
+
+% ── Tableaux ──────────────────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{array}
+
+% ── Code source ───────────────────────────────────────────────────────────────
+\usepackage{listings}
+\usepackage{inconsolata}
+
+% ── Maths ─────────────────────────────────────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ── Liens et PDF ──────────────────────────────────────────────────────────────
+\usepackage[hidelinks]{hyperref}
+
+% ── En-têtes et pieds de page ─────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small RecoShop}
+\fancyhead[R]{\small \leftmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Couleurs projet ───────────────────────────────────────────────────────────
+\definecolor{gold}{RGB}{212,175,55}
+\definecolor{darkbg}{RGB}{26,26,46}
+\definecolor{codebg}{RGB}{245,245,245}
+\definecolor{codecomment}{RGB}{100,100,100}
+\definecolor{codestring}{RGB}{163,21,21}
+\definecolor{codekeyword}{RGB}{0,0,200}
+
+% ── Style de code ─────────────────────────────────────────────────────────────
+\lstset{
+  backgroundcolor=\color{codebg},
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\color{codekeyword}\bfseries,
+  stringstyle=\color{codestring},
+  commentstyle=\color{codecomment}\itshape,
+  breaklines=true,
+  showstringspaces=false,
+  frame=single,
+  rulecolor=\color{gray!40},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=8pt,
+  tabsize=4,
+  captionpos=b,
+}
+
+\lstdefinelanguage{Python}{
+  keywords={def,class,return,if,else,elif,for,while,import,from,as,try,except,
+             in,not,and,or,True,False,None,with,lambda,pass,break,continue,raise},
+  morestring=[b]",
+  morestring=[b]',
+  morecomment=[l]{\#},
+  sensitive=true,
+}
+
+% ── Commandes personnalisées ───────────────────────────────────────────────────
+\newcommand{\fichier}[1]{\texttt{#1}}
+\newcommand{\fonction}[1]{\texttt{#1()}}
+\newcommand{\classe}[1]{\texttt{#1}}
+\newcommand{\var}[1]{\texttt{#1}}
+
+% ── Titre ─────────────────────────────────────────────────────────────────────
+\title{
+  \vspace{2cm}
+  {\color{gold}\rule{\linewidth}{1.5pt}}\\[0.4cm]
+  {\Huge\bfseries RecoShop}\\[0.3cm]
+  {\large Systeme de recommandation e-commerce}\\[0.2cm]
+  {\large Application web Django avec moteur hybride}\\[0.4cm]
+  {\color{gold}\rule{\linewidth}{1.5pt}}\\[2cm]
+}
+\author{
+  Rapport de projet\\[0.5cm]
+  \large Universite\\[0.2cm]
+}
+\date{\today}
+
+% =============================================================================
+\begin{document}
+% =============================================================================
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+\tableofcontents
+\newpage
+
+% =============================================================================
+\chapter{Introduction}
+% =============================================================================
+
+\section{Presentation generale}
+
+RecoShop est une application web e-commerce developpee avec le framework Django.
+Son objectif principal est de proposer a chaque utilisateur des recommandations
+de produits personnalisees, en combinant plusieurs algorithmes d'apprentissage
+automatique au sein d'un moteur hybride.
+
+L'application couvre la totalite du cycle de vie d'une boutique en ligne : 
+inscription et authentification des utilisateurs, catalogue de produits avec 
+recherche et filtrage, panier d'achat, finalisation des commandes, gestion du 
+profil, et page de recommandations dediee. Le systeme de recommandation 
+constitue la valeur ajoutee principale du projet d'un point de vue technique 
+et academique.
+
+\section{Objectifs du projet}
+
+Les objectifs poursuivis sont les suivants :
+
+\begin{itemize}
+  \item Concevoir une boutique en ligne fonctionnelle et deployable en production.
+  \item Implementer trois familles d'algorithmes de recommandation : filtrage 
+        collaboratif base utilisateur, filtrage collaboratif base article, et 
+        filtrage par contenu.
+  \item Combiner ces algorithmes dans un systeme hybride avec gestion automatique 
+        du cold start.
+  \item Evaluer la qualite des recommandations avec des metriques standards : 
+        Precision@K, Recall@K, F1-Score et NDCG@K.
+  \item Deployer l'application sur une plateforme cloud (Render) avec base de 
+        donnees PostgreSQL.
+\end{itemize}
+
+\section{Technologies utilisees}
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Composant} & \textbf{Technologie} \\
+\midrule
+Framework web       & Django 5.2 (Python) \\
+Base de donnees     & SQLite (developpement) / PostgreSQL (production) \\
+ORM                 & Django ORM avec \texttt{dj-database-url} \\
+Fichiers statiques  & WhiteNoise avec compression \\
+Machine Learning    & scikit-learn 1.8, NumPy 2.4, SciPy 1.17 \\
+Serveur production  & Gunicorn + Render Web Service \\
+Email               & SMTP Gmail via Django \texttt{send\_mail} \\
+Images              & Pillow 12, URLs Unsplash \\
+Fuseaux horaires    & \texttt{Africa/Dakar}, \texttt{tzdata} \\
+\bottomrule
+\end{tabularx}
+\caption{Stack technologique de RecoShop}
+\end{table}
+
+% =============================================================================
+\chapter{Architecture du projet}
+% =============================================================================
+
+\section{Structure des fichiers}
+
+Le projet suit la structure conventionnelle d'une application Django
+mono-application. Le dossier racine contient le package de configuration
+\fichier{ecommerce\_reco/} et l'application principale \fichier{recommendations/}.
+
+\begin{lstlisting}[language={},caption={Arborescence du projet},label={lst:tree}]
+ecommerce_reco/
+|-- manage.py
+|-- requirements.txt
+|-- build.sh
+|-- .env
+|-- ecommerce_reco/
+|   |-- settings.py
+|   |-- urls.py
+|   |-- asgi.py
+|   `-- wsgi.py
+`-- recommendations/
+    |-- models.py
+    |-- views.py
+    |-- urls.py
+    |-- collaborative.py
+    |-- content_based.py
+    |-- hybrid.py
+    |-- evaluation.py
+    |-- admin.py
+    |-- apps.py
+    |-- context_processors.py
+    |-- management/
+    |   `-- commands/
+    |       |-- seed_data.py
+    |       `-- fetch_images.py
+    |-- migrations/
+    |   |-- 0001_initial.py
+    |   `-- 0002_add_category_image_url.py
+    |-- static/
+    |   `-- recommendations/
+    |       |-- css/main.css
+    |       `-- js/main.js
+    `-- templates/
+        `-- recommendations/
+            |-- base.html
+            |-- home.html
+            |-- products.html
+            |-- product_detail.html
+            |-- cart.html
+            |-- profile.html
+            |-- recommendations.html
+            |-- login.html
+            |-- register.html
+            |-- landing.html
+            |-- email_sent.html
+            |-- activation_invalid.html
+            |-- emails/
+            |   `-- activation.html
+            `-- partials/
+                `-- product_card.html
+\end{lstlisting}
+
+\section{Roles des fichiers principaux}
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Fichier} & \textbf{Role} \\
+\midrule
+\fichier{models.py}         & Definition des modeles de donnees (7 classes) \\
+\fichier{views.py}          & Logique de traitement des requetes (18 vues) \\
+\fichier{urls.py}           & Routage des URLs vers les vues \\
+\fichier{collaborative.py}  & Algorithmes de filtrage collaboratif \\
+\fichier{content\_based.py} & Algorithme de filtrage par contenu TF-IDF \\
+\fichier{hybrid.py}         & Orchestration du systeme hybride et cold start \\
+\fichier{evaluation.py}     & Calcul des metriques d'evaluation \\
+\fichier{settings.py}       & Configuration globale Django \\
+\fichier{context\_processors.py} & Injection du compteur panier dans tous les templates \\
+\fichier{seed\_data.py}     & Commande de population initiale de la base \\
+\bottomrule
+\end{tabularx}
+\caption{Roles des fichiers principaux}
+\end{table}
+
+\section{Configuration et deploiement}
+
+\subsection{Variables d'environnement}
+
+Toute la configuration sensible est externalisee dans un fichier \fichier{.env}
+charge par \texttt{python-dotenv}. Les variables cles sont les suivantes :
+\var{SECRET\_KEY}, \var{DEBUG}, \var{ALLOWED\_HOSTS}, \var{DATABASE\_URL},
+\var{CSRF\_TRUSTED\_ORIGINS}, \var{EMAIL\_HOST\_USER} et
+\var{EMAIL\_HOST\_PASSWORD}.
+
+\subsection{Base de donnees}
+
+La configuration de la base de donnees utilise \texttt{dj-database-url} qui
+parse automatiquement la variable \var{DATABASE\_URL}. En l'absence de cette
+variable, elle bascule sur SQLite local :
+
+\begin{lstlisting}[language=Python,caption={Configuration de la base de donnees}]
+DATABASES = {
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+    )
+}
+\end{lstlisting}
+
+\subsection{Script de build pour Render}
+
+Le fichier \fichier{build.sh} est execute automatiquement a chaque deploiement
+sur la plateforme Render :
+
+\begin{lstlisting}[language=bash,caption={Script de build}]
+pip install -r requirements.txt
+python manage.py collectstatic --no-input
+python manage.py migrate
+\end{lstlisting}
+
+Les fichiers statiques sont servis par WhiteNoise avec compression et hachage
+de contenu en production (\texttt{CompressedManifestStaticFilesStorage}).
+
+% =============================================================================
+\chapter{Modeles de donnees}
+% =============================================================================
+
+\section{Vue d'ensemble}
+
+L'application repose sur sept modeles Django. La figure suivante illustre leurs
+relations.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+  entity/.style={rectangle, draw=gold, fill=darkbg!10, thick,
+                 rounded corners=3pt, minimum width=2.8cm, minimum height=0.9cm,
+                 font=\small\bfseries},
+  rel/.style={-Stealth, thick, color=gray!60},
+  note/.style={font=\tiny, color=gray}
+]
+  \node[entity] (user)     at (0,0)     {CustomUser};
+  \node[entity] (product)  at (6,0)     {Product};
+  \node[entity] (category) at (6,3)     {Category};
+  \node[entity] (rating)   at (3,-2.5)  {Rating};
+  \node[entity] (comment)  at (3,-4.5)  {Comment};
+  \node[entity] (cart)     at (0,-2.5)  {CartItem};
+  \node[entity] (purchase) at (6,-2.5)  {Purchase};
+
+  \draw[rel] (category) -- node[note,right]{1..N} (product);
+  \draw[rel] (user)     -- node[note,above]{1..N} (rating);
+  \draw[rel] (product)  -- node[note,right]{1..N} (rating);
+  \draw[rel] (user)     -- node[note,left]{1..N}  (cart);
+  \draw[rel] (product)  -- node[note,below]{1..N} (cart);
+  \draw[rel] (user)     -- node[note,above]{1..N} (comment);
+  \draw[rel] (product)  -- node[note,right]{1..N} (comment);
+  \draw[rel] (user)     -- node[note,above]{1..N} (purchase);
+  \draw[rel] (product)  -- node[note,right]{1..N} (purchase);
+\end{tikzpicture}
+\caption{Diagramme relationnel simplifie des modeles}
+\end{figure}
+
+\section{Description des modeles}
+
+\subsection{CustomUser}
+
+Etend \classe{AbstractUser} de Django. Le champ d'authentification est
+remplace par l'adresse email (au lieu du nom d'utilisateur par defaut).
+Les champs supplementaires sont \var{profile\_pic} (ImageField),
+\var{bio} (TextField limite a 300 caracteres) et \var{date\_joined}
+(auto-rempli a la creation).
+
+\begin{lstlisting}[language=Python,caption={Modele CustomUser (extrait)}]
+class CustomUser(AbstractUser):
+    email = models.EmailField(unique=True)
+    profile_pic = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+    bio = models.TextField(max_length=300, blank=True)
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+\end{lstlisting}
+
+\subsection{Category}
+
+Represente une categorie de produits avec un slug unique utilise dans les URLs,
+une icone (caractere emoji), une couleur de fond et une URL d'image optionnelle.
+Le projet seed 12 categories : Electronique, Mode, Maison, Sport, Beaute,
+Livres, Cuisine, Jeux, Voyage, Auto, Bijoux et Bebe.
+
+\subsection{Product}
+
+Modele central de l'application. Les champs notables sont :
+
+\begin{itemize}
+  \item \var{price} et \var{original\_price} : permettent de calculer le
+        pourcentage de reduction via la methode \fonction{discount\_percent}.
+  \item \var{tags} : chaine de caracteres separee par des virgules,
+        utilisee pour la recherche et le filtrage TF-IDF.
+  \item \var{is\_featured} : booleen pour mettre en avant certains produits.
+  \item \var{image\_url} : URL Unsplash pour l'affichage des images.
+\end{itemize}
+
+Trois methodes de calcul sont definies directement sur le modele :
+\fonction{average\_rating}, \fonction{rating\_count}, et
+\fonction{discount\_percent}.
+
+\subsection{Rating}
+
+Lie un \classe{CustomUser} a un \classe{Product} avec un score entier entre 1
+et 5. La contrainte \var{unique\_together} garantit qu'un utilisateur ne peut
+noter un produit qu'une seule fois. C'est la donnee fondamentale exploitee par
+le moteur de recommandation collaboratif.
+
+\subsection{Comment}
+
+Commentaire texte libre (max 1000 caracteres) d'un utilisateur sur un produit,
+independant de la note.
+
+\subsection{CartItem}
+
+Represente une ligne du panier actif d'un utilisateur. La methode
+\fonction{subtotal} calcule le prix total de la ligne
+(\var{price} x \var{quantity}). La contrainte \var{unique\_together} sur
+(\var{user}, \var{product}) garantit l'unicite de chaque produit dans le panier.
+
+\subsection{Purchase}
+
+Enregistre les commandes passees. Lors du checkout, chaque \classe{CartItem}
+est converti en \classe{Purchase}, puis le panier est vide.
+
+% =============================================================================
+\chapter{Fonctionnalites de l'application}
+% =============================================================================
+
+\section{Authentification}
+
+\subsection{Inscription avec confirmation par email}
+
+Le processus d'inscription est le suivant : le formulaire collecte l'email,
+le nom d'utilisateur et le mot de passe (avec confirmation). Si toutes les
+validations passent, le compte est cree avec \var{is\_active = False}. Un token
+signe est genere via \texttt{default\_token\_generator} de Django, encode en
+base64, et envoye par email SMTP Gmail dans un template HTML
+\fichier{emails/activation.html}.
+
+Lors du clic sur le lien d'activation, la vue \fonction{activate\_view}
+verifie la validite du token, active le compte et connecte l'utilisateur.
+En cas d'echec SMTP, le compte est active directement et l'utilisateur est
+connecte avec un message d'avertissement (mode de secours).
+
+\begin{lstlisting}[language=Python,caption={Generation du lien d'activation}]
+uid   = urlsafe_base64_encode(force_bytes(user.pk))
+token = default_token_generator.make_token(user)
+activation_link = f"{protocol}://{domain}/activate/{uid}/{token}/"
+\end{lstlisting}
+
+\subsection{Connexion et deconnexion}
+
+La connexion utilise \texttt{authenticate()} avec l'email comme identifiant.
+La redirection post-connexion respecte le parametre \var{next} de l'URL si
+present. La deconnexion est protegee par \texttt{@login\_required} pour eviter
+les requetes GET malveillantes.
+
+\section{Catalogue de produits}
+
+La vue \fonction{products\_view} offre les fonctionnalites suivantes.
+
+La \textbf{recherche full-text} filtre simultanement sur le nom, la description,
+les tags et la marque via des requetes \texttt{Q} Django combinant quatre
+\texttt{icontains}.
+
+Le \textbf{filtrage par categorie} est effectue via le slug de la categorie
+passe en parametre GET (\var{?category=electronique}).
+
+Le \textbf{tri} propose cinq options : produits vedettes, meilleures notes,
+prix croissant, prix decroissant, et plus recents.
+
+Les annotations Django (\texttt{Avg}, \texttt{Count}) calculent la note moyenne
+et le nombre de notes directement en base de donnees, sans N+1 requetes.
+
+\section{Detail d'un produit}
+
+La page detail gere plusieurs actions dans une seule vue :
+
+\begin{itemize}
+  \item Affichage du produit avec ses commentaires et sa note moyenne.
+  \item Soumission d'une note (1 a 5) via \texttt{update\_or\_create}.
+  \item Ajout d'un commentaire texte.
+  \item Affichage de 6 produits similaires calcules par filtrage par contenu.
+  \item Detection de la presence du produit dans le panier de l'utilisateur.
+\end{itemize}
+
+\section{Panier et commandes}
+
+Le panier supporte les requetes AJAX pour une mise a jour sans rechargement de
+page. Les vues \fonction{add\_to\_cart} et \fonction{remove\_from\_cart}
+detectent les requetes asynchrones via l'en-tete \texttt{X-Requested-With} et
+retournent une reponse JSON le cas echeant.
+
+Le checkout transforme chaque \classe{CartItem} en \classe{Purchase} dans une
+boucle transactionnelle, puis supprime tous les items du panier.
+
+\begin{lstlisting}[language=Python,caption={Logique du checkout}]
+for item in cart_items:
+    Purchase.objects.create(
+        user=request.user,
+        product=item.product,
+        quantity=item.quantity
+    )
+cart_items.delete()
+\end{lstlisting}
+
+\section{Profil utilisateur}
+
+La page profil affiche l'historique des achats, l'historique des notes, et
+8 recommandations personnalisees. Si l'utilisateur a note au moins 3 produits,
+les metriques d'evaluation du moteur sont affichees. La mise a jour du profil
+permet de changer le nom d'utilisateur, la biographie, la photo de profil, et
+le mot de passe. En cas de changement de mot de passe, \texttt{update\_session\_auth\_hash}
+est appele pour eviter la deconnexion automatique.
+
+\section{Context processor}
+
+Le fichier \fichier{context\_processors.py} injecte automatiquement dans
+chaque template le nombre d'articles dans le panier (\var{cart\_count}) et la
+liste des categories pour la sidebar (\var{sidebar\_categories}), sans avoir
+a repeter cette logique dans chaque vue.
+
+% =============================================================================
+\chapter{Moteur de recommandation}
+% =============================================================================
+
+\section{Vue d'ensemble de l'architecture}
+
+Le moteur de recommandation est decompose en quatre modules Python, chacun
+ayant un role distinct.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+  box/.style={rectangle, draw=gold, thick, rounded corners=4pt,
+              minimum width=3.5cm, minimum height=1cm,
+              font=\small, align=center},
+  arrow/.style={-Stealth, thick},
+]
+  \node[box, fill=darkbg!15] (hybrid)   at (4, 4)   {\textbf{hybrid.py}\\Orchestrateur};
+  \node[box, fill=blue!10]   (collab)   at (0, 2)   {collaborative.py\\User-based + Item-based};
+  \node[box, fill=green!10]  (content)  at (8, 2)   {content\_based.py\\TF-IDF + Cosinus};
+  \node[box, fill=gray!15]   (cold)     at (4, 2)   {Cold Start\\Popularite};
+  \node[box, fill=red!10]    (eval)     at (4, 0)   {evaluation.py\\P@K, R@K, F1, NDCG};
+
+  \draw[arrow] (hybrid) -- (collab);
+  \draw[arrow] (hybrid) -- (content);
+  \draw[arrow] (hybrid) -- (cold);
+  \draw[arrow] (hybrid) -- (eval);
+\end{tikzpicture}
+\caption{Architecture du moteur de recommandation}
+\end{figure}
+
+\section{Filtrage collaboratif (collaborative.py)}
+
+\subsection{Construction de la matrice utilisateur-produit}
+
+La fonction \fonction{build\_user\_item\_matrix} construit une matrice
+$U \times P$ (utilisateurs $\times$ produits) a partir du queryset de notes.
+Chaque cellule $M_{u,p}$ contient le score donne par l'utilisateur $u$ au
+produit $p$, ou 0 si l'utilisateur n'a pas note ce produit.
+
+\begin{lstlisting}[language=Python,caption={Construction de la matrice}]
+matrix = np.zeros((len(user_ids), len(item_ids)))
+for r in ratings_qs:
+    matrix[user_idx[r.user_id]][item_idx[r.product_id]] = r.score
+\end{lstlisting}
+
+\subsection{Calcul de la similarite cosinus}
+
+La similarite cosinus entre deux vecteurs $\mathbf{a}$ et $\mathbf{b}$ est :
+
+\begin{equation}
+\text{sim}(\mathbf{a}, \mathbf{b}) = \frac{\mathbf{a} \cdot \mathbf{b}}{||\mathbf{a}|| \cdot ||\mathbf{b}||}
+\end{equation}
+
+L'implementation utilise une normalisation matricielle avec NumPy, ce qui
+permet de calculer toutes les similarites en une seule operation matricielle :
+
+\begin{lstlisting}[language=Python,caption={Calcul matriciel de la similarite cosinus}]
+def cosine_similarity_matrix(matrix):
+    norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+    norms[norms == 0] = 1e-10  # evite la division par zero
+    normalized = matrix / norms
+    return normalized @ normalized.T
+\end{lstlisting}
+
+\subsection{Filtrage user-based}
+
+L'algorithme identifie les \var{n\_similar} (par defaut 5) utilisateurs les
+plus similaires a l'utilisateur cible. Pour chaque produit non encore note par
+l'utilisateur cible, un score predit est calcule comme la moyenne ponderee par
+similarite des notes des voisins :
+
+\begin{equation}
+\hat{r}_{u,p} = \frac{\sum_{v \in V} \text{sim}(u, v) \cdot r_{v,p}}{\sum_{v \in V} \text{sim}(u, v)}
+\end{equation}
+
+ou $V$ est l'ensemble des voisins ayant note le produit $p$.
+
+\subsection{Filtrage item-based}
+
+La meme logique est appliquee en transposant la matrice. La similarite est
+maintenant calculee entre produits (colonnes de la matrice originale). Pour
+chaque produit non note par l'utilisateur, le score predit est une moyenne
+ponderee des notes de l'utilisateur sur les produits similaires :
+
+\begin{equation}
+\hat{r}_{u,p} = \frac{\sum_{q \in Q} \text{sim}(p, q) \cdot r_{u,q}}{\sum_{q \in Q} \text{sim}(p, q)}
+\end{equation}
+
+ou $Q$ est l'ensemble des produits notes par l'utilisateur similaires a $p$.
+
+\section{Filtrage par contenu (content\_based.py)}
+
+\subsection{Construction des descripteurs de produits}
+
+Pour chaque produit, un descripteur textuel est construit en concatenant son
+nom, sa categorie, sa description, ses tags et sa marque. Ce texte est mis en
+minuscules et nettoye :
+
+\begin{lstlisting}[language=Python,caption={Construction du descripteur}]
+def build_product_features(products):
+    features = []
+    for p in products:
+        text = f"{p.name} {p.category.name} {p.description} {p.tags} {p.brand}"
+        features.append(text.lower().strip())
+    return features
+\end{lstlisting}
+
+\subsection{Vectorisation TF-IDF}
+
+Le vectoriseur \texttt{TfidfVectorizer} de scikit-learn transforme ces
+descripteurs en vecteurs numeriques. Les stop words anglais sont supprimes,
+et le vocabulaire est limite a 500 termes (\var{max\_features=500}).
+
+TF-IDF (Term Frequency - Inverse Document Frequency) attribue a chaque terme
+un poids refletant son importance relative dans le corpus :
+
+\begin{equation}
+\text{tfidf}(t, d) = \text{tf}(t, d) \times \log\frac{N}{\text{df}(t)}
+\end{equation}
+
+ou $\text{tf}(t, d)$ est la frequence du terme $t$ dans le document $d$, $N$
+le nombre total de documents, et $\text{df}(t)$ le nombre de documents
+contenant $t$.
+
+\subsection{Deux modes d'utilisation}
+
+Le module expose deux fonctions avec des usages distincts.
+
+\fonction{content\_based\_recommendations} prend un produit cible et retourne
+les produits les plus similaires selon la similarite cosinus entre vecteurs
+TF-IDF. Elle est utilisee dans la page detail pour la section "produits
+similaires".
+
+\fonction{content\_based\_for\_user} calcule le profil de l'utilisateur comme
+la moyenne des vecteurs TF-IDF de tous ses produits notes, puis retourne les
+produits les plus proches de ce profil moyen. Elle est utilisee dans le systeme
+hybride.
+
+\begin{lstlisting}[language=Python,caption={Profil utilisateur par contenu}]
+rated_indices = [product_ids.index(pid)
+                 for pid in user_rated_product_ids if pid in product_ids]
+user_profile = np.mean(tfidf_matrix[rated_indices].toarray(), axis=0)
+similarities = cosine_similarity([user_profile], tfidf_matrix.toarray())[0]
+\end{lstlisting}
+
+\section{Systeme hybride (hybrid.py)}
+
+\subsection{Principe de combinaison}
+
+La fonction \fonction{hybrid\_recommendations} orchestre les trois approches
+selon la formule :
+
+\begin{equation}
+\text{score\_final}(p) = \alpha \cdot \text{score\_collab}(p) + (1 - \alpha) \cdot \text{score\_contenu}(p)
+\end{equation}
+
+avec $\alpha = 0.5$ par defaut, donnant un poids egal aux deux approches.
+
+\subsection{Construction du score collaboratif}
+
+Les deux algorithmes collaboratifs sont executes chacun avec $2n$ resultats.
+Un score de position (rang inverse) est attribue a chaque produit, puis les
+scores des deux listes sont additionnes :
+
+\begin{lstlisting}[language=Python,caption={Score collaboratif par rang}]
+collab_scores = {}
+for i, pid in enumerate(user_recs):
+    collab_scores[pid] = collab_scores.get(pid, 0) + (len(user_recs) - i)
+for i, pid in enumerate(item_recs):
+    collab_scores[pid] = collab_scores.get(pid, 0) + (len(item_recs) - i)
+\end{lstlisting}
+
+\subsection{Normalisation}
+
+Les scores collaboratifs et par contenu sont normalises independamment par
+leur valeur maximale respective, ramenant les deux echelles sur $[0, 1]$ :
+
+\begin{lstlisting}[language=Python,caption={Normalisation et fusion}]
+max_c  = max(collab_scores.values(),  default=1) or 1
+max_cb = max(content_scores.values(), default=1) or 1
+
+for pid in all_ids:
+    if pid in rated_ids:
+        continue
+    c_score  = collab_scores.get(pid, 0)  / max_c
+    cb_score = content_scores.get(pid, 0) / max_cb
+    final_scores[pid] = alpha * c_score + (1 - alpha) * cb_score
+\end{lstlisting}
+
+\subsection{Gestion du cold start}
+
+Le cold start designe la situation ou un utilisateur n'a aucune note,
+rendant les algorithmes collaboratifs inutilisables. Le systeme le detecte
+en amont et bascule sur une heuristique de popularite :
+
+\begin{lstlisting}[language=Python,caption={Gestion du cold start}]
+if user_ratings.count() == 0:
+    return cold_start_recommendations(all_products, n)
+\end{lstlisting}
+
+\fonction{cold\_start\_recommendations} retourne les produits tries par
+\var{is\_featured} en premier, puis par note moyenne decroissante, puis par
+nombre de notes. Ce mecanisme est egalement declenche si la combinaison hybride
+ne produit aucun resultat.
+
+\section{Evaluation (evaluation.py)}
+
+Quatre metriques sont implementees. Toutes sont calculees en comparant la liste
+de recommandations aux produits que l'utilisateur a notes $\geq 4/5$ (seuil de
+pertinence).
+
+\subsection{Precision@K}
+
+Proportion de recommandations pertinentes parmi les $K$ premiers resultats :
+
+\begin{equation}
+\text{Precision@K} = \frac{|\text{recommandes}_{K} \cap \text{pertinents}|}{K}
+\end{equation}
+
+\subsection{Recall@K}
+
+Proportion de produits pertinents effectivement retrouves dans les $K$ premiers
+resultats :
+
+\begin{equation}
+\text{Recall@K} = \frac{|\text{recommandes}_{K} \cap \text{pertinents}|}{|\text{pertinents}|}
+\end{equation}
+
+\subsection{F1-Score}
+
+Moyenne harmonique de la Precision et du Recall, penalisant les cas
+desequilibres :
+
+\begin{equation}
+\text{F1} = \frac{2 \cdot \text{Precision@K} \cdot \text{Recall@K}}{\text{Precision@K} + \text{Recall@K}}
+\end{equation}
+
+\subsection{NDCG@K}
+
+Le Normalized Discounted Cumulative Gain prend en compte la position des
+elements pertinents dans la liste. Un produit pertinent en premiere position
+contribue davantage qu'un produit pertinent en dixieme position :
+
+\begin{equation}
+\text{DCG@K} = \sum_{i=1}^{K} \frac{\mathbb{1}[p_i \in \text{pertinents}]}{\log_2(i + 1)}
+\end{equation}
+
+\begin{equation}
+\text{NDCG@K} = \frac{\text{DCG@K}}{\text{IDCG@K}}
+\end{equation}
+
+ou $\text{IDCG@K}$ est le DCG ideal obtenu si tous les elements pertinents
+etaient places en tete de liste.
+
+\begin{lstlisting}[language=Python,caption={Implementation du NDCG@K}]
+def ndcg_at_k(recommended_ids, relevant_ids, k=10):
+    import math
+    relevant_set = set(relevant_ids)
+    top_k = recommended_ids[:k]
+    dcg = 0.0
+    for i, pid in enumerate(top_k):
+        if pid in relevant_set:
+            dcg += 1.0 / math.log2(i + 2)
+    ideal_hits = min(len(relevant_set), k)
+    idcg = sum(1.0 / math.log2(i + 2) for i in range(ideal_hits))
+    return round(dcg / idcg, 3) if idcg > 0 else 0.0
+\end{lstlisting}
+
+Les metriques sont affichees dans l'interface uniquement quand l'utilisateur
+a au moins 3 notes, garantissant que le calcul a du sens.
+
+% =============================================================================
+\chapter{Routes et vues}
+% =============================================================================
+
+\section{Table des routes}
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{URL} & \textbf{Nom} & \textbf{Description} \\
+\midrule
+\texttt{/}                        & index          & Redirige vers landing ou home \\
+\texttt{/landing/}                & landing        & Page d'accueil visiteurs \\
+\texttt{/home/}                   & home           & Accueil utilisateur connecte \\
+\texttt{/login/}                  & login          & Connexion \\
+\texttt{/register/}               & register       & Inscription \\
+\texttt{/email-sent/}             & email\_sent    & Confirmation envoi email \\
+\texttt{/activate/<uid>/<token>/} & activate       & Activation de compte \\
+\texttt{/logout/}                 & logout         & Deconnexion \\
+\texttt{/products/}               & products       & Catalogue avec recherche et tri \\
+\texttt{/products/<pk>/}          & product\_detail & Detail d'un produit \\
+\texttt{/cart/}                   & cart           & Panier \\
+\texttt{/cart/add/<pk>/}          & add\_to\_cart  & Ajout au panier (AJAX) \\
+\texttt{/cart/update/<pk>/}       & update\_cart   & Modification quantite \\
+\texttt{/cart/remove/<pk>/}       & remove\_from\_cart & Suppression (AJAX) \\
+\texttt{/cart/checkout/}          & checkout       & Finalisation commande \\
+\texttt{/profile/}                & profile        & Profil utilisateur \\
+\texttt{/profile/update/}         & update\_profile & Mise a jour profil \\
+\texttt{/recommendations/}        & recommendations & Page de recommandations \\
+\texttt{/api/rate/<pk>/}          & api\_rate      & API JSON notation \\
+\bottomrule
+\end{tabularx}
+\caption{Table complete des routes}
+\end{table}
+
+\section{Protection des acces}
+
+Toutes les vues sont protegees par le decorateur \texttt{@login\_required},
+a l'exception de \fonction{login\_view}, \fonction{register\_view},
+\fonction{landing\_view}, \fonction{index\_view}, \fonction{email\_sent\_view}
+et \fonction{activate\_view}. La redirection non authentifiee pointe vers
+\texttt{/login/} comme defini dans \var{LOGIN\_URL}.
+
+\section{Interactions AJAX}
+
+Deux vues supportent les requetes AJAX via la detection de l'en-tete
+\texttt{X-Requested-With: XMLHttpRequest} : \fonction{add\_to\_cart} retourne
+le nouveau compteur du panier en JSON, et \fonction{remove\_from\_cart} retourne
+le nouveau total et le nouveau compteur. L'endpoint \texttt{/api/rate/<pk>/}
+est entierement JSON pour la notation depuis la page detail.
+
+% =============================================================================
+\chapter{Donnees de test}
+% =============================================================================
+
+\section{Commande seed\_data}
+
+La commande \texttt{python manage.py seed\_data} peuple la base de donnees
+avec un jeu de donnees representatif pour permettre l'utilisation immediate du
+moteur de recommandation.
+
+\subsection{Categories}
+
+12 categories sont creees avec leurs icones, couleurs et slugs :
+Electronique, Mode, Maison, Sport, Beaute, Livres, Cuisine, Jeux,
+Voyage, Auto, Bijoux et Bebe.
+
+\subsection{Produits}
+
+Plus de 30 produits sont inseres, couvrant toutes les categories, avec :
+\begin{itemize}
+  \item Des descriptions detaillees integrant nom, caracteristiques et marque.
+  \item Des tags en virgule-separes pour le filtrage TF-IDF.
+  \item Des URLs Unsplash pour les images.
+  \item Des prix et prix originaux permettant le calcul de reduction.
+  \item Un stock aleatoire entre 10 et 200 unites.
+\end{itemize}
+
+\subsection{Utilisateurs de test}
+
+9 utilisateurs sont crees (dont un compte demo) avec le mot de passe
+\texttt{pass1234} ou \texttt{demo1234}. Un compte administrateur est gere
+separement via \texttt{createsuperuser}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Email} & \textbf{Mot de passe} & \textbf{Role} \\
+\midrule
+demo@luxemart.com  & demo1234  & Compte demonstration \\
+alice@luxemart.com & pass1234  & Utilisateur test \\
+bob@luxemart.com   & pass1234  & Utilisateur test \\
+clara@luxemart.com & pass1234  & Utilisateur test \\
+\ldots             & pass1234  & (et 5 autres) \\
+admin@luxemart.com & admin1234 & Superadministrateur \\
+\bottomrule
+\end{tabular}
+\caption{Comptes de test disponibles}
+\end{table}
+
+\subsection{Notes generees}
+
+Chaque utilisateur note 20 produits tires aleatoirement. La distribution des
+scores est biaisee vers les bonnes notes pour simuler un comportement realiste :
+
+\begin{lstlisting}[language=Python,caption={Distribution des notes dans le seed}]
+score = random.choices([1, 2, 3, 4, 5], weights=[5, 10, 20, 35, 30])[0]
+\end{lstlisting}
+
+Cela genere environ 180 notes au total, suffisantes pour que les algorithmes
+collaboratifs produisent des resultats significatifs.
+
+% =============================================================================
+\chapter{Interface utilisateur}
+% =============================================================================
+
+\section{Design et charte graphique}
+
+L'interface adopte une esthetique sobre et luxueuse avec la palette suivante :
+
+\begin{itemize}
+  \item Or : \texttt{\#D4AF37} pour les elements d'accentuation.
+  \item Fond sombre : \texttt{\#1a1a2e} pour les en-tetes et elements de mise
+        en valeur.
+  \item Blanc creme pour le contenu principal.
+\end{itemize}
+
+La typographie combine Cormorant Garamond pour les titres et Jost pour le
+corps du texte, chargees depuis Google Fonts. L'interface supporte un mode
+sombre et un mode clair, persiste dans le \texttt{localStorage} du navigateur.
+La mise en page est responsive avec une sidebar retractable sur mobile.
+
+\section{Templates principaux}
+
+\begin{description}
+  \item[\fichier{base.html}] Template parent contenant la navigation, la
+    sidebar categories, le compteur de panier, et les blocs extensibles.
+  \item[\fichier{home.html}] Affiche les categories, produits vedettes, mieux
+    notes, et les recommandations personnalisees.
+  \item[\fichier{products.html}] Catalogue avec barre de recherche, filtres
+    par categorie et options de tri.
+  \item[\fichier{product\_detail.html}] Page produit avec galerie, formulaire
+    de note, formulaire de commentaire, et section produits similaires.
+  \item[\fichier{cart.html}] Panier interactif avec mise a jour AJAX des
+    quantites et du total.
+  \item[\fichier{profile.html}] Historique des achats, notes donnees,
+    recommandations personnelles et metriques d'evaluation.
+  \item[\fichier{recommendations.html}] Page dediee aux recommandations avec
+    affichage des quatre metriques d'evaluation.
+  \item[\fichier{partials/product\_card.html}] Composant reutilisable affichant
+    une carte produit (image, nom, prix, note, bouton panier).
+\end{description}
+
+% =============================================================================
+\chapter{Limitations et perspectives}
+% =============================================================================
+
+\section{Limitations actuelles}
+
+\subsection{Evaluation sur les memes donnees}
+
+La principale limitation methodologique de l'evaluation est l'absence de
+separation train/test. Les metriques sont calculees en comparant les
+recommandations aux notes existantes de l'utilisateur, les memes notes qui ont
+servi a construire le modele. Pour une evaluation rigoureuse, il faudrait cacher
+une partie des notes avant de generer les recommandations, puis verifier si ces
+notes cachees se retrouvent dans les resultats.
+
+\subsection{Performance de la vectorisation}
+
+La vectorisation TF-IDF est recalculee a chaque requete, sans mise en cache.
+Avec un catalogue de grande taille, cette operation peut devenir un goulot
+d'etranglement. Une amelioration serait de precalculer et stocker les matrices
+de similarite.
+
+\subsection{Stop words}
+
+Le vectoriseur TF-IDF utilise des stop words anglais uniquement, alors que les
+descripteurs de produits sont en francais. Certains termes tres frequents en
+francais (articles, prepositions) pourraient diluer la qualite des vecteurs.
+
+\section{Perspectives d'amelioration}
+
+\begin{description}
+  \item[Evaluation train/test] Implementer une separation des donnees en
+    ensemble d'entrainement et ensemble de test pour des metriques plus fiables.
+  \item[Stop words francais] Utiliser une liste de stop words francais dans
+    le \texttt{TfidfVectorizer} ou passer par une librairie comme spaCy.
+  \item[Mise en cache] Utiliser le cache Django (Redis) pour stocker les
+    matrices de similarite precalculees et eviter leur recalcul a chaque requete.
+  \item[Factorisation matricielle] Implementer SVD (Singular Value Decomposition)
+    ou ALS (Alternating Least Squares) comme alternative aux methodes
+    de voisinage pour ameliorer la qualite des predictions.
+  \item[Dataset Amazon Reviews] Integrer le dataset Amazon Reviews 2023
+    (mentionne dans le README) pour remplacer les donnees de seed synthetiques
+    par des donnees reelles.
+  \item[Ajustement du parametre alpha] Permettre a l'administrateur d'ajuster
+    dynamiquement le parametre $\alpha$ du systeme hybride selon les metriques
+    d'evaluation observees.
+\end{description}
+
+% =============================================================================
+\chapter{Conclusion}
+% =============================================================================
+
+RecoShop est une application e-commerce complete integrant un moteur de
+recommandation hybride fonctionnel. Le projet illustre la mise en oeuvre
+pratique de plusieurs algorithmes classiques de systemes de recommandation :
+filtrage collaboratif base utilisateur, filtrage collaboratif base article, et
+filtrage par contenu TF-IDF.
+
+L'architecture est proprement separee : chaque algorithme occupe son propre
+module Python, le systeme hybride orchestre la combinaison dans un seul point
+d'entree, et l'evaluation est completement independante du reste. Cette
+modularite facilite l'ajout de nouveaux algorithmes ou le remplacement d'un
+composant existant sans impacter le reste du code.
+
+L'integration de quatre metriques d'evaluation (Precision@K, Recall@K, F1-Score
+et NDCG@K) directement dans l'interface utilisateur offre une transparence
+rare dans les applications e-commerce, permettant a chaque utilisateur de
+comprendre la qualite des recommandations qui lui sont proposees.
+
+Le deploiement est entierement automatise via un script de build et une
+configuration par variables d'environnement, rendant l'application prete
+pour un environnement de production sur Render avec PostgreSQL.
+
+% =============================================================================
+% Bibliographie
+% =============================================================================
+\begin{thebibliography}{9}
+
+\bibitem{ricci2011}
+Ricci, F., Rokach, L., \& Shapira, B. (2011).
+\textit{Introduction to Recommender Systems Handbook}.
+Springer.
+
+\bibitem{sklearn}
+Pedregosa, F. et al. (2011).
+Scikit-learn: Machine Learning in Python.
+\textit{Journal of Machine Learning Research}, 12, 2825--2830.
+
+\bibitem{ndcg}
+Jarvelin, K., \& Kekalainen, J. (2002).
+Cumulated gain-based evaluation of IR techniques.
+\textit{ACM Transactions on Information Systems}, 20(4), 422--446.
+
+\bibitem{django}
+Django Software Foundation. (2024).
+\textit{Django Documentation, Version 5.2}.
+\url{https://docs.djangoproject.com/}
+
+\bibitem{tfidf}
+Salton, G., \& Buckley, C. (1988).
+Term-weighting approaches in automatic text retrieval.
+\textit{Information Processing and Management}, 24(5), 513--523.
+
+\end{thebibliography}
+
+\end{document}
