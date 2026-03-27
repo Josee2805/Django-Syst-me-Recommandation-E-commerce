@@ -8,26 +8,38 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         CATEGORIES = [
-            ('Électronique',    'electronique',   '💻', '#1a1a2e'),
-            ('Mode & Vêtements','mode',           '👗', '#8B4513'),
-            ('Maison & Déco',   'maison',         '🏠', '#2d6a4f'),
-            ('Sport & Fitness', 'sport',          '⚽', '#d62828'),
-            ('Beauté & Santé',  'beaute',         '💄', '#c77dff'),
-            ('Livres & Culture','livres',         '📚', '#4361ee'),
-            ('Cuisine & Food',  'cuisine',        '🍳', '#f4a261'),
-            ('Jeux & Jouets',   'jeux',           '🎮', '#06d6a0'),
-            ('Voyage & Outdoor','voyage',         '✈️',  '#0077b6'),
-            ('Auto & Moto',     'auto',           '🚗', '#6c757d'),
-            ('Bijoux & Luxe',   'bijoux',         '💎', '#D4AF37'),
-            ('Bébé & Enfants',  'bebe',           '🍼', '#ffb3c6'),
+            ('Électronique',    'electronique',   '💻', '#1a1a2e',
+             'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&q=80'),
+            ('Mode & Vêtements','mode',           '👗', '#8B4513',
+             'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&q=80'),
+            ('Maison & Déco',   'maison',         '🏠', '#2d6a4f',
+             'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=600&q=80'),
+            ('Sport & Fitness', 'sport',          '⚽', '#d62828',
+             'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&q=80'),
+            ('Beauté & Santé',  'beaute',         '💄', '#c77dff',
+             'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&q=80'),
+            ('Livres & Culture','livres',         '📚', '#4361ee',
+             'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=600&q=80'),
+            ('Cuisine & Food',  'cuisine',        '🍳', '#f4a261',
+             'https://images.unsplash.com/photo-1556909172-54557c7e4fb7?w=600&q=80'),
+            ('Jeux & Jouets',   'jeux',           '🎮', '#06d6a0',
+             'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&q=80'),
+            ('Voyage & Outdoor','voyage',         '✈️',  '#0077b6',
+             'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80'),
+            ('Auto & Moto',     'auto',           '🚗', '#6c757d',
+             'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=600&q=80'),
+            ('Bijoux & Luxe',   'bijoux',         '💎', '#D4AF37',
+             'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&q=80'),
+            ('Bébé & Enfants',  'bebe',           '🍼', '#ffb3c6',
+             'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=600&q=80'),
         ]
         cats = {}
-        for name, slug, icon, color in CATEGORIES:
-            c, _ = Category.objects.get_or_create(slug=slug, defaults={
-                'name': name, 'icon': icon, 'image_color': color
+        for name, slug, icon, color, image_url in CATEGORIES:
+            c, _ = Category.objects.update_or_create(slug=slug, defaults={
+                'name': name, 'icon': icon, 'image_color': color, 'image_url': image_url,
             })
             cats[slug] = c
-        self.stdout.write(self.style.SUCCESS(f'✅ {len(cats)} catégories'))
+        self.stdout.write(self.style.SUCCESS(f'OK: {len(cats)} catégories'))
 
         # (name, cat_slug, price, orig_price, emoji, color, desc, tags, brand, featured, image_url)
         PRODUCTS = [
@@ -215,6 +227,181 @@ class Command(BaseCommand):
              'argan,huile,bio,soin,naturel',
              'Argan Pur', False,
              'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=500&q=80'),
+
+            # ── Livres & Culture ──
+            ('Atomic Habits',          'livres', 15000, None, '📖', '#4361ee',
+             'Transformez vos habitudes, transformez votre vie. Bestseller mondial.',
+             'livre,habitudes,developpement,james clear,bestseller',
+             'Gallimard', True,
+             'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=500&q=80'),
+
+            ("L'Alchimiste",           'livres', 9000, None, '📖', '#8B6914',
+             'Paulo Coelho. Un berger et sa quête de la légende personnelle.',
+             'roman,paulo coelho,philosophie,voyage,initiation',
+             'Éditions Anne Carrière', False,
+             'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500&q=80'),
+
+            ('Sapiens',                'livres', 12000, None, '📚', '#2c3e50',
+             'Une brève histoire de l\'humanité par Yuval Noah Harari.',
+             'histoire,humanite,harari,essai,science',
+             'Albin Michel', False,
+             'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=500&q=80'),
+
+            ('Harry Potter T1',        'livres', 8000, None, '📗', '#7f1d1d',
+             'Harry Potter à l\'école des sorciers — édition illustrée.',
+             'roman,fantasy,jeunesse,magie,rowling',
+             'Gallimard Jeunesse', False,
+             'https://images.unsplash.com/photo-1551269901-5c5e14c25df7?w=500&q=80'),
+
+            # ── Cuisine & Food ──
+            ('Robot pâtissier KitchenAid', 'cuisine', 280000, 320000, '🥣', '#e63946',
+             'Bol inox 4.8L, 10 vitesses, + de 15 accessoires inclus.',
+             'kitchenaid,patisserie,robot,cuisine,boulangerie',
+             'KitchenAid', True,
+             'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500&q=80'),
+
+            ('Couteau de chef japonais', 'cuisine', 65000, None, '🔪', '#1a1a1a',
+             'Lame acier damas 67 couches, manche pakkawood, 20cm.',
+             'couteau,japonais,damas,chef,cuisine',
+             'Miyabi', False,
+             'https://images.unsplash.com/photo-1593618998160-e34014e67546?w=500&q=80'),
+
+            ('Livre de recettes Gordon Ramsay', 'cuisine', 22000, None, '📕', '#8B0000',
+             '100 recettes de l\'étoilé Michelin pour cuisiner comme un pro.',
+             'cuisine,recettes,gordon ramsay,gastronomie,chef',
+             'Marabout', False,
+             'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=500&q=80'),
+
+            ('Poêle antiadhésive Tefal', 'cuisine', 35000, None, '🍳', '#c0392b',
+             'Revêtement Titanium Expert, compatible induction, 28cm.',
+             'poele,tefal,induction,antiadhesif,cuisine',
+             'Tefal', False,
+             'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=500&q=80'),
+
+            # ── Jeux & Jouets ──
+            ('PlayStation 5',          'jeux', 450000, 500000, '🎮', '#00439c',
+             'Console next-gen, SSD ultra rapide, DualSense haptique.',
+             'ps5,playstation,sony,console,gaming',
+             'Sony', True,
+             'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500&q=80'),
+
+            ('Nintendo Switch OLED',   'jeux', 220000, None, '🕹️', '#e60012',
+             'Écran OLED 7", dock amélioré, 64 Go stockage interne.',
+             'nintendo,switch,oled,portable,gaming',
+             'Nintendo', True,
+             'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=500&q=80'),
+
+            ('LEGO Technic 4x4',       'jeux', 75000, None, '🧱', '#f7d32c',
+             'Set 2200 pièces, moteur Power Functions, suspension réelle.',
+             'lego,technic,construction,enfant,4x4',
+             'LEGO', False,
+             'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=500&q=80'),
+
+            ('Manette Xbox Series X',  'jeux', 35000, None, '🎮', '#107c10',
+             'Sans fil Bluetooth, grip texturé, compatible PC & Xbox.',
+             'xbox,manette,microsoft,gaming,wireless',
+             'Microsoft', False,
+             'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=500&q=80'),
+
+            # ── Voyage & Outdoor ──
+            ('Valise Samsonite 75cm',  'voyage', 95000, 120000, '🧳', '#1a3a5c',
+             'Polycarbonate léger, 4 roues 360°, serrure TSA, 94L.',
+             'valise,samsonite,voyage,trolley,tsa',
+             'Samsonite', True,
+             'https://images.unsplash.com/photo-1553531580-a3b6c4d5e8f0?w=500&q=80'),
+
+            ('Sac à dos randonnée 50L', 'voyage', 55000, None, '🎒', '#2d6a4f',
+             'Waterproof, dos ventilé, ceinture lombaire, 50 litres.',
+             'sac,randonnee,trekking,outdoor,montagne',
+             'Osprey', False,
+             'https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=500&q=80'),
+
+            ('Appareil photo Sony Alpha', 'voyage', 380000, None, '📷', '#1a1a1a',
+             'Capteur APS-C 24MP, 4K, stabilisation 5 axes, autofocus IA.',
+             'sony,photo,appareil,alpha,mirrorless',
+             'Sony', False,
+             'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&q=80'),
+
+            ('Adaptateur universel',   'voyage', 12000, None, '🔌', '#6c757d',
+             'Compatible 150+ pays, 3 USB-A + 1 USB-C, indicateur LED.',
+             'adaptateur,voyage,universal,usb,electrique',
+             'TravelPro', False,
+             'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=500&q=80'),
+
+            # ── Auto & Moto ──
+            ('Dashcam 4K 70mai',       'auto', 45000, None, '📹', '#1a1a1a',
+             'Résolution 4K, vision nocturne, WiFi, parking mode 24h.',
+             'dashcam,voiture,camera,4k,wifi',
+             '70mai', True,
+             'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=500&q=80'),
+
+            ('GPS auto Garmin DriveSmart', 'auto', 85000, None, '🗺️', '#0077b6',
+             'Écran 6.95", cartes Europe à vie, alertes trafic en direct.',
+             'gps,garmin,navigation,voiture,europe',
+             'Garmin', False,
+             'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=500&q=80'),
+
+            ('Chargeur voiture USB-C 65W', 'auto', 8000, None, '⚡', '#f4a261',
+             'Double port USB-C + USB-A, charge rapide 65W, compact.',
+             'chargeur,voiture,usbc,rapide,65w',
+             'Anker', False,
+             'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80'),
+
+            ('Balai de voiture premium', 'auto', 18000, None, '🚗', '#6c757d',
+             'Kit nettoyage auto 12 pièces, microfibres et aspirateur portable.',
+             'nettoyage,voiture,auto,kit,microfibre',
+             'AutoClean', False,
+             'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=500&q=80'),
+
+            # ── Bijoux & Luxe ──
+            ('Bracelet or 18 carats',  'bijoux', 185000, 210000, '📿', '#D4AF37',
+             'Or jaune 18 carats, maille gourmette, longueur 19cm, 4.2g.',
+             'bracelet,or,18carats,luxe,bijou',
+             'Joaillerie Luxe', True,
+             'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=500&q=80'),
+
+            ('Collier perles naturelles', 'bijoux', 95000, None, '📿', '#f5e6c8',
+             'Perles d\'eau douce AAA, fermoir argent 925, 42cm.',
+             'collier,perles,naturel,argent,femme',
+             'Perles Fines', False,
+             'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500&q=80'),
+
+            ('Bague diamant solitaire', 'bijoux', 450000, None, '💍', '#e8e8e8',
+             'Diamant 0.5ct GIA, serti griffes, or blanc 18 carats.',
+             'bague,diamant,solitaire,or,blanc,fiancailles',
+             'Diamonds & Co', True,
+             'https://images.unsplash.com/photo-1543294001-f7cd5d7fb516?w=500&q=80'),
+
+            ('Montre Tissot Everytime', 'bijoux', 180000, None, '⌚', '#c0c0c0',
+             'Mouvement quartz Swiss Made, saphir anti-reflet, 30m waterproof.',
+             'montre,tissot,suisse,luxe,classique',
+             'Tissot', False,
+             'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80'),
+
+            # ── Bébé & Enfants ──
+            ('Poussette Chicco Trio',  'bebe', 185000, 210000, '👶', '#ffb3c6',
+             'Trio combiné, châssis aluminium léger, nacelle + siège auto.',
+             'poussette,bebe,chicco,trio,nacelle',
+             'Chicco', True,
+             'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=500&q=80'),
+
+            ('Hochet musical Fisher-Price', 'bebe', 12000, None, '🔔', '#f9c74f',
+             'Sons et lumières apaisantes, stimule l\'éveil, 0-12 mois.',
+             'hochet,musical,bebe,eveil,jouet',
+             'Fisher-Price', False,
+             'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=500&q=80'),
+
+            ('Lot pyjamas bébé bio',   'bebe', 22000, None, '🍼', '#c8f0e0',
+             'Pack 3 pyjamas coton bio certifié GOTS, zip, 0-3 mois.',
+             'pyjama,bebe,bio,coton,gots',
+             'Petit Bateau', False,
+             'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=500&q=80'),
+
+            ('Tapis d\'éveil musical',  'bebe', 35000, None, '🎵', '#a8dadc',
+             '5 arches amovibles, 20 sons, miroir, tapis doux 95×80cm.',
+             'tapis,eveil,bebe,musical,arches',
+             'Tiny Love', False,
+             'https://images.unsplash.com/photo-1612539465796-3f2ec74c5fe4?w=500&q=80'),
         ]
         created = updated = 0
         for data in PRODUCTS:
@@ -233,7 +420,7 @@ class Command(BaseCommand):
                 created += 1
             else:
                 updated += 1
-        self.stdout.write(self.style.SUCCESS(f'✅ {created} produits créés, {updated} mis à jour'))
+        self.stdout.write(self.style.SUCCESS(f'OK: {created} produits créés, {updated} mis à jour'))
 
         USERS = [
             ('alice@recoshop.com',  'Alice',  'pass1234'),
@@ -249,14 +436,14 @@ class Command(BaseCommand):
         users = []
         for email, username, password in USERS:
             u, created = CustomUser.objects.get_or_create(
-                email=email,
-                defaults={'username': username}
+                username=username,
+                defaults={'email': email}
             )
             if created:
                 u.set_password(password)
                 u.save()
             users.append(u)
-        self.stdout.write(self.style.SUCCESS(f'✅ {len(users)} utilisateurs'))
+        self.stdout.write(self.style.SUCCESS(f'OK: {len(users)} utilisateurs'))
 
         all_products = list(Product.objects.all())
         rc = 0
@@ -266,5 +453,5 @@ class Command(BaseCommand):
                 score = random.choices([1,2,3,4,5], weights=[5,10,20,35,30])[0]
                 _, c = Rating.objects.get_or_create(user=user, product=product, defaults={'score': score})
                 if c: rc += 1
-        self.stdout.write(self.style.SUCCESS(f'✅ {rc} notes créées'))
-        self.stdout.write(self.style.SUCCESS('\n🎉 Seed terminé ! Compte démo : demo@recoshop.com / demo1234'))
+        self.stdout.write(self.style.SUCCESS(f'OK: {rc} notes créées'))
+        self.stdout.write(self.style.SUCCESS('\nSeed terminé ! Compte démo : demo@recoshop.com / demo1234'))
