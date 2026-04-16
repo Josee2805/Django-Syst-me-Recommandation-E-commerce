@@ -1,4 +1,4 @@
-# ✦ LuxeMart — Système de Recommandation E-commerce
+# ✦ RecoShop — Système de Recommandation E-commerce
 
 Application Django complète de boutique en ligne avec moteur de recommandation hybride.
 
